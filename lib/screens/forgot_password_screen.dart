@@ -1,28 +1,70 @@
 import 'package:final_project/constants/colors.dart';
-import 'package:final_project/screens/home_screen.dart';
-import 'package:final_project/screens/signup_screen.dart';
-import 'package:final_project/services/database.dart';
 import 'package:final_project/utils/screen_size.dart';
 import 'package:flutter/material.dart';
-import 'package:final_project/screens/forgot_password_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
 
-  bool obscurePassword = true;
+  bool isLoading = false;
+
+  Future<void> resetPassword() async {
+    final email = emailController.text.trim();
+
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("اكتبي البريد الإلكتروني")));
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      await Supabase.instance.client.auth.resetPasswordForEmail(
+        email,
+        redirectTo: 'halati://reset-password',
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك"),
+        ),
+      );
+    } on AuthException catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("حدث خطأ أثناء إرسال الرابط")),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   void dispose() {
     emailController.dispose();
-    passwordController.dispose();
     super.dispose();
   }
 
@@ -52,7 +94,33 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: EdgeInsets.symmetric(horizontal: width * 0.07),
               child: Column(
                 children: [
-                  SizedBox(height: height * 0.045),
+                  SizedBox(height: height * 0.015),
+
+                  // زر الرجوع
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      width: width * 0.10,
+                      height: width * 0.10,
+                      decoration: const BoxDecoration(
+                        color: cardColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: Icon(
+                          Icons.arrow_back_ios_new,
+                          size: width * 0.04,
+                          color: darkBlueColor,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: height * 0.03),
 
                   // الشعار
                   Image.asset(
@@ -66,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // العنوان
                   Text(
-                    "تسجيل الدخول",
+                    "نسيت كلمة المرور؟",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: width * 0.07,
@@ -75,10 +143,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-                  SizedBox(height: height * 0.006),
+                  SizedBox(height: height * 0.01),
 
                   Text(
-                    "مرحباً بك في حالتي",
+                    "أدخلي بريدك الإلكتروني وسنرسل لك رابطًا لإعادة تعيين كلمة المرور",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: width * 0.035,
@@ -86,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-                  SizedBox(height: height * 0.035),
+                  SizedBox(height: height * 0.04),
 
                   // البريد الإلكتروني
                   SizedBox(
@@ -108,74 +176,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-                  SizedBox(height: height * 0.015),
+                  SizedBox(height: height * 0.025),
 
-                  // كلمة المرور
-                  SizedBox(
-                    width: width,
-                    height: height * 0.065,
-                    child: TextField(
-                      controller: passwordController,
-                      obscureText: obscurePassword,
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                        fontSize: width * 0.037,
-                        color: inputTextColor,
-                      ),
-                      decoration: inputDecoration(
-                        context: context,
-                        hint: "كلمة المرور",
-                        icon: Icons.lock_outline,
-                        suffix: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              obscurePassword = !obscurePassword;
-                            });
-                          },
-                          icon: Icon(
-                            obscurePassword
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
-                            color: primaryColor,
-                            size: width * 0.05,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: height * 0.002),
-
-                  // نسيت كلمة المرور
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ForgotPasswordScreen(),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        "نسيت كلمة المرور؟",
-                        style: TextStyle(
-                          color: whiteColor,
-                          fontSize: width * 0.032,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: height * 0.008),
-
-                  // زر تسجيل الدخول
+                  // زر إرسال الرابط
                   SizedBox(
                     width: width,
                     height: height * 0.065,
                     child: ElevatedButton(
+                      onPressed: isLoading ? null : resetPassword,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryColor,
                         foregroundColor: whiteColor,
@@ -185,45 +193,28 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(width * 0.04),
                         ),
                       ),
-                      onPressed: () async {
-                        try {
-                          await Database().loginUser(
-                            email: emailController.text.trim(),
-                            password: passwordController.text.trim(),
-                          );
-
-                          if (!mounted) return;
-
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const HomeScreen(),
+                      child: isLoading
+                          ? SizedBox(
+                              width: width * 0.055,
+                              height: width * 0.055,
+                              child: const CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: whiteColor,
+                              ),
+                            )
+                          : Text(
+                              "إرسال الرابط",
+                              style: TextStyle(
+                                fontSize: width * 0.04,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          );
-                        } catch (e) {
-                          if (!mounted) return;
-
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text(e.toString())));
-                        }
-                      },
-                      child: Center(
-                        child: Text(
-                          "تسجيل الدخول",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: width * 0.04,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
                     ),
                   ),
 
                   SizedBox(height: height * 0.02),
 
-                  // ليس لديك حساب؟ إنشاء حساب
+                  // الرجوع لتسجيل الدخول
                   Container(
                     width: width,
                     height: height * 0.065,
@@ -236,24 +227,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       textDirection: TextDirection.rtl,
                       children: [
                         Text(
-                          "ليس لديك حساب؟",
+                          "تذكرت كلمة المرور؟",
                           style: TextStyle(
                             fontSize: width * 0.032,
                             color: inputTextColor,
                           ),
                         ),
-
                         TextButton(
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SignupScreen(),
-                              ),
-                            );
+                            Navigator.pop(context);
                           },
                           child: Text(
-                            "إنشاء حساب",
+                            "تسجيل الدخول",
                             style: TextStyle(
                               fontSize: width * 0.032,
                               color: primaryColor,
@@ -277,7 +262,6 @@ class _LoginScreenState extends State<LoginScreen> {
     required BuildContext context,
     required String hint,
     required IconData icon,
-    Widget? suffix,
   }) {
     final width = screenWidth(context);
 
@@ -287,8 +271,6 @@ class _LoginScreenState extends State<LoginScreen> {
       hintStyle: TextStyle(color: hintTextColor, fontSize: width * 0.034),
 
       prefixIcon: Icon(icon, color: primaryColor, size: width * 0.05),
-
-      suffixIcon: suffix,
 
       filled: true,
       fillColor: cardColor,

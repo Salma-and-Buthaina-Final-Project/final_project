@@ -246,7 +246,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                   SizedBox(height: height * 0.02),
 
-                  // الرجوع لتسجيل الدخول
+                  // لديك حساب بالفعل؟ تسجيل الدخول
                   Container(
                     width: width,
                     height: height * 0.065,
@@ -258,6 +258,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      textDirection: TextDirection.rtl,
                       children: [
                         Text(
                           "لديك حساب بالفعل؟",

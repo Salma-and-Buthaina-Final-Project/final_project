@@ -1,12 +1,12 @@
-<<<<<<< HEAD
 import 'package:final_project/screens/home_screen.dart';
 import 'package:final_project/screens/splash_screen.dart';
-=======
 import 'package:final_project/screens/login_screen.dart';
->>>>>>> 202a16916ab2c70c948573720f29ca1bdd570fec
+import 'package:final_project/screens/reset_password_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,22 +16,42 @@ Future<void> main() async {
   final url = dotenv.get('my_url');
   final publishableKey = dotenv.get('my_publishableKey');
 
-  await Supabase.initialize(
-    url: url,
-    anonKey: publishableKey,
-  );
+  await Supabase.initialize(url: url, anonKey: publishableKey);
 
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+
+    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      if (data.event == AuthChangeEvent.passwordRecovery) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          navigatorKey.currentState?.push(
+            MaterialPageRoute(
+              builder: (context) => const ResetPasswordScreen(),
+            ),
+          );
+        });
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
+      home: const SplashScreen(),
     );
   }
 }
