@@ -1,4 +1,5 @@
 import 'package:final_project/constants/colors.dart';
+import 'package:final_project/constants/fonts.dart';
 import 'package:final_project/screens/signup_screen.dart';
 import 'package:final_project/utils/screen_size.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,6 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
@@ -65,115 +65,144 @@ class _SplashScreenState extends State<SplashScreen>
           ),
 
           SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: width * 0.07,
-              ),
-              child: Column(
-                children: [
-                  const Spacer(flex: 2),
-
-                  // Animated Logo
-                  ScaleTransition(
-                    scale: _scaleAnimation,
-                    child: Image.asset(
-                      'assets/logo.png',
-                      width: width * 0.55,
-                      fit: BoxFit.contain,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
                     ),
-                  ),
+                    child: IntrinsicHeight(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: width * 0.07,
+                        ),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: height * 0.06,
+                            ),
 
-                  SizedBox(height: height * 0.005),
+                            // Animated Logo
+                            ScaleTransition(
+                              scale: _scaleAnimation,
+                              child: Image.asset(
+                                'assets/logo.png',
+                                width: width * 0.55,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
 
-                  // App Name
-                  Text(
-                    'حالتي',
-                    textAlign: TextAlign.center,
-                    textDirection: TextDirection.rtl,
-                    style: TextStyle(
-                      fontSize: width * 0.15,
-                      fontWeight: FontWeight.w900,
-                      color: mainTextColor,
-                    ),
-                  ),
+                            SizedBox(
+                              height: height * 0.005,
+                            ),
 
-                  SizedBox(height: height * 0.012),
+                            // App Name
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                'حالتي',
+                                textAlign: TextAlign.center,
+                                textDirection: TextDirection.rtl,
+                                style: TextStyle(
+                                  fontSize: width * 0.15,
+                                  fontWeight: FontWeight.w900,
+                                  fontFamily: thmanyahFont,
+                                  color: mainTextColor,
+                                ),
+                              ),
+                            ),
 
-                  // Subtitle
-                  Text(
-                    'صحتك أقرب إليك',
-                    textAlign: TextAlign.center,
-                    textDirection: TextDirection.rtl,
-                    style: TextStyle(
-                      fontSize: width * 0.045,
-                      fontWeight: FontWeight.w400,
-                      color: secondaryTextColor,
-                    ),
-                  ),
+                            SizedBox(
+                              height: height * 0.03,
+                            ),
 
-                  const Spacer(),
+                            // Subtitle
+                            Text(
+                              'صحتك أقرب إليك',
+                              textAlign: TextAlign.center,
+                              textDirection: TextDirection.rtl,
+                              style: TextStyle(
+                                fontSize: width * 0.045,
+                                fontWeight: FontWeight.w400,
+                                fontFamily: thmanyahFont,
+                                color: secondaryTextColor,
+                              ),
+                            ),
 
-                  // Hadith
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: width * 0.02,
-                    ),
-                    child: Text(
-                      '«تَدَاوَوْا، فَإِنَّ اللَّهَ عَزَّ وَجَلَّ '
-                      'لَمْ يَضَعْ دَاءً إِلَّا وَضَعَ لَهُ دَوَاءً، '
-                      'غَيْرَ دَاءٍ وَاحِدٍ: الْهَرَمُ»',
-                      textAlign: TextAlign.center,
-                      textDirection: TextDirection.rtl,
-                      style: TextStyle(
-                        fontSize: width * 0.045,
-                        fontWeight: FontWeight.w500,
-                        height: 1.8,
-                        color: secondaryTextColor,
-                      ),
-                    ),
-                  ),
+                            SizedBox(height: height * 0.084),
 
-                  SizedBox(height: height * 0.045),
+                            // Hadith
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: width * 0.02,
+                              ),
+                              child: Text(
+                                '«تَدَاوَوْا، فَإِنَّ اللَّهَ عَزَّ وَجَلَّ '
+                                'لَمْ يَضَعْ دَاءً إِلَّا وَضَعَ لَهُ دَوَاءً»',
+                                textAlign: TextAlign.center,
+                                textDirection: TextDirection.rtl,
+                                style: TextStyle(
+                                  fontSize: width * 0.045,
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: thmanyahFont,
+                                  height: 1.8,
+                                  color: secondaryTextColor,
+                                ),
+                              ),
+                            ),
 
-                  // Start Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: height * 0.065,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: primaryColor,
-                        foregroundColor: whiteColor,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            width * 0.04,
-                          ),
+                            SizedBox(
+                              height: height * 0.15,
+                            ),
+
+                            // Start Button
+                            SizedBox(
+                              width: double.infinity,
+                              height: height * 0.065,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: primaryColor,
+                                  foregroundColor: whiteColor,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      width * 0.04,
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const SignupScreen(),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  'ابدأ الآن',
+                                  textDirection: TextDirection.rtl,
+                                  style: TextStyle(
+                                    fontSize: width * 0.04,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: thmanyahFont,
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            SizedBox(
+                              height: height * 0.05,
+                            ),
+                          ],
                         ),
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const SignupScreen(),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        'ابدأ الآن',
-                        textDirection: TextDirection.rtl,
-                        style: TextStyle(
-                          fontSize: width * 0.04,
-                          fontWeight: FontWeight.bold,
-                      
-                        ),
-                      ),
                     ),
                   ),
-
-                  SizedBox(height: height * 0.12),
-                ],
-              ),
+                );
+              },
             ),
           ),
         ],

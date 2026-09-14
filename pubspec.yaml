@@ -19,3 +19,21 @@ flutter:
     - .env
     - assets/background.png
     - assets/logo.png
+  
+  fonts:
+    - family: Thmanyah
+      fonts:
+        - asset: assets/fonts/thmanyahsans-Light.otf
+          weight: 300
+
+        - asset: assets/fonts/thmanyahsans-Regular.otf
+          weight: 400
+
+        - asset: assets/fonts/thmanyahsans-Medium.otf
+          weight: 500
+
+        - asset: assets/fonts/thmanyahsans-Bold.otf
+          weight: 700
+
+        - asset: assets/fonts/thmanyahsans-Black.otf
+          weight: 900
