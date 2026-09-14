@@ -1,4 +1,4 @@
-include: package:flutter_lints/flutter.yaml
+package:flutter_lints/flutter.yamlinclude: 
 
 analyzer:
   exclude:

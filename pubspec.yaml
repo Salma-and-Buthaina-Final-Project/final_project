@@ -15,8 +15,13 @@ dependencies:
 
 flutter:
   uses-material-design: true
-
+  - .env
   assets:
+<<<<<<< HEAD
     - .env
+=======
+    - assets/WhatsApp Video 2026-09-13 at 17.03.17.mp4 
+    - assets/WhatsApp Video 2026-09-13 at 17.03.17.mp4
+>>>>>>> 3665661 (test)
     - assets/background.png
     - assets/logo.png

@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 import 'package:final_project/screens/home_screen.dart';
 import 'package:final_project/screens/splash_screen.dart';
 import 'package:final_project/screens/login_screen.dart';
 import 'package:final_project/screens/reset_password_screen.dart';
+=======
+import 'package:final_project/screens/login_screen.dart';
+>>>>>>> 3665661 (test)
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
