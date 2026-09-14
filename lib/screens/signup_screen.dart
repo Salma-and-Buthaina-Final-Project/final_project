@@ -1,4 +1,6 @@
 import 'package:final_project/constants/colors.dart';
+import 'package:final_project/screens/home_screen.dart';
+import 'package:final_project/screens/login_screen.dart';
 import 'package:final_project/services/database.dart';
 import 'package:final_project/utils/screen_size.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +35,6 @@ class _SignupScreenState extends State<SignupScreen> {
     return Scaffold(
       backgroundColor: backgroundColor,
       resizeToAvoidBottomInset: false,
-
       body: Stack(
         children: [
           // الخلفية
@@ -48,38 +49,10 @@ class _SignupScreenState extends State<SignupScreen> {
 
           SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: width * 0.07,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: width * 0.07),
               child: Column(
                 children: [
-                  SizedBox(height: height * 0.015),
-
-                  // زر الرجوع
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      width: width * 0.10,
-                      height: width * 0.10,
-                      decoration: const BoxDecoration(
-                        color: cardColor,
-                        shape: BoxShape.circle,
-                      ),
-                      child: IconButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: Icon(
-                          Icons.arrow_back_ios_new,
-                          size: width * 0.04,
-                          color: darkBlueColor,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: height * 0.005),
+                  SizedBox(height: height * 0.06),
 
                   // الشعار
                   Image.asset(
@@ -205,9 +178,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         elevation: 0,
                         padding: EdgeInsets.zero,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            width * 0.04,
-                          ),
+                          borderRadius: BorderRadius.circular(width * 0.04),
                         ),
                       ),
                       onPressed: () async {
@@ -220,15 +191,20 @@ class _SignupScreenState extends State<SignupScreen> {
 
                           if (!mounted) return;
 
-                          Navigator.pop(context);
+                          // بعد نجاح إنشاء الحساب يروح للهوم
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const HomeScreen(),
+                            ),
+                            (route) => false,
+                          );
                         } catch (e) {
                           if (!mounted) return;
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(e.toString()),
-                            ),
-                          );
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text(e.toString())));
                         }
                       },
                       child: Center(
@@ -252,9 +228,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     height: height * 0.065,
                     decoration: BoxDecoration(
                       color: cardColor,
-                      borderRadius: BorderRadius.circular(
-                        width * 0.04,
-                      ),
+                      borderRadius: BorderRadius.circular(width * 0.04),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -270,7 +244,12 @@ class _SignupScreenState extends State<SignupScreen> {
 
                         TextButton(
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LoginScreen(),
+                              ),
+                            );
                           },
                           child: Text(
                             "تسجيل الدخول",
@@ -304,52 +283,30 @@ class _SignupScreenState extends State<SignupScreen> {
     return InputDecoration(
       hintText: hint,
 
-      hintStyle: TextStyle(
-        color: hintTextColor,
-        fontSize: width * 0.034,
-      ),
+      hintStyle: TextStyle(color: hintTextColor, fontSize: width * 0.034),
 
-      prefixIcon: Icon(
-        icon,
-        color: primaryColor,
-        size: width * 0.05,
-      ),
+      prefixIcon: Icon(icon, color: primaryColor, size: width * 0.05),
 
       suffixIcon: suffix,
 
       filled: true,
       fillColor: cardColor,
 
-      contentPadding: EdgeInsets.symmetric(
-        horizontal: width * 0.04,
-      ),
+      contentPadding: EdgeInsets.symmetric(horizontal: width * 0.04),
 
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(
-          width * 0.04,
-        ),
-        borderSide: const BorderSide(
-          color: borderColor,
-        ),
+        borderRadius: BorderRadius.circular(width * 0.04),
+        borderSide: const BorderSide(color: borderColor),
       ),
 
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(
-          width * 0.04,
-        ),
-        borderSide: const BorderSide(
-          color: borderColor,
-        ),
+        borderRadius: BorderRadius.circular(width * 0.04),
+        borderSide: const BorderSide(color: borderColor),
       ),
 
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(
-          width * 0.04,
-        ),
-        borderSide: const BorderSide(
-          color: primaryColor,
-          width: 1.5,
-        ),
+        borderRadius: BorderRadius.circular(width * 0.04),
+        borderSide: const BorderSide(color: primaryColor, width: 1.5),
       ),
     );
   }

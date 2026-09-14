@@ -12,7 +12,6 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
@@ -28,12 +27,7 @@ class _SplashScreenState extends State<SplashScreen>
     _scaleAnimation = Tween<double>(
       begin: 1.0,
       end: 1.1,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     _controller.repeat(reverse: true);
   }
@@ -66,9 +60,7 @@ class _SplashScreenState extends State<SplashScreen>
 
           SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: width * 0.07,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: width * 0.07),
               child: Column(
                 children: [
                   const Spacer(flex: 2),
@@ -115,9 +107,7 @@ class _SplashScreenState extends State<SplashScreen>
 
                   // Hadith
                   Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: width * 0.02,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: width * 0.02),
                     child: Text(
                       '«تَدَاوَوْا، فَإِنَّ اللَّهَ عَزَّ وَجَلَّ '
                       'لَمْ يَضَعْ دَاءً إِلَّا وَضَعَ لَهُ دَوَاءً، '
@@ -145,17 +135,14 @@ class _SplashScreenState extends State<SplashScreen>
                         foregroundColor: whiteColor,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            width * 0.04,
-                          ),
+                          borderRadius: BorderRadius.circular(width * 0.04),
                         ),
                       ),
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                const SignupScreen(),
+                            builder: (context) => const SignupScreen(),
                           ),
                         );
                       },
@@ -165,7 +152,6 @@ class _SplashScreenState extends State<SplashScreen>
                         style: TextStyle(
                           fontSize: width * 0.04,
                           fontWeight: FontWeight.bold,
-                      
                         ),
                       ),
                     ),
@@ -181,8 +167,3 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 }
-
-
-
-
-
