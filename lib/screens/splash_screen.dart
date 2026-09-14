@@ -19,13 +19,22 @@ class _SplashScreenState extends State<SplashScreen> {
       'assets/WhatsApp Video 2026-09-13 at 17.03.17.mp4',
     );
 
-    _controller.initialize().then((_) {
+    _initializeVideo();
+  }
+
+  Future<void> _initializeVideo() async {
+    try {
+      await _controller.initialize();
+
+      await _controller.setLooping(true);
+      await _controller.play();
+
       if (mounted) {
         setState(() {});
-        _controller.setLooping(true);
-        _controller.play();
       }
-    });
+    } catch (e) {
+      debugPrint('VIDEO ERROR: $e');
+    }
   }
 
   @override
@@ -36,19 +45,23 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_controller.value.isInitialized) {
+      return const Scaffold(
+        body: SizedBox.shrink(),
+      );
+    }
+
     return Scaffold(
-      body: _controller.value.isInitialized
-          ? SizedBox.expand(
-              child: FittedBox(
-                fit: BoxFit.cover,
-                child: SizedBox(
-                  width: _controller.value.size.width,
-                  height: _controller.value.size.height,
-                  child: VideoPlayer(_controller),
-                ),
-              ),
-            )
-          : const SizedBox.shrink(),
+      body: SizedBox.expand(
+        child: FittedBox(
+          fit: BoxFit.cover,
+          child: SizedBox(
+            width: _controller.value.size.width,
+            height: _controller.value.size.height,
+            child: VideoPlayer(_controller),
+          ),
+        ),
+      ),
     );
   }
 }
