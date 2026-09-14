@@ -1,5 +1,7 @@
+import 'package:final_project/constants/colors.dart';
+import 'package:final_project/screens/signup_screen.dart';
+import 'package:final_project/utils/screen_size.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -8,33 +10,32 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
-  late VideoPlayerController _controller;
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
 
-    _controller = VideoPlayerController.asset(
-      'assets/WhatsApp Video 2026-09-13 at 17.03.17.mp4',
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 120),
     );
 
-    _initializeVideo();
-  }
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.15,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
 
-  Future<void> _initializeVideo() async {
-    try {
-      await _controller.initialize();
-
-      await _controller.setLooping(true);
-      await _controller.play();
-
-      if (mounted) {
-        setState(() {});
-      }
-    } catch (e) {
-      debugPrint('VIDEO ERROR: $e');
-    }
+    _controller.repeat(reverse: true);
   }
 
   @override
@@ -45,22 +46,137 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_controller.value.isInitialized) {
-      return const Scaffold(
-        body: SizedBox.shrink(),
-      );
-    }
+    final width = screenWidth(context);
+    final height = screenHeight(context);
 
     return Scaffold(
-      body: SizedBox.expand(
-        child: FittedBox(
-          fit: BoxFit.cover,
-          child: SizedBox(
-            width: _controller.value.size.width,
-            height: _controller.value.size.height,
-            child: VideoPlayer(_controller),
+      backgroundColor: backgroundColor,
+      resizeToAvoidBottomInset: false,
+      body: Stack(
+        children: [
+          // Background
+          Positioned.fill(
+            child: Image.asset(
+              'assets/background.png',
+              width: width,
+              height: height,
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
+
+          SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: width * 0.07,
+              ),
+              child: Column(
+                children: [
+                  const Spacer(flex: 2),
+
+                  // Animated Logo
+                  ScaleTransition(
+                    scale: _scaleAnimation,
+                    child: Image.asset(
+                      'assets/logo.png',
+                      width: width * 0.55,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+
+                  SizedBox(height: height * 0.005),
+
+                  // App Name
+                  Text(
+                    'حالتي',
+                    textAlign: TextAlign.center,
+                    textDirection: TextDirection.rtl,
+                    style: TextStyle(
+                      fontSize: width * 0.15,
+                      fontWeight: FontWeight.w900,
+                      color: mainTextColor,
+                    ),
+                  ),
+
+                  SizedBox(height: height * 0.012),
+
+                  // Subtitle
+                  Text(
+                    'صحتك أقرب إليك',
+                    textAlign: TextAlign.center,
+                    textDirection: TextDirection.rtl,
+                    style: TextStyle(
+                      fontSize: width * 0.045,
+                      fontWeight: FontWeight.w400,
+                      color: secondaryTextColor,
+                    ),
+                  ),
+
+                  const Spacer(),
+
+                  // Hadith
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: width * 0.02,
+                    ),
+                    child: Text(
+                      '«تَدَاوَوْا، فَإِنَّ اللَّهَ عَزَّ وَجَلَّ '
+                      'لَمْ يَضَعْ دَاءً إِلَّا وَضَعَ لَهُ دَوَاءً، '
+                      'غَيْرَ دَاءٍ وَاحِدٍ: الْهَرَمُ»',
+                      textAlign: TextAlign.center,
+                      textDirection: TextDirection.rtl,
+                      style: TextStyle(
+                        fontSize: width * 0.045,
+                        fontWeight: FontWeight.w500,
+                        height: 1.8,
+                        color: secondaryTextColor,
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: height * 0.045),
+
+                  // Start Button
+                  SizedBox(
+                    width: double.infinity,
+                    height: height * 0.065,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                        foregroundColor: whiteColor,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            width * 0.04,
+                          ),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const SignupScreen(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'ابدأ الآن',
+                        textDirection: TextDirection.rtl,
+                        style: TextStyle(
+                          fontSize: width * 0.04,
+                          fontWeight: FontWeight.bold,
+                          color: inputTextColor,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: height * 0.12),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
