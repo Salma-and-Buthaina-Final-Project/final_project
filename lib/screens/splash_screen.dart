@@ -22,12 +22,12 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 120),
+      duration: const Duration(milliseconds: 400),
     );
 
     _scaleAnimation = Tween<double>(
       begin: 1.0,
-      end: 1.15,
+      end: 1.1,
     ).animate(
       CurvedAnimation(
         parent: _controller,
@@ -165,7 +165,7 @@ class _SplashScreenState extends State<SplashScreen>
                         style: TextStyle(
                           fontSize: width * 0.04,
                           fontWeight: FontWeight.bold,
-                          color: inputTextColor,
+                      
                         ),
                       ),
                     ),
