@@ -131,7 +131,9 @@ class _SplashScreenState extends State<SplashScreen>
                               ),
                             ),
 
-                            SizedBox(height: height * 0.084),
+                            SizedBox(
+                              height: height * 0.05,
+                            ),
 
                             // Hadith
                             Padding(
@@ -154,7 +156,7 @@ class _SplashScreenState extends State<SplashScreen>
                             ),
 
                             SizedBox(
-                              height: height * 0.15,
+                              height: height * 0.05,
                             ),
 
                             // Start Button
@@ -210,8 +212,3 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 }
-
-
-
-
-

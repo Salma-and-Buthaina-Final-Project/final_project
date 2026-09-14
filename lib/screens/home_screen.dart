@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:final_project/screens/add_condition_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -39,10 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: const Color(0xFFD8D8D8),
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 4,
-                        ),
+                        border: Border.all(color: Colors.white, width: 4),
                       ),
                       child: const Icon(
                         Icons.person,
@@ -85,9 +83,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
+
                     SizedBox(width: width * 0.02),
 
-                    // Notification
                     _headerButton(
                       icon: Icons.notifications_none_rounded,
                       width: width,
@@ -97,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 SizedBox(height: height * 0.025),
 
+                // سجل أعراضك اليوم
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(
@@ -220,6 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
 
                 SizedBox(height: height * 0.035),
+
                 Text(
                   "أحدث الإدخالات",
                   style: TextStyle(
@@ -270,36 +270,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
 
-                // Space for bottom navigation
                 SizedBox(height: height * 0.03),
               ],
             ),
           ),
         ),
+
         bottomNavigationBar: _bottomNavigation(width),
       ),
     );
   }
 
-  Widget _headerButton({
-    required IconData icon,
-    required double width,
-  }) {
+  Widget _headerButton({required IconData icon, required double width}) {
     return Container(
       width: width * 0.125,
       height: width * 0.125,
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.75),
         shape: BoxShape.circle,
-        border: Border.all(
-          color: const Color(0xFFD7E5F2),
-        ),
+        border: Border.all(color: const Color(0xFFD7E5F2)),
       ),
-      child: Icon(
-        icon,
-        color: const Color(0xFF122E4D),
-        size: width * 0.065,
-      ),
+      child: Icon(icon, color: const Color(0xFF122E4D), size: width * 0.065),
     );
   }
 
@@ -318,19 +309,12 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: iconColor.withOpacity(0.12),
-          width: 1.5,
-        ),
+        border: Border.all(color: iconColor.withOpacity(0.12), width: 1.5),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            size: width * 0.095,
-            color: iconColor,
-          ),
+          Icon(icon, size: width * 0.095, color: iconColor),
 
           SizedBox(height: height * 0.015),
 
@@ -394,10 +378,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             width: width * 0.14,
             height: width * 0.14,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             child: Icon(
               icon,
               size: width * 0.075,
@@ -418,143 +399,135 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-Widget _bottomNavigation(double width) {
-  return Container(
-    height: 90,
-    decoration: BoxDecoration(
-      color: Colors.white.withOpacity(0.94),
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(32),
-        topRight: Radius.circular(32),
-      ),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.06),
-          blurRadius: 18,
-          offset: const Offset(0, -4),
+  Widget _bottomNavigation(double width) {
+    return Container(
+      height: 90,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.94),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(32),
+          topRight: Radius.circular(32),
         ),
-      ],
-    ),
-    child: Stack(
-      clipBehavior: Clip.none,
-      alignment: Alignment.topCenter,
-      children: [
-
-        // Navigation items
-        Positioned.fill(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _navItem(
-                icon: Icons.home_rounded,
-                label: "",
-                index: 0,
-              ),
-
-              _navItem(
-                icon: Icons.favorite_border_rounded,
-                label: "",
-                index: 1,
-              ),
-
-              // Empty space for + button
-              const SizedBox(width: 70),
-
-              _navItem(
-                icon: Icons.bar_chart_rounded,
-                label: "",
-                index: 3,
-              ),
-
-              _navItem(
-                icon: Icons.person_outline_rounded,
-                label: "",
-                index: 4,
-              ),
-            ],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 18,
+            offset: const Offset(0, -4),
           ),
-        ),
-        Positioned(
-          top: -25,
-          child: GestureDetector(
-            onTap: () {
-              // Add symptom action
-            },
-            child: Container(
-              width: 68,
-              height: 68,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFF2366B1),
-                border: Border.all(
-                  color: const Color(0xFFEAF4FC),
-                  width: 6,
+        ],
+      ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.topCenter,
+        children: [
+          Positioned.fill(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _navItem(icon: Icons.home_rounded, label: "", index: 0),
+
+                _navItem(
+                  icon: Icons.favorite_border_rounded,
+                  label: "",
+                  index: 1,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.12),
-                    blurRadius: 12,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.add_rounded,
-                color: Colors.white,
-                size: 38,
-              ),
+
+                const SizedBox(width: 70),
+
+                _navItem(icon: Icons.bar_chart_rounded, label: "", index: 3),
+
+                _navItem(
+                  icon: Icons.person_outline_rounded,
+                  label: "",
+                  index: 4,
+                ),
+              ],
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
 
-  Widget _navItem({
-  required IconData icon,
-  required String label,
-  required int index,
-}) {
-  final isSelected = selectedIndex == index;
-
-  return GestureDetector(
-    onTap: () {
-      setState(() {
-        selectedIndex = index;
-      });
-    },
-    child: SizedBox(
-      width: 55,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            size: 27,
-            color: isSelected
-                ? const Color(0xFF2366B1)
-                : const Color(0xFF9AAEC0),
-          ),
-
-          const SizedBox(height: 3),
-
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 9,
-              fontWeight:
-                  isSelected ? FontWeight.bold : FontWeight.w500,
-              color: isSelected
-                  ? const Color(0xFF2366B1)
-                  : const Color(0xFF71869A),
+          // زر إضافة حالة
+          Positioned(
+            top: -25,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddConditionScreen(),
+                  ),
+                );
+              },
+              child: Container(
+                width: 68,
+                height: 68,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF2366B1),
+                  border: Border.all(color: const Color(0xFFEAF4FC), width: 6),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.12),
+                      blurRadius: 12,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.add_rounded,
+                  color: Colors.white,
+                  size: 38,
+                ),
+              ),
             ),
           ),
         ],
       ),
-    ),
-  );
-}
+    );
+  }
+
+  Widget _navItem({
+    required IconData icon,
+    required String label,
+    required int index,
+  }) {
+    final isSelected = selectedIndex == index;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedIndex = index;
+        });
+      },
+      child: SizedBox(
+        width: 55,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 27,
+              color: isSelected
+                  ? const Color(0xFF2366B1)
+                  : const Color(0xFF9AAEC0),
+            ),
+
+            const SizedBox(height: 3),
+
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 9,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                color: isSelected
+                    ? const Color(0xFF2366B1)
+                    : const Color(0xFF71869A),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
