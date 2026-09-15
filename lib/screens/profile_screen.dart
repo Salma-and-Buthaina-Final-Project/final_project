@@ -8,6 +8,9 @@ import 'package:final_project/widgets/custom_bottom_navigation.dart';
 
 import 'package:final_project/screens/login_screen.dart';
 import 'package:final_project/screens/appointment_screen.dart';
+import 'package:final_project/screens/personal_info_screen.dart';
+import 'package:final_project/screens/help_support_screen.dart';
+import 'package:final_project/screens/privacy_policy_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -148,7 +151,13 @@ class ProfileScreen extends StatelessWidget {
                           title: 'معلوماتي الشخصية',
                           iconColor: homeLightBlueColor,
                           onTap: () {
-                            // نربطها لاحقًا
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const PersonalInfoScreen(),
+                              ),
+                            );
                           },
                         ),
 
@@ -185,14 +194,14 @@ class ProfileScreen extends StatelessWidget {
                           title: 'الإشعارات',
                           iconColor: homeYellowColor,
                           onTap: () {
-                            // نربطها لاحقًا
+                            // بنربط صفحة الإشعارات لاحقًا
                           },
                         ),
 
                         _divider(width),
 
                         // =================================================
-                        // HELP
+                        // HELP & SUPPORT
                         // =================================================
                         _profileItem(
                           width: width,
@@ -201,14 +210,19 @@ class ProfileScreen extends StatelessWidget {
                           title: 'المساعدة والدعم',
                           iconColor: homePurpleColor,
                           onTap: () {
-                            // نربطها لاحقًا
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const HelpSupportScreen(),
+                              ),
+                            );
                           },
                         ),
 
                         _divider(width),
 
                         // =================================================
-                        // PRIVACY
+                        // PRIVACY POLICY
                         // =================================================
                         _profileItem(
                           width: width,
@@ -217,7 +231,13 @@ class ProfileScreen extends StatelessWidget {
                           title: 'سياسة الخصوصية',
                           iconColor: homePinkColor,
                           onTap: () {
-                            // نربطها لاحقًا
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const PrivacyPolicyScreen(),
+                              ),
+                            );
                           },
                         ),
                       ],
@@ -316,9 +336,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           child: Row(
             children: [
-              // =================================================
               // ICON
-              // =================================================
               Container(
                 width: width * 0.105,
                 height: width * 0.105,
@@ -335,9 +353,7 @@ class ProfileScreen extends StatelessWidget {
 
               SizedBox(width: width * 0.03),
 
-              // =================================================
               // TITLE
-              // =================================================
               Expanded(
                 child: Text(
                   title,
@@ -350,9 +366,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
 
-              // =================================================
               // ARROW
-              // =================================================
               Icon(
                 Icons.arrow_back_ios_new_rounded,
                 color: homeGreyColor,

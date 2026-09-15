@@ -12,7 +12,7 @@ class AppointmentScreen extends StatefulWidget {
 }
 
 class _AppointmentScreenState extends State<AppointmentScreen> {
-  DateTime lastAppointment = DateTime(2026, 9, 1);
+  // موعد المراجعة القادمة فقط
   DateTime nextAppointment = DateTime(2026, 9, 15);
 
   final TextEditingController doctorController = TextEditingController();
@@ -31,14 +31,16 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     return '${date.day} سبتمبر ${date.year}';
   }
 
+  // =========================================================
+  // اختيار موعد المراجعة
+  // =========================================================
   Future<void> _selectNextAppointment() async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: nextAppointment,
-      firstDate: DateTime(2020),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2035),
 
-      // تطبيق الخط على DatePicker
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -63,9 +65,6 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     final height = screenHeight(context);
 
     return Theme(
-      // =====================================================
-      // تطبيق الخط على الصفحة كاملة
-      // =====================================================
       data: Theme.of(context).copyWith(
         textTheme: Theme.of(context).textTheme.apply(fontFamily: thmanyahFont),
       ),
@@ -93,13 +92,12 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
               ),
             ),
 
-            // سهم الرجوع
             leading: IconButton(
               onPressed: () {
                 Navigator.pop(context);
               },
               icon: Icon(
-                Icons.arrow_back_ios_rounded,
+                Icons.arrow_back_ios_new_rounded,
                 color: whiteColor,
                 size: width * 0.05,
               ),
@@ -115,24 +113,9 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                 horizontal: width * 0.055,
                 vertical: height * 0.02,
               ),
-
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // =================================================
-                  // LAST APPOINTMENT
-                  // =================================================
-                  _appointmentCard(
-                    width: width,
-                    height: height,
-                    title: 'الزيارة القادمة',
-                    date: _formatDate(lastAppointment),
-                    color: homeLightBlueColor,
-                    icon: Icons.calendar_today_outlined,
-                  ),
-
-                  SizedBox(height: height * 0.018),
-
                   // =================================================
                   // NEXT APPOINTMENT
                   // =================================================
@@ -150,7 +133,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     ),
                   ),
 
-                  SizedBox(height: height * 0.018),
+                  SizedBox(height: height * 0.025),
 
                   // =================================================
                   // DOCTOR NAME
@@ -210,24 +193,19 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       controller: notesController,
                       maxLines: 4,
                       textAlign: TextAlign.right,
-
                       style: TextStyle(
                         fontFamily: thmanyahFont,
                         fontSize: width * 0.039,
                         color: homeDarkTextColor,
                       ),
-
                       decoration: InputDecoration(
                         hintText: 'اكتب أي ملاحظات حول موعد المراجعة...',
-
                         hintStyle: TextStyle(
                           fontFamily: thmanyahFont,
                           fontSize: width * 0.036,
                           color: homeGreyColor,
                         ),
-
                         border: InputBorder.none,
-
                         contentPadding: EdgeInsets.all(width * 0.04),
                       ),
                     ),
@@ -236,27 +214,30 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   SizedBox(height: height * 0.035),
 
                   // =================================================
-                  // UPDATE BUTTON
+                  // SAVE BUTTON
                   // =================================================
                   SizedBox(
                     height: height * 0.065,
                     child: ElevatedButton(
                       onPressed: () {
                         // نربطه مع Supabase لاحقاً
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('تم حفظ موعد المراجعة')),
+                        );
                       },
 
                       style: ElevatedButton.styleFrom(
                         backgroundColor: homePrimaryColor,
                         foregroundColor: whiteColor,
                         elevation: 0,
-
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(width * 0.04),
                         ),
                       ),
 
                       child: Text(
-                        'تعديل الموعد',
+                        'حفظ الموعد',
                         style: TextStyle(
                           fontFamily: thmanyahFont,
                           fontSize: width * 0.045,
@@ -291,27 +272,21 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   }) {
     return Container(
       width: double.infinity,
-
       padding: EdgeInsets.symmetric(
         horizontal: width * 0.04,
         vertical: height * 0.018,
       ),
-
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(width * 0.045),
         border: Border.all(color: homeBorderColor),
       ),
-
       child: Row(
         children: [
-          // ICON
           Container(
             width: width * 0.12,
             height: width * 0.12,
-
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-
             child: Icon(icon, color: homeDarkTextColor, size: width * 0.058),
           ),
 
@@ -321,7 +296,6 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // TITLE
                 Text(
                   title,
                   style: TextStyle(
@@ -334,7 +308,6 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
 
                 SizedBox(height: height * 0.004),
 
-                // DATE
                 Text(
                   date,
                   style: TextStyle(
@@ -345,10 +318,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   ),
                 ),
 
-                // SUBTITLE
                 if (subtitle != null) ...[
                   SizedBox(height: height * 0.003),
-
                   Text(
                     subtitle,
                     style: TextStyle(
@@ -381,29 +352,21 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   }) {
     return Container(
       width: double.infinity,
-
       padding: EdgeInsets.symmetric(
         horizontal: width * 0.035,
         vertical: height * 0.012,
       ),
-
       decoration: BoxDecoration(
         color: cardColor,
-
         borderRadius: BorderRadius.circular(width * 0.045),
-
         border: Border.all(color: homeBorderColor),
       ),
-
       child: Row(
         children: [
-          // ICON
           Container(
             width: width * 0.105,
             height: width * 0.105,
-
             decoration: BoxDecoration(color: iconColor, shape: BoxShape.circle),
-
             child: Icon(icon, color: homeDarkTextColor, size: width * 0.052),
           ),
 
@@ -413,7 +376,6 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // TITLE
                 Text(
                   title,
                   style: TextStyle(
@@ -424,30 +386,24 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   ),
                 ),
 
-                // TEXT FIELD
                 TextField(
                   controller: controller,
                   textAlign: TextAlign.right,
-
                   style: TextStyle(
                     fontFamily: thmanyahFont,
                     fontSize: width * 0.039,
                     fontWeight: FontWeight.w500,
                     color: homeDarkTextColor,
                   ),
-
                   decoration: InputDecoration(
                     hintText: hint,
-
                     hintStyle: TextStyle(
                       fontFamily: thmanyahFont,
                       fontSize: width * 0.035,
                       color: homeGreyColor,
                     ),
-
                     border: InputBorder.none,
                     isDense: true,
-
                     contentPadding: const EdgeInsets.only(top: 5),
                   ),
                 ),

@@ -54,6 +54,9 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
     super.dispose();
   }
 
+  // =========================================================
+  // SELECT DATE & TIME
+  // =========================================================
   Future<void> selectDateTime() async {
     final date = await showDatePicker(
       context: context,
@@ -244,55 +247,58 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                 // =================================================
                 _title("التاريخ والوقت", width),
 
-                InkWell(
-                  onTap: selectDateTime,
-                  borderRadius: BorderRadius.circular(18),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: width * 0.035,
-                      vertical: height * 0.014,
-                    ),
-                    decoration: BoxDecoration(
-                      color: cardColor,
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: homeBorderColor),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: width * 0.11,
-                          height: width * 0.11,
-                          decoration: const BoxDecoration(
-                            color: homeGreenColor,
-                            shape: BoxShape.circle,
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: selectDateTime,
+                    borderRadius: BorderRadius.circular(18),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: width * 0.035,
+                        vertical: height * 0.014,
+                      ),
+                      decoration: BoxDecoration(
+                        color: cardColor,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(color: homeBorderColor),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: width * 0.11,
+                            height: width * 0.11,
+                            decoration: const BoxDecoration(
+                              color: homeGreenColor,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.calendar_month_outlined,
+                              color: homeDarkTextColor,
+                              size: width * 0.055,
+                            ),
                           ),
-                          child: Icon(
-                            Icons.calendar_month_outlined,
+
+                          SizedBox(width: width * 0.03),
+
+                          Expanded(
+                            child: Text(
+                              formatDateTime(),
+                              style: TextStyle(
+                                fontFamily: thmanyahFont,
+                                color: homeDarkTextColor,
+                                fontSize: width * 0.041,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+
+                          Icon(
+                            Icons.keyboard_arrow_down_rounded,
                             color: homeDarkTextColor,
                             size: width * 0.055,
                           ),
-                        ),
-
-                        SizedBox(width: width * 0.03),
-
-                        Expanded(
-                          child: Text(
-                            formatDateTime(),
-                            style: TextStyle(
-                              fontFamily: thmanyahFont,
-                              color: homeDarkTextColor,
-                              fontSize: width * 0.041,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-
-                        Icon(
-                          Icons.keyboard_arrow_down_rounded,
-                          color: homeDarkTextColor,
-                          size: width * 0.055,
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -575,33 +581,39 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
     required IconData icon,
     required ValueChanged<bool?> onChanged,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: homeBorderColor),
-      ),
-      child: CheckboxListTile(
-        value: value,
-        onChanged: onChanged,
-        activeColor: homePrimaryColor,
-        checkColor: whiteColor,
-        controlAffinity: ListTileControlAffinity.leading,
-
-        secondary: Container(
-          width: width * 0.11,
-          height: width * 0.11,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-          child: Icon(icon, color: homeDarkTextColor, size: width * 0.055),
+    return Material(
+      color: cardColor,
+      borderRadius: BorderRadius.circular(18),
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: homeBorderColor),
         ),
+        child: CheckboxListTile(
+          value: value,
+          onChanged: onChanged,
+          activeColor: homePrimaryColor,
+          checkColor: whiteColor,
+          tileColor: cardColor,
+          selectedTileColor: cardColor,
+          controlAffinity: ListTileControlAffinity.leading,
 
-        title: Text(
-          title,
-          style: TextStyle(
-            fontFamily: thmanyahFont,
-            color: homeDarkTextColor,
-            fontSize: width * 0.041,
-            fontWeight: FontWeight.w600,
+          secondary: Container(
+            width: width * 0.11,
+            height: width * 0.11,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            child: Icon(icon, color: homeDarkTextColor, size: width * 0.055),
+          ),
+
+          title: Text(
+            title,
+            style: TextStyle(
+              fontFamily: thmanyahFont,
+              color: homeDarkTextColor,
+              fontSize: width * 0.041,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),
