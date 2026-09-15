@@ -99,7 +99,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                 Navigator.pop(context);
               },
               icon: Icon(
-                Icons.arrow_forward_ios_rounded,
+                Icons.arrow_back_ios_rounded,
                 color: whiteColor,
                 size: width * 0.05,
               ),
@@ -144,7 +144,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       height: height,
                       title: 'موعد المراجعة القادمة',
                       date: _formatDate(nextAppointment),
-                      subtitle: 'اضغطي لتعديل التاريخ',
+                      subtitle: 'اضغط لتعديل التاريخ',
                       color: homeGreenColor,
                       icon: Icons.event_available_outlined,
                     ),
@@ -218,7 +218,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       ),
 
                       decoration: InputDecoration(
-                        hintText: 'اكتبي أي ملاحظات حول موعد المراجعة...',
+                        hintText: 'اكتب أي ملاحظات حول موعد المراجعة...',
 
                         hintStyle: TextStyle(
                           fontFamily: thmanyahFont,

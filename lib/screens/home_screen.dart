@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:final_project/constants/colors.dart';
 import 'package:final_project/constants/fonts.dart';
@@ -21,16 +22,16 @@ class _HomeScreenState extends State<HomeScreen> {
     final width = screenWidth(context);
     final height = screenHeight(context);
 
-    return Theme(
-      // =====================================================
-      // خط ثمانية للصفحة كاملة
-      // =====================================================
-      data: Theme.of(context).copyWith(
-        textTheme: Theme.of(context).textTheme.apply(
-          fontFamily: thmanyahFont,
-        ),
-      ),
+    // المستخدم المسجل دخوله حالياً
+    final user = Supabase.instance.client.auth.currentUser;
 
+    // اسم المستخدم من Supabase
+    final String name = user?.userMetadata?['name']?.toString() ?? 'المستخدم';
+
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textTheme: Theme.of(context).textTheme.apply(fontFamily: thmanyahFont),
+      ),
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
@@ -64,10 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               decoration: BoxDecoration(
                                 color: lightBlueColor,
                                 shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: whiteColor,
-                                  width: 2,
-                                ),
+                                border: Border.all(color: whiteColor, width: 2),
                               ),
                               child: Icon(
                                 Icons.person_outline_rounded,
@@ -84,17 +82,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'مرحباً بكِ',
+                                    'مرحباً بكِ $name',
                                     style: TextStyle(
                                       fontFamily: thmanyahFont,
-                                      fontSize: width * 0.038,
-                                      fontWeight: FontWeight.w500,
+                                      fontSize: width * 0.043,
+                                      fontWeight: FontWeight.w600,
                                       color: whiteColor,
                                     ),
                                   ),
-
                                   Text(
-                                    'كيف حالك اليوم؟',
+                                    'كيف حالتك اليوم؟',
                                     style: TextStyle(
                                       fontFamily: thmanyahFont,
                                       fontSize: width * 0.055,
@@ -113,10 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               decoration: BoxDecoration(
                                 color: lightBlueColor,
                                 shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: whiteColor,
-                                  width: 2,
-                                ),
+                                border: Border.all(color: whiteColor, width: 2),
                               ),
                               child: Icon(
                                 Icons.notifications_none_rounded,
@@ -137,14 +131,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    const AppointmentScreen(),
+                                builder: (context) => const AppointmentScreen(),
                               ),
                             );
                           },
-                          borderRadius: BorderRadius.circular(
-                            width * 0.05,
-                          ),
+                          borderRadius: BorderRadius.circular(width * 0.05),
                           child: Container(
                             width: double.infinity,
                             padding: EdgeInsets.symmetric(
@@ -153,12 +144,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             decoration: BoxDecoration(
                               color: cardColor,
-                              borderRadius: BorderRadius.circular(
-                                width * 0.05,
-                              ),
-                              border: Border.all(
-                                color: homeBorderColor,
-                              ),
+                              borderRadius: BorderRadius.circular(width * 0.05),
+                              border: Border.all(color: homeBorderColor),
                             ),
                             child: Row(
                               children: [
@@ -192,11 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           color: homeDarkTextColor,
                                         ),
                                       ),
-
-                                      SizedBox(
-                                        height: height * 0.004,
-                                      ),
-
+                                      SizedBox(height: height * 0.004),
                                       Text(
                                         'متابعة صحية',
                                         style: TextStyle(
@@ -222,11 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         color: homeDarkTextColor,
                                       ),
                                     ),
-
-                                    SizedBox(
-                                      height: height * 0.004,
-                                    ),
-
+                                    SizedBox(height: height * 0.004),
                                     Text(
                                       '10:30 ص',
                                       style: TextStyle(
@@ -306,14 +285,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: whiteColor,
                               ),
                             ),
-
                             InkWell(
                               onTap: () {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        const HistoryScreen(),
+                                    builder: (context) => const HistoryScreen(),
                                   ),
                                 );
                               },
@@ -372,10 +349,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // =====================================================
           // CUSTOM BOTTOM NAVIGATION
           // =====================================================
-          bottomNavigationBar:
-              const CustomBottomNavigation(
-            selectedIndex: 0,
-          ),
+          bottomNavigationBar: const CustomBottomNavigation(selectedIndex: 0),
         ),
       ),
     );
@@ -400,18 +374,12 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(
-          width * 0.045,
-        ),
+        borderRadius: BorderRadius.circular(width * 0.045),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            color: homeDarkTextColor,
-            size: width * 0.055,
-          ),
+          Icon(icon, color: homeDarkTextColor, size: width * 0.055),
 
           SizedBox(height: height * 0.004),
 
@@ -465,33 +433,20 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(
-          width * 0.04,
-        ),
-        border: Border.all(
-          color: homeBorderColor,
-        ),
+        borderRadius: BorderRadius.circular(width * 0.04),
+        border: Border.all(color: homeBorderColor),
       ),
       child: Row(
         children: [
-          // Icon
           Container(
             width: width * 0.12,
             height: width * 0.12,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              color: homeDarkTextColor,
-              size: width * 0.06,
-            ),
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            child: Icon(icon, color: homeDarkTextColor, size: width * 0.06),
           ),
 
           SizedBox(width: width * 0.03),
 
-          // Name + date
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -505,9 +460,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: homeDarkTextColor,
                   ),
                 ),
-
                 SizedBox(height: height * 0.003),
-
                 Text(
                   date,
                   style: TextStyle(
@@ -521,15 +474,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Severity
           Container(
             width: width * 0.105,
             height: width * 0.105,
             alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             child: Text(
               severity,
               style: TextStyle(

@@ -1,5 +1,4 @@
 import 'package:final_project/constants/colors.dart';
-import 'package:final_project/screens/home_screen.dart';
 import 'package:final_project/screens/login_screen.dart';
 import 'package:final_project/services/database.dart';
 import 'package:final_project/utils/screen_size.dart';
@@ -37,7 +36,9 @@ class _SignupScreenState extends State<SignupScreen> {
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          // الخلفية
+          // =====================================================
+          // BACKGROUND
+          // =====================================================
           Positioned.fill(
             child: Image.asset(
               "assets/background.png",
@@ -47,6 +48,9 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
           ),
 
+          // =====================================================
+          // BODY
+          // =====================================================
           SafeArea(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: width * 0.07),
@@ -54,7 +58,9 @@ class _SignupScreenState extends State<SignupScreen> {
                 children: [
                   SizedBox(height: height * 0.06),
 
-                  // الشعار
+                  // =================================================
+                  // LOGO
+                  // =================================================
                   Image.asset(
                     "assets/logo.png",
                     width: width * 0.25,
@@ -64,7 +70,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
                   SizedBox(height: height * 0.005),
 
-                  // العنوان
+                  // =================================================
+                  // TITLE
+                  // =================================================
                   Text(
                     "إنشاء حساب",
                     textAlign: TextAlign.center,
@@ -88,7 +96,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
                   SizedBox(height: height * 0.03),
 
-                  // الاسم
+                  // =================================================
+                  // NAME
+                  // =================================================
                   SizedBox(
                     width: width,
                     height: height * 0.065,
@@ -109,7 +119,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
                   SizedBox(height: height * 0.015),
 
-                  // البريد الإلكتروني
+                  // =================================================
+                  // EMAIL
+                  // =================================================
                   SizedBox(
                     width: width,
                     height: height * 0.065,
@@ -131,7 +143,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
                   SizedBox(height: height * 0.015),
 
-                  // كلمة المرور
+                  // =================================================
+                  // PASSWORD
+                  // =================================================
                   SizedBox(
                     width: width,
                     height: height * 0.065,
@@ -167,7 +181,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
                   SizedBox(height: height * 0.025),
 
-                  // زر إنشاء حساب
+                  // =================================================
+                  // SIGNUP BUTTON
+                  // =================================================
                   SizedBox(
                     width: width,
                     height: height * 0.065,
@@ -181,8 +197,10 @@ class _SignupScreenState extends State<SignupScreen> {
                           borderRadius: BorderRadius.circular(width * 0.04),
                         ),
                       ),
+
                       onPressed: () async {
                         try {
+                          // إنشاء الحساب
                           await Database().signupUser(
                             name: nameController.text.trim(),
                             email: emailController.text.trim(),
@@ -191,11 +209,12 @@ class _SignupScreenState extends State<SignupScreen> {
 
                           if (!mounted) return;
 
-                          // بعد نجاح إنشاء الحساب يروح للهوم
+                          // بعد نجاح إنشاء الحساب
+                          // الانتقال إلى تسجيل الدخول
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const HomeScreen(),
+                              builder: (context) => const LoginScreen(),
                             ),
                             (route) => false,
                           );
@@ -207,6 +226,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           ).showSnackBar(SnackBar(content: Text(e.toString())));
                         }
                       },
+
                       child: Center(
                         child: Text(
                           "إنشاء حساب",
@@ -222,7 +242,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
                   SizedBox(height: height * 0.02),
 
-                  // لديك حساب بالفعل؟ تسجيل الدخول
+                  // =================================================
+                  // ALREADY HAVE ACCOUNT
+                  // =================================================
                   Container(
                     width: width,
                     height: height * 0.065,
@@ -272,6 +294,9 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
+  // =========================================================
+  // INPUT DECORATION
+  // =========================================================
   InputDecoration inputDecoration({
     required BuildContext context,
     required String hint,
