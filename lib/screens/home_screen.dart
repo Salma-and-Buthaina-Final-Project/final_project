@@ -82,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'مرحباً بكِ $name',
+                                    'مرحباً بك $name',
                                     style: TextStyle(
                                       fontFamily: thmanyahFont,
                                       fontSize: width * 0.043,
