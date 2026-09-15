@@ -1,4 +1,5 @@
 import 'package:final_project/constants/colors.dart';
+import 'package:final_project/constants/fonts.dart';
 import 'package:final_project/utils/screen_size.dart';
 import 'package:flutter/material.dart';
 
@@ -84,7 +85,8 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
     final date =
         "${selectedDateTime.day}/${selectedDateTime.month}/${selectedDateTime.year}";
 
-    final time = TimeOfDay.fromDateTime(selectedDateTime).format(context);
+    final time =
+        TimeOfDay.fromDateTime(selectedDateTime).format(context);
 
     return "$date - $time";
   }
@@ -98,10 +100,15 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: backgroundColor,
+
+        // =====================================================
+        // APP BAR
+        // =====================================================
         appBar: AppBar(
           backgroundColor: backgroundColor,
           elevation: 0,
           centerTitle: true,
+
           leading: IconButton(
             onPressed: () {
               Navigator.pop(context);
@@ -112,24 +119,36 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
               size: width * 0.05,
             ),
           ),
+
           title: Text(
             "تسجيل عرض جديد",
             style: TextStyle(
+              fontFamily: thmanyahFont,
               color: whiteColor,
-              fontSize: width * 0.055,
-              fontWeight: FontWeight.bold,
+              fontSize: width * 0.065,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
+
+        // =====================================================
+        // BODY
+        // =====================================================
         body: SingleChildScrollView(
           padding: EdgeInsets.symmetric(
             horizontal: width * 0.055,
-            vertical: height * 0.015,
+            vertical: height * 0.018,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _title("نوع العرض", width),
+              // =================================================
+              // CONDITION
+              // =================================================
+              _title(
+                "نوع العرض",
+                width,
+              ),
 
               DropdownButtonFormField<String>(
                 value: selectedCondition,
@@ -137,6 +156,14 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                   hint: "اختر العرض",
                   icon: Icons.health_and_safety_outlined,
                   iconBackground: homePurpleColor,
+                  width: width,
+                ),
+                dropdownColor: cardColor,
+                style: TextStyle(
+                  fontFamily: thmanyahFont,
+                  color: homeDarkTextColor,
+                  fontSize: width * 0.042,
+                  fontWeight: FontWeight.w500,
                 ),
                 items: conditions.map((condition) {
                   return DropdownMenuItem<String>(
@@ -144,8 +171,10 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                     child: Text(
                       condition,
                       style: TextStyle(
+                        fontFamily: thmanyahFont,
                         color: homeDarkTextColor,
-                        fontSize: width * 0.035,
+                        fontSize: width * 0.042,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   );
@@ -157,9 +186,15 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                 },
               ),
 
-              SizedBox(height: height * 0.018),
+              SizedBox(height: height * 0.022),
 
-              _title("مكان الألم", width),
+              // =================================================
+              // LOCATION
+              // =================================================
+              _title(
+                "مكان الألم",
+                width,
+              ),
 
               DropdownButtonFormField<String>(
                 value: selectedLocation,
@@ -167,6 +202,14 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                   hint: "اختر مكان الألم",
                   icon: Icons.location_on_outlined,
                   iconBackground: homeLightBlueColor,
+                  width: width,
+                ),
+                dropdownColor: cardColor,
+                style: TextStyle(
+                  fontFamily: thmanyahFont,
+                  color: homeDarkTextColor,
+                  fontSize: width * 0.042,
+                  fontWeight: FontWeight.w500,
                 ),
                 items: locations.map((location) {
                   return DropdownMenuItem<String>(
@@ -174,8 +217,10 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                     child: Text(
                       location,
                       style: TextStyle(
+                        fontFamily: thmanyahFont,
                         color: homeDarkTextColor,
-                        fontSize: width * 0.035,
+                        fontSize: width * 0.042,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   );
@@ -187,9 +232,15 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                 },
               ),
 
-              SizedBox(height: height * 0.018),
+              SizedBox(height: height * 0.022),
 
-              _title("التاريخ والوقت", width),
+              // =================================================
+              // DATE & TIME
+              // =================================================
+              _title(
+                "التاريخ والوقت",
+                width,
+              ),
 
               InkWell(
                 onTap: selectDateTime,
@@ -202,21 +253,23 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                   decoration: BoxDecoration(
                     color: cardColor,
                     borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: homeBorderColor),
+                    border: Border.all(
+                      color: homeBorderColor,
+                    ),
                   ),
                   child: Row(
                     children: [
                       Container(
-                        width: width * 0.10,
-                        height: width * 0.10,
+                        width: width * 0.11,
+                        height: width * 0.11,
                         decoration: const BoxDecoration(
                           color: homeGreenColor,
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           Icons.calendar_month_outlined,
-                          color: homePrimaryColor,
-                          size: width * 0.05,
+                          color: homeDarkTextColor,
+                          size: width * 0.055,
                         ),
                       ),
 
@@ -226,15 +279,17 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                         child: Text(
                           formatDateTime(),
                           style: TextStyle(
+                            fontFamily: thmanyahFont,
                             color: homeDarkTextColor,
-                            fontSize: width * 0.035,
+                            fontSize: width * 0.041,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
 
                       Icon(
                         Icons.keyboard_arrow_down_rounded,
-                        color: homeGreyColor,
+                        color: homeDarkTextColor,
                         size: width * 0.055,
                       ),
                     ],
@@ -242,89 +297,115 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                 ),
               ),
 
-              SizedBox(height: height * 0.022),
+              SizedBox(height: height * 0.025),
 
-              _title("شدة العرض", width),
+              // =================================================
+              // SEVERITY
+              // =================================================
+              _title(
+                "شدة العرض",
+                width,
+              ),
 
               Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: width * 0.025,
-                  vertical: height * 0.015,
+                  vertical: height * 0.018,
                 ),
                 decoration: BoxDecoration(
                   color: cardColor,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: homeBorderColor),
+                  border: Border.all(
+                    color: homeBorderColor,
+                  ),
                 ),
                 child: Column(
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           "خفيف",
                           style: TextStyle(
-                            fontSize: width * 0.03,
-                            color: homeSecondaryTextColor,
+                            fontFamily: thmanyahFont,
+                            fontSize: width * 0.035,
+                            fontWeight: FontWeight.w500,
+                            color: homeDarkTextColor,
                           ),
                         ),
                         Text(
                           "شديد",
                           style: TextStyle(
-                            fontSize: width * 0.03,
-                            color: homeSecondaryTextColor,
+                            fontFamily: thmanyahFont,
+                            fontSize: width * 0.035,
+                            fontWeight: FontWeight.w500,
+                            color: homeDarkTextColor,
                           ),
                         ),
                       ],
                     ),
 
-                    SizedBox(height: height * 0.012),
+                    SizedBox(height: height * 0.015),
 
                     Wrap(
                       alignment: WrapAlignment.center,
                       spacing: width * 0.014,
                       runSpacing: height * 0.01,
-                      children: List.generate(10, (index) {
-                        final number = index + 1;
-                        final selected = severity == number;
+                      children: List.generate(
+                        10,
+                        (index) {
+                          final number = index + 1;
+                          final selected =
+                              severity == number;
 
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              severity = number;
-                            });
-                          },
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 150),
-                            width: width * 0.057,
-                            height: width * 0.057,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: selected
-                                  ? homePrimaryColor
-                                  : _severityColor(number),
-                            ),
-                            child: Text(
-                              "$number",
-                              style: TextStyle(
-                                fontSize: width * 0.024,
-                                fontWeight: FontWeight.bold,
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                severity = number;
+                              });
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(
+                                milliseconds: 150,
+                              ),
+                              width: width * 0.065,
+                              height: width * 0.065,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
                                 color: selected
-                                    ? whiteColor
-                                    : homeDarkTextColor,
+                                    ? homePrimaryColor
+                                    : _severityColor(number),
+                              ),
+                              child: Text(
+                                "$number",
+                                style: TextStyle(
+                                  fontFamily:
+                                      thmanyahFont,
+                                  fontSize:
+                                      width * 0.030,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                  color: selected
+                                      ? whiteColor
+                                      : homeDarkTextColor,
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      }),
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),
               ),
 
-              SizedBox(height: height * 0.018),
+              SizedBox(height: height * 0.022),
 
+              // =================================================
+              // REPEATED
+              // =================================================
               _checkCard(
                 width: width,
                 title: "هل تكررت هذه الحالة؟",
@@ -338,8 +419,11 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                 },
               ),
 
-              SizedBox(height: height * 0.012),
+              SizedBox(height: height * 0.015),
 
+              // =================================================
+              // MEDICINE
+              // =================================================
               _checkCard(
                 width: width,
                 title: "هل أخذتِ دواء؟",
@@ -353,49 +437,65 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                 },
               ),
 
-              SizedBox(height: height * 0.018),
+              SizedBox(height: height * 0.022),
 
-              _title("ملاحظات إضافية (اختياري)", width),
+              // =================================================
+              // NOTES
+              // =================================================
+              _title(
+                "ملاحظات إضافية (اختياري)",
+                width,
+              ),
 
               TextField(
                 controller: notesController,
                 maxLines: 3,
                 textAlign: TextAlign.right,
                 style: TextStyle(
+                  fontFamily: thmanyahFont,
                   color: homeDarkTextColor,
-                  fontSize: width * 0.035,
+                  fontSize: width * 0.041,
+                  fontWeight: FontWeight.w500,
                 ),
                 decoration: _inputDecoration(
                   hint: "اكتبي أي ملاحظات هنا...",
                   icon: Icons.notes_outlined,
                   iconBackground: homeYellowColor,
+                  width: width,
                 ),
               ),
 
-              SizedBox(height: height * 0.028),
+              SizedBox(height: height * 0.03),
 
+              // =================================================
+              // SAVE BUTTON
+              // =================================================
               SizedBox(
                 height: height * 0.065,
                 child: ElevatedButton(
                   onPressed: () {
-                    // نربطه مع Supabase بعدين
+                    // Supabase later
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: homePrimaryColor,
+                    backgroundColor:
+                        homePrimaryColor,
                     foregroundColor: whiteColor,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(width * 0.04),
+                      borderRadius:
+                          BorderRadius.circular(
+                        width * 0.04,
+                      ),
                     ),
                   ),
-                  child: Center(
-                    child: Text(
-                      "حفظ العرض",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: width * 0.04,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  child: Text(
+                    "حفظ العرض",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: thmanyahFont,
+                      fontSize: width * 0.045,
+                      fontWeight: FontWeight.w700,
+                      color: whiteColor,
                     ),
                   ),
                 ),
@@ -409,57 +509,106 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
     );
   }
 
-  Widget _title(String title, double width) {
+  // =========================================================
+  // SECTION TITLE
+  // =========================================================
+
+  Widget _title(
+    String title,
+    double width,
+  ) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(
+        bottom: 9,
+      ),
       child: Text(
         title,
         style: TextStyle(
+          fontFamily: thmanyahFont,
           color: whiteColor,
-          fontSize: width * 0.037,
-          fontWeight: FontWeight.bold,
+          fontSize: width * 0.043,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
   }
 
+  // =========================================================
+  // INPUT DECORATION
+  // =========================================================
+
   InputDecoration _inputDecoration({
     required String hint,
     required IconData icon,
     required Color iconBackground,
+    required double width,
   }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: homeGreyColor),
+
+      hintStyle: TextStyle(
+        fontFamily: thmanyahFont,
+        color: homeGreyColor,
+        fontSize: width * 0.039,
+        fontWeight: FontWeight.w400,
+      ),
+
       prefixIcon: Padding(
         padding: const EdgeInsets.all(8),
         child: Container(
-          width: 38,
-          height: 38,
+          width: 40,
+          height: 40,
           decoration: BoxDecoration(
             color: iconBackground,
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: homePrimaryColor, size: 19),
+          child: Icon(
+            icon,
+            color: homeDarkTextColor,
+            size: 20,
+          ),
         ),
       ),
+
       filled: true,
       fillColor: cardColor,
-      contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 14),
+
+      contentPadding:
+          const EdgeInsets.symmetric(
+        vertical: 16,
+        horizontal: 14,
+      ),
+
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(color: homeBorderColor),
+        borderRadius:
+            BorderRadius.circular(18),
+        borderSide: const BorderSide(
+          color: homeBorderColor,
+        ),
       ),
+
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(color: homeBorderColor),
+        borderRadius:
+            BorderRadius.circular(18),
+        borderSide: const BorderSide(
+          color: homeBorderColor,
+        ),
       ),
+
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(color: homePrimaryColor, width: 1.5),
+        borderRadius:
+            BorderRadius.circular(18),
+        borderSide: const BorderSide(
+          color: homePrimaryColor,
+          width: 1.5,
+        ),
       ),
     );
   }
+
+  // =========================================================
+  // CHECK CARD
+  // =========================================================
 
   Widget _checkCard({
     required double width,
@@ -472,32 +621,50 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: homeBorderColor),
+        borderRadius:
+            BorderRadius.circular(18),
+        border: Border.all(
+          color: homeBorderColor,
+        ),
       ),
       child: CheckboxListTile(
         value: value,
         onChanged: onChanged,
         activeColor: homePrimaryColor,
         checkColor: whiteColor,
-        controlAffinity: ListTileControlAffinity.leading,
+        controlAffinity:
+            ListTileControlAffinity.leading,
+
         secondary: Container(
-          width: width * 0.10,
-          height: width * 0.10,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-          child: Icon(icon, color: homePrimaryColor, size: width * 0.05),
+          width: width * 0.11,
+          height: width * 0.11,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            icon,
+            color: homeDarkTextColor,
+            size: width * 0.055,
+          ),
         ),
+
         title: Text(
           title,
           style: TextStyle(
+            fontFamily: thmanyahFont,
             color: homeDarkTextColor,
-            fontSize: width * 0.035,
-            fontWeight: FontWeight.w500,
+            fontSize: width * 0.041,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
     );
   }
+
+  // =========================================================
+  // SEVERITY COLORS
+  // =========================================================
 
   Color _severityColor(int number) {
     if (number <= 3) {

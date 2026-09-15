@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+
+import 'package:final_project/constants/colors.dart';
+import 'package:final_project/constants/fonts.dart';
+import 'package:final_project/utils/screen_size.dart';
+
+import 'package:final_project/screens/history_screen.dart';
+import 'package:final_project/screens/report_screen.dart';
 import 'package:final_project/screens/add_condition_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -9,323 +16,398 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // الصفحة الحالية هي الرئيسية دائماً
   int selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final width = size.width;
-    final height = size.height;
+    final width = screenWidth(context);
+    final height = screenHeight(context);
 
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: const Color(0xFFEAF4FC),
-
+        backgroundColor: backgroundColor,
         body: SafeArea(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              horizontal: width * 0.055,
-              vertical: height * 0.018,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    // Profile
-                    Container(
-                      width: width * 0.16,
-                      height: width * 0.16,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: const Color(0xFFD8D8D8),
-                        border: Border.all(color: Colors.white, width: 4),
-                      ),
-                      child: const Icon(
-                        Icons.person,
-                        size: 42,
-                        color: Color(0xFF263B55),
-                      ),
-                    ),
-
-                    SizedBox(width: width * 0.035),
-
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+          bottom: false,
+          child: Column(
+            children: [
+              // =====================================================
+              // CONTENT
+              // =====================================================
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: width * 0.055,
+                    vertical: height * 0.02,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // =================================================
+                      // HEADER
+                      // =================================================
+                      Row(
                         children: [
-                          Text(
-                            "مرحباً،",
-                            style: TextStyle(
-                              fontSize: width * 0.055,
-                              fontWeight: FontWeight.w500,
-                              color: const Color(0xFF122B4A),
+                          // Person
+                          Container(
+                            width: width * 0.13,
+                            height: width * 0.13,
+                            decoration: BoxDecoration(
+                              color: lightBlueColor,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: whiteColor,
+                                width: 2,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.person_outline_rounded,
+                              color: homeDarkTextColor,
+                              size: width * 0.07,
                             ),
                           ),
-                          Text(
-                            "سلمى",
-                            style: TextStyle(
-                              fontSize: width * 0.07,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFF102A49),
+
+                          SizedBox(width: width * 0.03),
+
+                          // Greeting
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'مرحباً بكِ',
+                                  style: TextStyle(
+                                    fontFamily: thmanyahFont,
+                                    fontSize: width * 0.038,
+                                    fontWeight: FontWeight.w500,
+                                    color: whiteColor,
+                                  ),
+                                ),
+                                Text(
+                                  'كيف حالك اليوم؟',
+                                  style: TextStyle(
+                                    fontFamily: thmanyahFont,
+                                    fontSize: width * 0.055,
+                                    fontWeight: FontWeight.w700,
+                                    color: whiteColor,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(height: height * 0.005),
-                          Text(
-                            "كيف حالك اليوم؟",
-                            style: TextStyle(
-                              fontSize: width * 0.042,
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF456889),
+
+                          // Notification
+                          Container(
+                            width: width * 0.13,
+                            height: width * 0.13,
+                            decoration: BoxDecoration(
+                              color: lightBlueColor,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: whiteColor,
+                                width: 2,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.notifications_none_rounded,
+                              color: homeDarkTextColor,
+                              size: width * 0.065,
                             ),
                           ),
                         ],
                       ),
-                    ),
 
-                    SizedBox(width: width * 0.02),
+                      SizedBox(height: height * 0.025),
 
-                    _headerButton(
-                      icon: Icons.notifications_none_rounded,
-                      width: width,
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: height * 0.025),
-
-                // سجل أعراضك اليوم
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: width * 0.04,
-                    vertical: height * 0.02,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFC7F1E5),
-                    borderRadius: BorderRadius.circular(25),
-                    border: Border.all(
-                      color: const Color(0xFF73D4BE),
-                      width: 1.5,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
+                      // =================================================
+                      // APPOINTMENT CARD
+                      // =================================================
                       Container(
-                        width: width * 0.16,
-                        height: width * 0.16,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xFFFF9DDA),
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: width * 0.045,
+                          vertical: height * 0.022,
                         ),
-                        child: Icon(
-                          Icons.favorite_rounded,
-                          color: const Color(0xFF182F4D),
-                          size: width * 0.085,
+                        decoration: BoxDecoration(
+                          color: cardColor,
+                          borderRadius: BorderRadius.circular(
+                            width * 0.05,
+                          ),
+                          border: Border.all(
+                            color: homeBorderColor,
+                          ),
                         ),
-                      ),
-
-                      SizedBox(width: width * 0.035),
-
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
                           children: [
-                            Text(
-                              "سجل أعراضك اليوم",
-                              style: TextStyle(
-                                fontSize: width * 0.052,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF102B4B),
+                            Container(
+                              width: width * 0.13,
+                              height: width * 0.13,
+                              decoration: const BoxDecoration(
+                                color: homePurpleColor,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.calendar_month_outlined,
+                                color: homeDarkTextColor,
+                                size: width * 0.065,
                               ),
                             ),
-                            SizedBox(height: height * 0.006),
-                            Text(
-                              "خطوة صغيرة نحو صحة أفضل",
-                              style: TextStyle(
-                                fontSize: width * 0.037,
-                                color: const Color(0xFF426785),
-                                fontWeight: FontWeight.w500,
+
+                            SizedBox(width: width * 0.035),
+
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'موعدك القادم',
+                                    style: TextStyle(
+                                      fontFamily: thmanyahFont,
+                                      fontSize: width * 0.043,
+                                      fontWeight: FontWeight.w700,
+                                      color: homeDarkTextColor,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: height * 0.004,
+                                  ),
+                                  Text(
+                                    'متابعة صحية',
+                                    style: TextStyle(
+                                      fontFamily: thmanyahFont,
+                                      fontSize: width * 0.036,
+                                      fontWeight: FontWeight.w500,
+                                      color: homeDarkTextColor,
+                                    ),
+                                  ),
+                                ],
                               ),
+                            ),
+
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  '15 سبتمبر 2026',
+                                  style: TextStyle(
+                                    fontFamily: thmanyahFont,
+                                    fontSize: width * 0.034,
+                                    fontWeight: FontWeight.w600,
+                                    color: homeDarkTextColor,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: height * 0.004,
+                                ),
+                                Text(
+                                  '10:30 ص',
+                                  style: TextStyle(
+                                    fontFamily: thmanyahFont,
+                                    fontSize: width * 0.034,
+                                    fontWeight: FontWeight.w500,
+                                    color: homeDarkTextColor,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
                       ),
 
-                      Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        size: width * 0.055,
-                        color: const Color(0xFF163452),
+                      SizedBox(height: height * 0.025),
+
+                      // =================================================
+                      // STATISTICS
+                      // =================================================
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _statCard(
+                              width: width,
+                              height: height,
+                              icon: Icons.favorite_border_rounded,
+                              number: '5',
+                              title: 'أعراض مسجلة',
+                              color: homePinkColor,
+                            ),
+                          ),
+
+                          SizedBox(width: width * 0.025),
+
+                          Expanded(
+                            child: _statCard(
+                              width: width,
+                              height: height,
+                              icon: Icons.show_chart_rounded,
+                              number: '6.2',
+                              title: 'متوسط الشدة',
+                              color: homeGreenColor,
+                            ),
+                          ),
+
+                          SizedBox(width: width * 0.025),
+
+                          Expanded(
+                            child: _statCard(
+                              width: width,
+                              height: height,
+                              icon: Icons.calendar_today_outlined,
+                              number: '12',
+                              title: 'هذا الشهر',
+                              color: homePurpleColor,
+                            ),
+                          ),
+                        ],
                       ),
+
+                      SizedBox(height: height * 0.035),
+
+                      // =================================================
+                      // LATEST SYMPTOMS TITLE
+                      // =================================================
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'آخر الأعراض',
+                            style: TextStyle(
+                              fontFamily: thmanyahFont,
+                              fontSize: width * 0.055,
+                              fontWeight: FontWeight.w700,
+                              color: whiteColor,
+                            ),
+                          ),
+
+                          InkWell(
+                            onTap: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const HistoryScreen(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              'عرض الكل',
+                              style: TextStyle(
+                                fontFamily: thmanyahFont,
+                                fontSize: width * 0.037,
+                                fontWeight: FontWeight.w600,
+                                color: whiteColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: height * 0.015),
+
+                      // =================================================
+                      // SYMPTOM 1
+                      // =================================================
+                      _symptomCard(
+                        width: width,
+                        height: height,
+                        title: 'صداع',
+                        date: '12 سبتمبر 2026',
+                        severity: '7',
+                        color: homePinkColor,
+                        icon: Icons.psychology_alt_outlined,
+                      ),
+
+                      SizedBox(height: height * 0.012),
+
+                      // =================================================
+                      // SYMPTOM 2
+                      // =================================================
+                      _symptomCard(
+                        width: width,
+                        height: height,
+                        title: 'ألم في المعدة',
+                        date: '10 سبتمبر 2026',
+                        severity: '10',
+                        color: homePinkColor,
+                        icon: Icons.sick_outlined,
+                      ),
+
+                      SizedBox(height: height * 0.025),
                     ],
                   ),
                 ),
+              ),
 
-                SizedBox(height: height * 0.025),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: _featureCard(
-                        context: context,
-                        title: "سجل الأعراض\nاليومية",
-                        icon: Icons.thermostat_rounded,
-                        color: const Color(0xFFFFD5E9),
-                        iconColor: const Color(0xFF163452),
-                      ),
-                    ),
-
-                    SizedBox(width: width * 0.035),
-
-                    Expanded(
-                      child: _featureCard(
-                        context: context,
-                        title: "عرض\nالتقارير",
-                        icon: Icons.bar_chart_rounded,
-                        color: const Color(0xFFE0D5FF),
-                        iconColor: const Color(0xFF163452),
-                      ),
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: height * 0.018),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: _featureCard(
-                        context: context,
-                        title: "الجدول الزمني",
-                        icon: Icons.calendar_month_outlined,
-                        color: const Color(0xFFFFE8B4),
-                        iconColor: const Color(0xFF163452),
-                      ),
-                    ),
-
-                    SizedBox(width: width * 0.035),
-
-                    Expanded(
-                      child: _featureCard(
-                        context: context,
-                        title: "مشاركة مع الطبيب",
-                        icon: Icons.person_outline_rounded,
-                        color: const Color(0xFFC9F1E5),
-                        iconColor: const Color(0xFF163452),
-                      ),
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: height * 0.035),
-
-                Text(
-                  "أحدث الإدخالات",
-                  style: TextStyle(
-                    fontSize: width * 0.06,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF102B4B),
-                  ),
-                ),
-
-                SizedBox(height: height * 0.015),
-
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.75),
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: Column(
-                    children: [
-                      _recentItem(
-                        context: context,
-                        title: "صداع + تعب",
-                        date: "14 مايو 2025",
-                        icon: Icons.sentiment_dissatisfied_rounded,
-                        color: const Color(0xFFFFC4E3),
-                      ),
-
-                      _divider(),
-
-                      _recentItem(
-                        context: context,
-                        title: "ألم المعدة",
-                        date: "13 مايو 2025",
-                        icon: Icons.sentiment_neutral_rounded,
-                        color: const Color(0xFFC5EDE2),
-                      ),
-
-                      _divider(),
-
-                      _recentItem(
-                        context: context,
-                        title: "تحسين عام",
-                        date: "12 مايو 2025",
-                        icon: Icons.sentiment_satisfied_alt_rounded,
-                        color: const Color(0xFFFFE1A0),
-                      ),
-                    ],
-                  ),
-                ),
-
-                SizedBox(height: height * 0.03),
-              ],
-            ),
+              // =====================================================
+              // BOTTOM NAVIGATION
+              // =====================================================
+              _bottomNavigation(width, height),
+            ],
           ),
         ),
-
-        bottomNavigationBar: _bottomNavigation(width),
       ),
     );
   }
 
-  Widget _headerButton({required IconData icon, required double width}) {
-    return Container(
-      width: width * 0.125,
-      height: width * 0.125,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.75),
-        shape: BoxShape.circle,
-        border: Border.all(color: const Color(0xFFD7E5F2)),
-      ),
-      child: Icon(icon, color: const Color(0xFF122E4D), size: width * 0.065),
-    );
-  }
+  // =============================================================
+  // STAT CARD
+  // =============================================================
 
-  Widget _featureCard({
-    required BuildContext context,
-    required String title,
+  Widget _statCard({
+    required double width,
+    required double height,
     required IconData icon,
+    required String number,
+    required String title,
     required Color color,
-    required Color iconColor,
   }) {
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
-
     return Container(
-      height: height * 0.19,
+      height: height * 0.145,
+      padding: EdgeInsets.symmetric(
+        horizontal: width * 0.015,
+        vertical: height * 0.015,
+      ),
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: iconColor.withOpacity(0.12), width: 1.5),
+        borderRadius: BorderRadius.circular(
+          width * 0.045,
+        ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: width * 0.095, color: iconColor),
+          Icon(
+            icon,
+            color: homeDarkTextColor,
+            size: width * 0.055,
+          ),
 
-          SizedBox(height: height * 0.015),
+          SizedBox(height: height * 0.004),
 
           Text(
-            title,
-            textAlign: TextAlign.center,
+            number,
             style: TextStyle(
-              fontSize: width * 0.042,
-              height: 1.35,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF173554),
+              fontFamily: thmanyahFont,
+              fontSize: width * 0.06,
+              fontWeight: FontWeight.w700,
+              color: homeDarkTextColor,
+            ),
+          ),
+
+          SizedBox(height: height * 0.002),
+
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              title,
+              maxLines: 1,
+              style: TextStyle(
+                fontFamily: thmanyahFont,
+                fontSize: width * 0.033,
+                fontWeight: FontWeight.w600,
+                color: homeDarkTextColor,
+              ),
             ),
           ),
         ],
@@ -333,23 +415,54 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _recentItem({
-    required BuildContext context,
+  // =============================================================
+  // SYMPTOM CARD
+  // =============================================================
+
+  Widget _symptomCard({
+    required double width,
+    required double height,
     required String title,
     required String date,
-    required IconData icon,
+    required String severity,
     required Color color,
+    required IconData icon,
   }) {
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
-
-    return Padding(
+    return Container(
+      width: double.infinity,
       padding: EdgeInsets.symmetric(
         horizontal: width * 0.04,
-        vertical: height * 0.018,
+        vertical: height * 0.016,
+      ),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(
+          width * 0.04,
+        ),
+        border: Border.all(
+          color: homeBorderColor,
+        ),
       ),
       child: Row(
         children: [
+          // Icon
+          Container(
+            width: width * 0.12,
+            height: width * 0.12,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: homeDarkTextColor,
+              size: width * 0.06,
+            ),
+          ),
+
+          SizedBox(width: width * 0.03),
+
+          // Name + date
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -357,32 +470,45 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: width * 0.043,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF183755),
+                    fontFamily: thmanyahFont,
+                    fontSize: width * 0.045,
+                    fontWeight: FontWeight.w700,
+                    color: homeDarkTextColor,
                   ),
                 ),
-                SizedBox(height: height * 0.005),
+
+                SizedBox(height: height * 0.003),
+
                 Text(
                   date,
                   style: TextStyle(
-                    fontSize: width * 0.035,
+                    fontFamily: thmanyahFont,
+                    fontSize: width * 0.034,
                     fontWeight: FontWeight.w500,
-                    color: const Color(0xFF58718A),
+                    color: homeDarkTextColor,
                   ),
                 ),
               ],
             ),
           ),
 
+          // Severity
           Container(
-            width: width * 0.14,
-            height: width * 0.14,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-            child: Icon(
-              icon,
-              size: width * 0.075,
-              color: const Color(0xFF173554),
+            width: width * 0.105,
+            height: width * 0.105,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+            child: Text(
+              severity,
+              style: TextStyle(
+                fontFamily: thmanyahFont,
+                fontSize: width * 0.045,
+                fontWeight: FontWeight.w700,
+                color: homeDarkTextColor,
+              ),
             ),
           ),
         ],
@@ -390,92 +516,113 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _divider() {
-    return const Divider(
-      height: 1,
-      indent: 20,
-      endIndent: 20,
-      color: Color(0xFFDCE7EF),
-    );
-  }
+  // =============================================================
+  // BOTTOM NAVIGATION
+  // =============================================================
 
-  Widget _bottomNavigation(double width) {
-    return Container(
-      height: 90,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.94),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(32),
-          topRight: Radius.circular(32),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 18,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
+  Widget _bottomNavigation(
+    double width,
+    double height,
+  ) {
+    return SizedBox(
+      height: 125,
       child: Stack(
+        alignment: Alignment.bottomCenter,
         clipBehavior: Clip.none,
-        alignment: Alignment.topCenter,
         children: [
-          Positioned.fill(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _navItem(icon: Icons.home_rounded, label: "", index: 0),
+          // =====================================================
+          // WHITE BAR
+          // =====================================================
+          ClipPath(
+            clipper: TriangleNavigationClipper(),
+            child: Container(
+              width: double.infinity,
+              height: 115,
+              color: cardColor,
+              padding: const EdgeInsets.only(
+                top: 40,
+              ),
+              child: Row(
+                children: [
+                  // الرئيسية
+                  Expanded(
+                    child: _navItem(
+                      width: width,
+                      icon: Icons.home_outlined,
+                      selectedIcon: Icons.home_rounded,
+                      label: 'الرئيسية',
+                      index: 0,
+                    ),
+                  ),
 
-                _navItem(
-                  icon: Icons.favorite_border_rounded,
-                  label: "",
-                  index: 1,
-                ),
+                  // السجل
+                  Expanded(
+                    child: _navItem(
+                      width: width,
+                      icon: Icons.calendar_today_outlined,
+                      selectedIcon: Icons.calendar_month_rounded,
+                      label: 'السجل',
+                      index: 1,
+                    ),
+                  ),
 
-                const SizedBox(width: 70),
+                  // مكان زر +
+                  const Expanded(
+                    child: SizedBox(),
+                  ),
 
-                _navItem(icon: Icons.bar_chart_rounded, label: "", index: 3),
+                  // التقرير
+                  Expanded(
+                    child: _navItem(
+                      width: width,
+                      icon: Icons.bar_chart_outlined,
+                      selectedIcon: Icons.bar_chart_rounded,
+                      label: 'التقرير',
+                      index: 3,
+                    ),
+                  ),
 
-                _navItem(
-                  icon: Icons.person_outline_rounded,
-                  label: "",
-                  index: 4,
-                ),
-              ],
+                  // حسابي
+                  Expanded(
+                    child: _navItem(
+                      width: width,
+                      icon: Icons.person_outline_rounded,
+                      selectedIcon: Icons.person_rounded,
+                      label: 'حسابي',
+                      index: 4,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
 
-          // زر إضافة حالة
+          // =====================================================
+          // ADD BUTTON
+          // =====================================================
           Positioned(
-            top: -25,
+            top: 4,
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const AddConditionScreen(),
+                    builder: (context) =>
+                        const AddConditionScreen(),
                   ),
                 );
               },
               child: Container(
-                width: 68,
-                height: 68,
-                decoration: BoxDecoration(
+                width: width * 0.18,
+                height: width * 0.18,
+                decoration: const BoxDecoration(
+                  color: homePrimaryColor,
                   shape: BoxShape.circle,
-                  color: const Color(0xFF2366B1),
-                  border: Border.all(color: const Color(0xFFEAF4FC), width: 6),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.12),
-                      blurRadius: 12,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.add_rounded,
-                  color: Colors.white,
-                  size: 38,
+                  color: whiteColor,
+                  size: width * 0.10,
                 ),
               ),
             ),
@@ -485,49 +632,178 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // =============================================================
+  // NAV ITEM
+  // =============================================================
+
   Widget _navItem({
+    required double width,
     required IconData icon,
+    required IconData selectedIcon,
     required String label,
     required int index,
   }) {
-    final isSelected = selectedIndex == index;
+    final bool isSelected = selectedIndex == index;
 
-    return GestureDetector(
+    return InkWell(
       onTap: () {
-        setState(() {
-          selectedIndex = index;
-        });
+        // =====================================================
+        // HOME
+        // =====================================================
+        if (index == 0) {
+          // نحن أصلاً في Home
+          // لذلك ما نغير selectedIndex ولا نفتح صفحة جديدة
+          return;
+        }
+
+        // =====================================================
+        // HISTORY
+        // =====================================================
+        if (index == 1) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  const HistoryScreen(),
+            ),
+          );
+          return;
+        }
+
+        // =====================================================
+        // REPORT
+        // =====================================================
+        if (index == 3) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  const ReportScreen(),
+            ),
+          );
+          return;
+        }
+
+        // =====================================================
+        // PROFILE
+        // =====================================================
+        if (index == 4) {
+          // نربط صفحة الحساب لاحقاً
+          return;
+        }
       },
+
       child: SizedBox(
-        width: 55,
+        height: 88,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: 27,
-              color: isSelected
-                  ? const Color(0xFF2366B1)
-                  : const Color(0xFF9AAEC0),
+            // =================================================
+            // ICON BACKGROUND
+            // =================================================
+            AnimatedContainer(
+              duration: const Duration(
+                milliseconds: 200,
+              ),
+              curve: Curves.easeInOut,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 5,
+              ),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? homeLightBlueColor
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(
+                isSelected
+                    ? selectedIcon
+                    : icon,
+                size: 27,
+                color: isSelected
+                    ? homePrimaryColor
+                    : homeDarkTextColor,
+              ),
             ),
 
             const SizedBox(height: 3),
 
+            // =================================================
+            // LABEL
+            // =================================================
             Text(
               label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 9,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                fontFamily: thmanyahFont,
+                fontSize: width * 0.032,
+                fontWeight: isSelected
+                    ? FontWeight.w700
+                    : FontWeight.w600,
                 color: isSelected
-                    ? const Color(0xFF2366B1)
-                    : const Color(0xFF71869A),
+                    ? homePrimaryColor
+                    : homeDarkTextColor,
               ),
             ),
           ],
         ),
       ),
     );
+  }
+}
+
+// =============================================================
+// TRIANGLE NAVIGATION CLIPPER
+// =============================================================
+
+class TriangleNavigationClipper
+    extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+
+    path.moveTo(0, 40);
+
+    path.lineTo(
+      size.width * 0.36,
+      40,
+    );
+
+    // رأس المثلث للأعلى
+    path.lineTo(
+      size.width * 0.50,
+      0,
+    );
+
+    path.lineTo(
+      size.width * 0.64,
+      40,
+    );
+
+    path.lineTo(
+      size.width,
+      40,
+    );
+
+    path.lineTo(
+      size.width,
+      size.height,
+    );
+
+    path.lineTo(
+      0,
+      size.height,
+    );
+
+    path.close();
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(
+    covariant CustomClipper<Path> oldClipper,
+  ) {
+    return false;
   }
 }
