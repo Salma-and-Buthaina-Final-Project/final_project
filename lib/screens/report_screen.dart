@@ -11,7 +11,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:flutter/services.dart';
-import 'dart:html' as html;
+
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key});
@@ -1210,7 +1210,7 @@ SizedBox(height: height * 0.035),
     // LOAD ARABIC FONTS
     // ==========================================
     final regularFont = await PdfGoogleFonts.notoNaskhArabicRegular();
-final boldFont = await PdfGoogleFonts.notoNaskhArabicBold();
+    final boldFont = await PdfGoogleFonts.notoNaskhArabicBold();
     // ==========================================
     // PDF COLORS
     // ==========================================
@@ -1641,20 +1641,12 @@ final boldFont = await PdfGoogleFonts.notoNaskhArabicBold();
     // OPEN / EXPORT PDF
     // ==========================================
 
-    final pdfBytes = await pdf.save();
-
-final blob = html.Blob(
-  [pdfBytes],
-  'application/pdf',
+  await Printing.layoutPdf(
+  onLayout: (PdfPageFormat format) async {
+    return pdf.save();
+  },
 );
 
-final url = html.Url.createObjectUrlFromBlob(blob);
-
-final anchor = html.AnchorElement(href: url)
-  ..setAttribute('download', 'health_report.pdf')
-  ..click();
-
-html.Url.revokeObjectUrl(url);
   } catch (error) {
     if (!mounted) return;
 
