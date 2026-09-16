@@ -18,8 +18,7 @@ class HistoryScreen extends StatefulWidget {
 class _HistoryScreenState extends State<HistoryScreen> {
   int selectedFilter = 0;
 
-  final TextEditingController searchController =
-      TextEditingController();
+  final TextEditingController searchController = TextEditingController();
 
   List<Map<String, dynamic>> symptoms = [];
 
@@ -53,7 +52,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   // =========================================================
-  // GET SYMPTOMS FROM SUPABASE
+  // GET CURRENT USER SYMPTOMS FROM SUPABASE
   // =========================================================
 
   Future<void> fetchSymptoms() async {
@@ -63,19 +62,33 @@ class _HistoryScreenState extends State<HistoryScreen> {
         errorMessage = null;
       });
 
+      // المستخدم المسجل دخوله حاليًا
+      final user = Supabase.instance.client.auth.currentUser;
+
+      // إذا ما فيه مستخدم مسجل
+      if (user == null) {
+        if (!mounted) return;
+
+        setState(() {
+          symptoms = [];
+          isLoading = false;
+          errorMessage = 'يجب تسجيل الدخول أولاً';
+        });
+
+        return;
+      }
+
+      // جلب أعراض المستخدم الحالي فقط
       final response = await Supabase.instance.client
           .from('symptoms')
           .select()
-          .order(
-            'symptom_date',
-            ascending: false,
-          );
+          .eq('user_id', user.id)
+          .order('symptom_date', ascending: false);
 
       if (!mounted) return;
 
       setState(() {
-        symptoms =
-            List<Map<String, dynamic>>.from(response);
+        symptoms = List<Map<String, dynamic>>.from(response);
 
         isLoading = false;
       });
@@ -94,37 +107,29 @@ class _HistoryScreenState extends State<HistoryScreen> {
   // =========================================================
 
   List<Map<String, dynamic>> get filteredSymptoms {
-    List<Map<String, dynamic>> result =
-        List<Map<String, dynamic>>.from(symptoms);
+    List<Map<String, dynamic>> result = List<Map<String, dynamic>>.from(
+      symptoms,
+    );
 
     // =====================================================
     // SEARCH
     // =====================================================
 
-    final search =
-        searchController.text.trim().toLowerCase();
+    final search = searchController.text.trim().toLowerCase();
 
     if (search.isNotEmpty) {
       result = result.where((symptom) {
-        final condition =
-            (symptom['condition_name'] ?? '')
-                .toString()
-                .toLowerCase();
+        final condition = (symptom['condition_name'] ?? '')
+            .toString()
+            .toLowerCase();
 
-        final location =
-            (symptom['location'] ?? '')
-                .toString()
-                .toLowerCase();
+        final location = (symptom['location'] ?? '').toString().toLowerCase();
 
-        final notes =
-            (symptom['notes'] ?? '')
-                .toString()
-                .toLowerCase();
+        final notes = (symptom['notes'] ?? '').toString().toLowerCase();
 
-        final medicine =
-            (symptom['medicine_name'] ?? '')
-                .toString()
-                .toLowerCase();
+        final medicine = (symptom['medicine_name'] ?? '')
+            .toString()
+            .toLowerCase();
 
         return condition.contains(search) ||
             location.contains(search) ||
@@ -145,44 +150,29 @@ class _HistoryScreenState extends State<HistoryScreen> {
         now.year,
         now.month,
         now.day,
-      ).subtract(
-        Duration(
-          days: now.weekday - 1,
-        ),
-      );
+      ).subtract(Duration(days: now.weekday - 1));
 
       result = result.where((symptom) {
-        final date =
-            DateTime.tryParse(
-              symptom['symptom_date'].toString(),
-            );
+        final date = DateTime.tryParse(symptom['symptom_date'].toString());
 
         if (date == null) {
           return false;
         }
 
-        return date.isAfter(
-              startOfWeek.subtract(
-                const Duration(seconds: 1),
-              ),
-            );
+        return date.isAfter(startOfWeek.subtract(const Duration(seconds: 1)));
       }).toList();
     }
 
     // هذا الشهر
     if (selectedFilter == 2) {
       result = result.where((symptom) {
-        final date =
-            DateTime.tryParse(
-              symptom['symptom_date'].toString(),
-            );
+        final date = DateTime.tryParse(symptom['symptom_date'].toString());
 
         if (date == null) {
           return false;
         }
 
-        return date.year == now.year &&
-            date.month == now.month;
+        return date.year == now.year && date.month == now.month;
       }).toList();
     }
 
@@ -198,8 +188,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       return '';
     }
 
-    final date =
-        DateTime.tryParse(value.toString());
+    final date = DateTime.tryParse(value.toString());
 
     if (date == null) {
       return value.toString();
@@ -251,10 +240,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
     return Theme(
       data: Theme.of(context).copyWith(
-        textTheme:
-            Theme.of(context).textTheme.apply(
-          fontFamily: thmanyahFont,
-        ),
+        textTheme: Theme.of(context).textTheme.apply(fontFamily: thmanyahFont),
       ),
 
       child: Directionality(
@@ -266,14 +252,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
           // =====================================================
           // BODY
           // =====================================================
-
           body: SafeArea(
             child: RefreshIndicator(
               onRefresh: fetchSymptoms,
 
               child: SingleChildScrollView(
-                physics:
-                    const AlwaysScrollableScrollPhysics(),
+                physics: const AlwaysScrollableScrollPhysics(),
 
                 padding: EdgeInsets.symmetric(
                   horizontal: width * 0.055,
@@ -298,17 +282,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               'سجل الأعراض',
 
                               style: TextStyle(
-                                fontFamily:
-                                    thmanyahFont,
+                                fontFamily: thmanyahFont,
 
-                                fontSize:
-                                    width * 0.07,
+                                fontSize: width * 0.07,
 
-                                fontWeight:
-                                    FontWeight.w700,
+                                fontWeight: FontWeight.w700,
 
-                                color:
-                                    mainTextColor,
+                                color: mainTextColor,
                               ),
                             ),
                           ),
@@ -316,103 +296,72 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       ),
                     ),
 
-                    SizedBox(
-                      height: height * 0.02,
-                    ),
+                    SizedBox(height: height * 0.02),
 
                     // =============================================
                     // SEARCH
                     // =============================================
-
                     Container(
                       decoration: BoxDecoration(
                         color: cardColor,
 
-                        borderRadius:
-                            BorderRadius.circular(
-                          width * 0.045,
-                        ),
+                        borderRadius: BorderRadius.circular(width * 0.045),
 
-                        border: Border.all(
-                          color:
-                              homeBorderColor,
-                        ),
+                        border: Border.all(color: homeBorderColor),
                       ),
 
                       child: TextField(
-                        controller:
-                            searchController,
+                        controller: searchController,
 
-                        textAlign:
-                            TextAlign.right,
+                        textAlign: TextAlign.right,
 
                         style: TextStyle(
-                          fontFamily:
-                              thmanyahFont,
+                          fontFamily: thmanyahFont,
 
-                          color:
-                              homeDarkTextColor,
+                          color: homeDarkTextColor,
 
-                          fontSize:
-                              width * 0.038,
+                          fontSize: width * 0.038,
                         ),
 
-                        decoration:
-                            InputDecoration(
-                          hintText:
-                              'ابحث عن عرض أو كلمة مفتاحية...',
+                        decoration: InputDecoration(
+                          hintText: 'ابحث عن عرض أو كلمة مفتاحية...',
 
-                          hintStyle:
-                              TextStyle(
-                            fontFamily:
-                                thmanyahFont,
+                          hintStyle: TextStyle(
+                            fontFamily: thmanyahFont,
 
-                            color:
-                                homeGreyColor,
+                            color: homeGreyColor,
 
-                            fontSize:
-                                width * 0.035,
+                            fontSize: width * 0.035,
                           ),
 
                           prefixIcon: Icon(
-                            Icons
-                                .search_rounded,
+                            Icons.search_rounded,
 
-                            color:
-                                homeDarkTextColor,
+                            color: homeDarkTextColor,
 
-                            size:
-                                width * 0.07,
+                            size: width * 0.07,
                           ),
 
-                          border:
-                              InputBorder.none,
+                          border: InputBorder.none,
 
-                          contentPadding:
-                              EdgeInsets.symmetric(
-                            horizontal:
-                                width * 0.04,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: width * 0.04,
 
-                            vertical:
-                                height * 0.018,
+                            vertical: height * 0.018,
                           ),
                         ),
                       ),
                     ),
 
-                    SizedBox(
-                      height: height * 0.025,
-                    ),
+                    SizedBox(height: height * 0.025),
 
                     // =============================================
                     // FILTERS
                     // =============================================
-
                     Row(
                       children: [
                         Expanded(
-                          child:
-                              _filterButton(
+                          child: _filterButton(
                             title: 'الكل',
                             index: 0,
                             width: width,
@@ -420,30 +369,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           ),
                         ),
 
-                        SizedBox(
-                          width: width * 0.025,
-                        ),
+                        SizedBox(width: width * 0.025),
 
                         Expanded(
-                          child:
-                              _filterButton(
-                            title:
-                                'هذا الأسبوع',
+                          child: _filterButton(
+                            title: 'هذا الأسبوع',
                             index: 1,
                             width: width,
                             height: height,
                           ),
                         ),
 
-                        SizedBox(
-                          width: width * 0.025,
-                        ),
+                        SizedBox(width: width * 0.025),
 
                         Expanded(
-                          child:
-                              _filterButton(
-                            title:
-                                'هذا الشهر',
+                          child: _filterButton(
+                            title: 'هذا الشهر',
                             index: 2,
                             width: width,
                             height: height,
@@ -452,39 +393,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       ],
                     ),
 
-                    SizedBox(
-                      height: height * 0.025,
-                    ),
+                    SizedBox(height: height * 0.025),
 
                     // =============================================
                     // CONTENT
                     // =============================================
-
                     if (isLoading)
-                      _loading(
-                        width,
-                        height,
-                      )
+                      _loading(width, height)
                     else if (errorMessage != null)
-                      _error(
-                        width,
-                        height,
-                      )
-                    else if (filteredSymptoms
-                        .isEmpty)
-                      _empty(
-                        width,
-                        height,
-                      )
+                      _error(width, height)
+                    else if (filteredSymptoms.isEmpty)
+                      _empty(width, height)
                     else
-                      _symptomsList(
-                        width,
-                        height,
-                      ),
+                      _symptomsList(width, height),
 
-                    SizedBox(
-                      height: height * 0.05,
-                    ),
+                    SizedBox(height: height * 0.05),
                   ],
                 ),
               ),
@@ -494,11 +417,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           // =====================================================
           // BOTTOM NAVIGATION
           // =====================================================
-
-          bottomNavigationBar:
-              const CustomBottomNavigation(
-            selectedIndex: 1,
-          ),
+          bottomNavigationBar: const CustomBottomNavigation(selectedIndex: 1),
         ),
       ),
     );
@@ -508,10 +427,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   // SYMPTOMS LIST
   // =========================================================
 
-  Widget _symptomsList(
-    double width,
-    double height,
-  ) {
+  Widget _symptomsList(double width, double height) {
     final list = filteredSymptoms;
 
     return Container(
@@ -520,26 +436,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
       decoration: BoxDecoration(
         color: cardColor,
 
-        borderRadius:
-            BorderRadius.circular(
-          width * 0.05,
-        ),
+        borderRadius: BorderRadius.circular(width * 0.05),
 
-        border: Border.all(
-          color: homeBorderColor,
-        ),
+        border: Border.all(color: homeBorderColor),
       ),
 
       child: ListView.separated(
         shrinkWrap: true,
 
-        physics:
-            const NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
 
         itemCount: list.length,
 
-        separatorBuilder:
-            (context, index) {
+        separatorBuilder: (context, index) {
           return Divider(
             height: 1,
             thickness: 1,
@@ -551,40 +460,26 @@ class _HistoryScreenState extends State<HistoryScreen> {
           );
         },
 
-        itemBuilder:
-            (context, index) {
+        itemBuilder: (context, index) {
           final symptom = list[index];
 
-          final title =
-              (symptom['condition_name'] ??
-                      'غير محدد')
-                  .toString();
+          final title = (symptom['condition_name'] ?? 'غير محدد').toString();
 
-          final severity =
-              int.tryParse(
-                    symptom['severity']
-                        .toString(),
-                  ) ??
-                  1;
+          final severity = int.tryParse(symptom['severity'].toString()) ?? 1;
 
-          final date =
-              formatArabicDate(
-            symptom['symptom_date'],
+          final date = formatArabicDate(symptom['symptom_date']);
+
+          final color = getSeverityColor(severity);
+
+          return _symptomItem(
+            width: width,
+            height: height,
+            symptom: symptom,
+            title: title,
+            date: date,
+            severity: severity.toString(),
+            color: color,
           );
-
-          final color =
-              getSeverityColor(
-            severity,
-          );
-return _symptomItem(
-  width: width,
-  height: height,
-  symptom: symptom,
-  title: title,
-  date: date,
-  severity: severity.toString(),
-  color: color,
-);
         },
       ),
     );
@@ -594,10 +489,7 @@ return _symptomItem(
   // LOADING
   // =========================================================
 
-  Widget _loading(
-    double width,
-    double height,
-  ) {
+  Widget _loading(double width, double height) {
     return Container(
       width: double.infinity,
       height: height * 0.22,
@@ -607,20 +499,12 @@ return _symptomItem(
       decoration: BoxDecoration(
         color: cardColor,
 
-        borderRadius:
-            BorderRadius.circular(
-          width * 0.05,
-        ),
+        borderRadius: BorderRadius.circular(width * 0.05),
 
-        border: Border.all(
-          color: homeBorderColor,
-        ),
+        border: Border.all(color: homeBorderColor),
       ),
 
-      child:
-          const CircularProgressIndicator(
-        color: homePrimaryColor,
-      ),
+      child: const CircularProgressIndicator(color: homePrimaryColor),
     );
   }
 
@@ -628,10 +512,7 @@ return _symptomItem(
   // EMPTY
   // =========================================================
 
-  Widget _empty(
-    double width,
-    double height,
-  ) {
+  Widget _empty(double width, double height) {
     return Container(
       width: double.infinity,
 
@@ -643,14 +524,9 @@ return _symptomItem(
       decoration: BoxDecoration(
         color: cardColor,
 
-        borderRadius:
-            BorderRadius.circular(
-          width * 0.05,
-        ),
+        borderRadius: BorderRadius.circular(width * 0.05),
 
-        border: Border.all(
-          color: homeBorderColor,
-        ),
+        border: Border.all(color: homeBorderColor),
       ),
 
       child: Column(
@@ -659,71 +535,53 @@ return _symptomItem(
             width: width * 0.17,
             height: width * 0.17,
 
-            decoration:
-                const BoxDecoration(
+            decoration: const BoxDecoration(
               color: homeLightBlueColor,
               shape: BoxShape.circle,
             ),
 
             child: Icon(
-              Icons
-                  .health_and_safety_outlined,
+              Icons.health_and_safety_outlined,
 
-              color:
-                  homeDarkTextColor,
+              color: homeDarkTextColor,
 
-              size:
-                  width * 0.085,
+              size: width * 0.085,
             ),
           ),
 
-          SizedBox(
-            height: height * 0.015,
-          ),
+          SizedBox(height: height * 0.015),
 
           Text(
-            searchController
-                    .text.isNotEmpty
+            searchController.text.isNotEmpty
                 ? 'لا توجد نتائج'
                 : 'لا توجد أعراض مسجلة',
 
             style: TextStyle(
-              fontFamily:
-                  thmanyahFont,
+              fontFamily: thmanyahFont,
 
-              fontSize:
-                  width * 0.045,
+              fontSize: width * 0.045,
 
-              fontWeight:
-                  FontWeight.w700,
+              fontWeight: FontWeight.w700,
 
-              color:
-                  homeDarkTextColor,
+              color: homeDarkTextColor,
             ),
           ),
 
-          SizedBox(
-            height: height * 0.005,
-          ),
+          SizedBox(height: height * 0.005),
 
           Text(
-            searchController
-                    .text.isNotEmpty
+            searchController.text.isNotEmpty
                 ? 'جربي البحث بكلمة أخرى'
                 : 'الأعراض التي تسجلينها ستظهر هنا',
 
-            textAlign:
-                TextAlign.center,
+            textAlign: TextAlign.center,
 
             style: TextStyle(
-              fontFamily:
-                  thmanyahFont,
+              fontFamily: thmanyahFont,
 
-              fontSize:
-                  width * 0.035,
+              fontSize: width * 0.035,
 
-              color:
-                  homeGreyColor,
+              color: homeGreyColor,
             ),
           ),
         ],
@@ -735,10 +593,7 @@ return _symptomItem(
   // ERROR
   // =========================================================
 
-  Widget _error(
-    double width,
-    double height,
-  ) {
+  Widget _error(double width, double height) {
     return Container(
       width: double.infinity,
 
@@ -750,14 +605,9 @@ return _symptomItem(
       decoration: BoxDecoration(
         color: cardColor,
 
-        borderRadius:
-            BorderRadius.circular(
-          width * 0.05,
-        ),
+        borderRadius: BorderRadius.circular(width * 0.05),
 
-        border: Border.all(
-          color: homeBorderColor,
-        ),
+        border: Border.all(color: homeBorderColor),
       ),
 
       child: Column(
@@ -765,50 +615,36 @@ return _symptomItem(
           Icon(
             Icons.error_outline_rounded,
 
-            color:
-                homeDarkTextColor,
+            color: homeDarkTextColor,
 
-            size:
-                width * 0.10,
+            size: width * 0.10,
           ),
 
-          SizedBox(
-            height: height * 0.015,
-          ),
+          SizedBox(height: height * 0.015),
 
           Text(
             'تعذر تحميل الأعراض',
 
             style: TextStyle(
-              fontFamily:
-                  thmanyahFont,
+              fontFamily: thmanyahFont,
 
-              fontSize:
-                  width * 0.043,
+              fontSize: width * 0.043,
 
-              fontWeight:
-                  FontWeight.w700,
+              fontWeight: FontWeight.w700,
 
-              color:
-                  homeDarkTextColor,
+              color: homeDarkTextColor,
             ),
           ),
 
-          SizedBox(
-            height: height * 0.015,
-          ),
+          SizedBox(height: height * 0.015),
 
           ElevatedButton(
-            onPressed:
-                fetchSymptoms,
+            onPressed: fetchSymptoms,
 
-            style:
-                ElevatedButton.styleFrom(
-              backgroundColor:
-                  homePrimaryColor,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: homePrimaryColor,
 
-              foregroundColor:
-                  whiteColor,
+              foregroundColor: whiteColor,
 
               elevation: 0,
             ),
@@ -816,10 +652,7 @@ return _symptomItem(
             child: const Text(
               'إعادة المحاولة',
 
-              style: TextStyle(
-                fontFamily:
-                    thmanyahFont,
-              ),
+              style: TextStyle(fontFamily: thmanyahFont),
             ),
           ),
         ],
@@ -837,8 +670,7 @@ return _symptomItem(
     required double width,
     required double height,
   }) {
-    final bool isSelected =
-        selectedFilter == index;
+    final bool isSelected = selectedFilter == index;
 
     return GestureDetector(
       onTap: () {
@@ -848,30 +680,19 @@ return _symptomItem(
       },
 
       child: AnimatedContainer(
-        duration:
-            const Duration(
-          milliseconds: 200,
-        ),
+        duration: const Duration(milliseconds: 200),
 
         height: height * 0.06,
 
-        alignment:
-            Alignment.center,
+        alignment: Alignment.center,
 
         decoration: BoxDecoration(
-          color: isSelected
-              ? homePrimaryColor
-              : homeLightBlueColor,
+          color: isSelected ? homePrimaryColor : homeLightBlueColor,
 
-          borderRadius:
-              BorderRadius.circular(
-            width * 0.05,
-          ),
+          borderRadius: BorderRadius.circular(width * 0.05),
 
           border: Border.all(
-            color: isSelected
-                ? homePrimaryColor
-                : homeBorderColor,
+            color: isSelected ? homePrimaryColor : homeBorderColor,
           ),
         ),
 
@@ -881,22 +702,16 @@ return _symptomItem(
           child: Text(
             title,
 
-            textAlign:
-                TextAlign.center,
+            textAlign: TextAlign.center,
 
             style: TextStyle(
-              fontFamily:
-                  thmanyahFont,
+              fontFamily: thmanyahFont,
 
-              fontSize:
-                  width * 0.037,
+              fontSize: width * 0.037,
 
-              fontWeight:
-                  FontWeight.w600,
+              fontWeight: FontWeight.w600,
 
-              color: isSelected
-                  ? whiteColor
-                  : homeDarkTextColor,
+              color: isSelected ? whiteColor : homeDarkTextColor,
             ),
           ),
         ),
@@ -908,136 +723,144 @@ return _symptomItem(
   // SYMPTOM ITEM
   // =========================================================
 
- Widget _symptomItem({
-  required double width,
-  required double height,
-  required Map<String, dynamic> symptom,
-  required String title,
-  required String date,
-  required String severity,
-  required Color color,
-}) {
-  return Material(
-    color: Colors.transparent,
-    child: InkWell(
-      borderRadius: BorderRadius.circular(
-        width * 0.04,
-      ),
+  Widget _symptomItem({
+    required double width,
+    required double height,
+    required Map<String, dynamic> symptom,
+    required String title,
+    required String date,
+    required String severity,
+    required Color color,
+  }) {
+    return Material(
+      color: Colors.transparent,
 
-      // =====================================================
-      // OPEN CONDITION DETAILS
-      // =====================================================
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ConditionDetailsScreen(
-              title: title,
-              date: date,
-              severity: severity,
-              color: color,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(width * 0.04),
 
-              // بيانات Supabase الحقيقية
-              location:
-                  (symptom['location'] ?? 'غير محدد').toString(),
+        // =====================================================
+        // OPEN CONDITION DETAILS
+        // =====================================================
+        onTap: () {
+          Navigator.push(
+            context,
 
-              isRepeated:
-                  symptom['is_repeated'] == true,
-
-              medicineName:
-                  symptom['medicine_name']?.toString(),
-
-              notes:
-                  symptom['notes']?.toString(),
-            ),
-          ),
-        );
-      },
-
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: width * 0.035,
-          vertical: height * 0.018,
-        ),
-        child: Row(
-          children: [
-            // =================================================
-            // SEVERITY
-            // =================================================
-
-            Container(
-              width: width * 0.14,
-              height: width * 0.14,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
+            MaterialPageRoute(
+              builder: (context) => ConditionDetailsScreen(
+                title: title,
+                date: date,
+                severity: severity,
                 color: color,
-                borderRadius: BorderRadius.circular(
-                  width * 0.035,
+
+                // بيانات Supabase الحقيقية
+                location: (symptom['location'] ?? 'غير محدد').toString(),
+
+                isRepeated: symptom['is_repeated'] == true,
+
+                medicineName: symptom['medicine_name']?.toString(),
+
+                notes: symptom['notes']?.toString(),
+              ),
+            ),
+          );
+        },
+
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: width * 0.035,
+            vertical: height * 0.018,
+          ),
+
+          child: Row(
+            children: [
+              // =================================================
+              // SEVERITY
+              // =================================================
+
+              Container(
+                width: width * 0.14,
+                height: width * 0.14,
+
+                alignment: Alignment.center,
+
+                decoration: BoxDecoration(
+                  color: color,
+
+                  borderRadius: BorderRadius.circular(width * 0.035),
+                ),
+
+                child: Text(
+                  severity,
+
+                  style: TextStyle(
+                    fontFamily: thmanyahFont,
+
+                    fontSize: width * 0.06,
+
+                    fontWeight: FontWeight.w700,
+
+                    color: homeDarkTextColor,
+                  ),
                 ),
               ),
-              child: Text(
-                severity,
-                style: TextStyle(
-                  fontFamily: thmanyahFont,
-                  fontSize: width * 0.06,
-                  fontWeight: FontWeight.w700,
-                  color: homeDarkTextColor,
+
+              SizedBox(width: width * 0.035),
+
+              // =================================================
+              // CONDITION + DATE
+              // =================================================
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+
+                  children: [
+                    Text(
+                      title,
+
+                      style: TextStyle(
+                        fontFamily: thmanyahFont,
+
+                        fontSize: width * 0.05,
+
+                        fontWeight: FontWeight.w700,
+
+                        color: homeDarkTextColor,
+                      ),
+                    ),
+
+                    SizedBox(height: height * 0.003),
+
+                    Text(
+                      date,
+
+                      style: TextStyle(
+                        fontFamily: thmanyahFont,
+
+                        fontSize: width * 0.036,
+
+                        fontWeight: FontWeight.w500,
+
+                        color: homeDarkTextColor,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
 
-            SizedBox(
-              width: width * 0.035,
-            ),
+              // =================================================
+              // ARROW
+              // =================================================
+              Icon(
+                Icons.arrow_back_ios_new_rounded,
 
-            // =================================================
-            // CONDITION + DATE
-            // =================================================
+                size: width * 0.045,
 
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontFamily: thmanyahFont,
-                      fontSize: width * 0.05,
-                      fontWeight: FontWeight.w700,
-                      color: homeDarkTextColor,
-                    ),
-                  ),
-
-                  SizedBox(
-                    height: height * 0.003,
-                  ),
-
-                  Text(
-                    date,
-                    style: TextStyle(
-                      fontFamily: thmanyahFont,
-                      fontSize: width * 0.036,
-                      fontWeight: FontWeight.w500,
-                      color: homeDarkTextColor,
-                    ),
-                  ),
-                ],
+                color: homeDarkTextColor,
               ),
-            ),
-
-            // =================================================
-            // ARROW
-            // =================================================
-
-            Icon(
-              Icons.arrow_back_ios_new_rounded,
-              size: width * 0.045,
-              color: homeDarkTextColor,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }

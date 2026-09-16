@@ -12,22 +12,31 @@ import 'package:final_project/screens/profile_screen.dart';
 class CustomBottomNavigation extends StatelessWidget {
   final int selectedIndex;
 
-  const CustomBottomNavigation({
-    super.key,
-    required this.selectedIndex,
-  });
+  const CustomBottomNavigation({super.key, required this.selectedIndex});
 
-  void _navigate(
-    BuildContext context,
-    Widget page,
-    int index,
-  ) {
+  // =========================================================
+  // NAVIGATION WITH FADE
+  // =========================================================
+  void _navigate(BuildContext context, Widget page, int index) {
+    // إذا المستخدم ضغط على نفس الصفحة
     if (selectedIndex == index) return;
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder: (context) => page,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return page;
+        },
+
+        // مدة الانتقال
+        transitionDuration: const Duration(milliseconds: 180),
+
+        reverseTransitionDuration: const Duration(milliseconds: 180),
+
+        // Fade
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
       ),
     );
   }
@@ -51,10 +60,7 @@ class CustomBottomNavigation extends StatelessWidget {
             bottom: 0,
             child: ClipPath(
               clipper: TriangleNavigationClipper(),
-              child: Container(
-                height: 115,
-                color: cardColor,
-              ),
+              child: Container(height: 115, color: cardColor),
             ),
           ),
 
@@ -69,7 +75,9 @@ class CustomBottomNavigation extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
+                // =================================================
                 // الرئيسية
+                // =================================================
                 _navItem(
                   context: context,
                   icon: Icons.home_rounded,
@@ -78,7 +86,9 @@ class CustomBottomNavigation extends StatelessWidget {
                   page: const HomeScreen(),
                 ),
 
+                // =================================================
                 // السجل
+                // =================================================
                 _navItem(
                   context: context,
                   icon: Icons.article_rounded,
@@ -87,12 +97,14 @@ class CustomBottomNavigation extends StatelessWidget {
                   page: const HistoryScreen(),
                 ),
 
+                // =================================================
                 // مكان زر +
-                SizedBox(
-                  width: width * 0.18,
-                ),
+                // =================================================
+                SizedBox(width: width * 0.18),
 
+                // =================================================
                 // التقرير
+                // =================================================
                 _navItem(
                   context: context,
                   icon: Icons.bar_chart_rounded,
@@ -101,7 +113,9 @@ class CustomBottomNavigation extends StatelessWidget {
                   page: const ReportScreen(),
                 ),
 
+                // =================================================
                 // حسابي
+                // =================================================
                 _navItem(
                   context: context,
                   icon: Icons.person_outline_rounded,
@@ -119,12 +133,9 @@ class CustomBottomNavigation extends StatelessWidget {
           Positioned(
             top: 4,
             child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTap: () {
-                _navigate(
-                  context,
-                  const AddConditionScreen(),
-                  2,
-                );
+                _navigate(context, const AddConditionScreen(), 2);
               },
               child: Container(
                 width: width * 0.18,
@@ -133,13 +144,10 @@ class CustomBottomNavigation extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: homePrimaryColor,
 
-                  // نفس الحد الأبيض
-                  border: Border.all(
-                    color: whiteColor,
-                    width: 5,
-                  ),
+                  // الحد الأبيض
+                  border: Border.all(color: whiteColor, width: 5),
 
-                  // نفس الـ Shadow
+                  // Shadow
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.12),
@@ -176,11 +184,7 @@ class CustomBottomNavigation extends StatelessWidget {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
-        _navigate(
-          context,
-          page,
-          index,
-        );
+        _navigate(context, page, index);
       },
       child: SizedBox(
         width: 65,
@@ -189,26 +193,17 @@ class CustomBottomNavigation extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             AnimatedContainer(
-              duration: const Duration(
-                milliseconds: 200,
-              ),
+              duration: const Duration(milliseconds: 200),
               curve: Curves.easeInOut,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 5,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                color: isSelected
-                    ? homeLightBlueColor
-                    : Colors.transparent,
+                color: isSelected ? homeLightBlueColor : Colors.transparent,
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
                 icon,
                 size: 27,
-                color: isSelected
-                    ? homePrimaryColor
-                    : homeDarkTextColor,
+                color: isSelected ? homePrimaryColor : homeDarkTextColor,
               ),
             ),
 
@@ -220,12 +215,8 @@ class CustomBottomNavigation extends StatelessWidget {
               style: TextStyle(
                 fontFamily: thmanyahFont,
                 fontSize: 11,
-                fontWeight: isSelected
-                    ? FontWeight.bold
-                    : FontWeight.w500,
-                color: isSelected
-                    ? homePrimaryColor
-                    : homeDarkTextColor,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                color: isSelected ? homePrimaryColor : homeDarkTextColor,
               ),
             ),
           ],
@@ -247,37 +238,19 @@ class TriangleNavigationClipper extends CustomClipper<Path> {
     path.moveTo(0, 40);
 
     // قبل المثلث
-    path.lineTo(
-      size.width * 0.36,
-      40,
-    );
+    path.lineTo(size.width * 0.36, 40);
 
     // رأس المثلث للأعلى
-    path.lineTo(
-      size.width * 0.50,
-      0,
-    );
+    path.lineTo(size.width * 0.50, 0);
 
     // بعد المثلث
-    path.lineTo(
-      size.width * 0.64,
-      40,
-    );
+    path.lineTo(size.width * 0.64, 40);
 
-    path.lineTo(
-      size.width,
-      40,
-    );
+    path.lineTo(size.width, 40);
 
-    path.lineTo(
-      size.width,
-      size.height,
-    );
+    path.lineTo(size.width, size.height);
 
-    path.lineTo(
-      0,
-      size.height,
-    );
+    path.lineTo(0, size.height);
 
     path.close();
 
@@ -285,9 +258,7 @@ class TriangleNavigationClipper extends CustomClipper<Path> {
   }
 
   @override
-  bool shouldReclip(
-    covariant CustomClipper<Path> oldClipper,
-  ) {
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
     return false;
   }
 }
