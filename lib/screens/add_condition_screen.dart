@@ -3,6 +3,7 @@ import 'package:final_project/constants/fonts.dart';
 import 'package:final_project/utils/screen_size.dart';
 import 'package:final_project/widgets/custom_bottom_navigation.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AddConditionScreen extends StatefulWidget {
   const AddConditionScreen({super.key});
@@ -23,6 +24,10 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
   DateTime selectedDateTime = DateTime.now();
 
   final TextEditingController notesController = TextEditingController();
+
+  final TextEditingController medicineController = TextEditingController();
+
+  bool isSaving = false;
 
   final List<String> conditions = [
     "صداع",
@@ -51,6 +56,7 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
   @override
   void dispose() {
     notesController.dispose();
+    medicineController.dispose();
     super.dispose();
   }
 
@@ -110,6 +116,98 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
     final time = TimeOfDay.fromDateTime(selectedDateTime).format(context);
 
     return "$date - $time";
+  }
+
+  Future<void> saveSymptom() async {
+    // التأكد من اختيار العرض
+    if (selectedCondition == null) {
+      _showMessage('اختاري نوع العرض أولاً');
+      return;
+    }
+
+    // التأكد من اختيار المكان
+    if (selectedLocation == null) {
+      _showMessage('اختاري مكان الألم');
+      return;
+    }
+
+    // إذا قالت إنها أخذت دواء، لازم تكتب اسمه
+    if (tookMedicine && medicineController.text.trim().isEmpty) {
+      _showMessage('اكتبي اسم الدواء');
+      return;
+    }
+
+    setState(() {
+      isSaving = true;
+    });
+
+    try {
+      await Supabase.instance.client.from('symptoms').insert({
+        'condition_name': selectedCondition,
+        'location': selectedLocation,
+        'severity': severity,
+        'is_repeated': isRepeated,
+        'took_medicine': tookMedicine,
+
+        'medicine_name': tookMedicine ? medicineController.text.trim() : null,
+
+        'symptom_date': selectedDateTime.toIso8601String(),
+
+        'notes': notesController.text.trim().isEmpty
+            ? null
+            : notesController.text.trim(),
+      });
+
+      if (!mounted) return;
+
+      setState(() {
+        isSaving = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'تم حفظ العرض بنجاح',
+            textDirection: TextDirection.rtl,
+            style: const TextStyle(fontFamily: thmanyahFont),
+          ),
+          backgroundColor: homePrimaryColor,
+        ),
+      );
+
+      // تنظيف الحقول بعد الحفظ
+      setState(() {
+        selectedCondition = null;
+        selectedLocation = null;
+        severity = 1;
+        isRepeated = false;
+        tookMedicine = false;
+        selectedDateTime = DateTime.now();
+
+        notesController.clear();
+        medicineController.clear();
+      });
+    } catch (error) {
+      if (!mounted) return;
+
+      setState(() {
+        isSaving = false;
+      });
+
+      _showMessage('حدث خطأ أثناء حفظ العرض:\n$error');
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          textDirection: TextDirection.rtl,
+          style: const TextStyle(fontFamily: thmanyahFont),
+        ),
+      ),
+    );
   }
 
   @override
@@ -427,6 +525,29 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                     });
                   },
                 ),
+                if (tookMedicine) ...[
+                  SizedBox(height: height * 0.022),
+
+                  _title("اسم الدواء", width),
+
+                  TextField(
+                    controller: medicineController,
+                    textAlign: TextAlign.right,
+                    textDirection: TextDirection.rtl,
+                    style: TextStyle(
+                      fontFamily: thmanyahFont,
+                      color: homeDarkTextColor,
+                      fontSize: width * 0.041,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    decoration: _inputDecoration(
+                      hint: "اكتبي اسم الدواء...",
+                      icon: Icons.medication_outlined,
+                      iconBackground: homeGreenColor,
+                      width: width,
+                    ),
+                  ),
+                ],
 
                 SizedBox(height: height * 0.022),
 
@@ -461,9 +582,11 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                 SizedBox(
                   height: height * 0.065,
                   child: ElevatedButton(
-                    onPressed: () {
-                      // نربطه مع Supabase لاحقاً
-                    },
+                    onPressed: isSaving
+                        ? null
+                        : () {
+                            saveSymptom();
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: homePrimaryColor,
                       foregroundColor: whiteColor,
@@ -472,15 +595,24 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                         borderRadius: BorderRadius.circular(width * 0.04),
                       ),
                     ),
-                    child: Text(
-                      "حفظ العرض",
-                      style: TextStyle(
-                        fontFamily: thmanyahFont,
-                        fontSize: width * 0.045,
-                        fontWeight: FontWeight.w700,
-                        color: whiteColor,
-                      ),
-                    ),
+                    child: isSaving
+                        ? SizedBox(
+                            width: width * 0.055,
+                            height: width * 0.055,
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: whiteColor,
+                            ),
+                          )
+                        : Text(
+                            "حفظ العرض",
+                            style: TextStyle(
+                              fontFamily: thmanyahFont,
+                              fontSize: width * 0.045,
+                              fontWeight: FontWeight.w700,
+                              color: whiteColor,
+                            ),
+                          ),
                   ),
                 ),
 

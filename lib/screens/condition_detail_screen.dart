@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:final_project/constants/colors.dart';
 import 'package:final_project/constants/fonts.dart';
 import 'package:final_project/utils/screen_size.dart';
@@ -9,141 +10,151 @@ class ConditionDetailsScreen extends StatelessWidget {
   final String severity;
   final Color color;
 
+  // البيانات القادمة من Supabase
+  final String location;
+  final bool isRepeated;
+  final String? medicineName;
+  final String? notes;
+
   const ConditionDetailsScreen({
     super.key,
     required this.title,
     required this.date,
     required this.severity,
     required this.color,
+    required this.location,
+    required this.isRepeated,
+    this.medicineName,
+    this.notes,
   });
 
   // =========================================================
-  // بيانات كل عرض
+  // هل يوجد دواء فعلاً؟
   // =========================================================
 
-  Map<String, String> get details {
-    switch (title) {
-      case 'صداع':
-        return {
-          'location': 'الجانب الأيسر من الرأس',
-          'duration': 'من 10:30 ص إلى 02:00 م',
-          'repeated': '4 مرات',
-          'medicineUsed': 'نعم',
-          'medicine': 'باراسيتامول',
-          'notes': 'يزداد الألم عند التعرض للضوء',
-        };
-
-      case 'ألم في المعدة':
-        return {
-          'location': 'البطن',
-          'duration': 'من 08:00 ص إلى 11:00 ص',
-          'repeated': '3 مرات',
-          'medicineUsed': 'نعم',
-          'medicine': 'دواء للمعدة',
-          'notes': 'يزداد الألم بعد تناول الطعام',
-        };
-
-      case 'غثيان':
-        return {
-          'location': 'البطن',
-          'duration': 'من 01:00 م إلى 03:00 م',
-          'repeated': 'مرتين',
-          'medicineUsed': 'لا',
-          'medicine': 'لم يتم استخدام دواء',
-          'notes': 'غثيان خفيف ومتقطع',
-        };
-
-      case 'ألم في الظهر':
-        return {
-          'location': 'أسفل الظهر',
-          'duration': 'من 04:00 م إلى 07:00 م',
-          'repeated': '3 مرات',
-          'medicineUsed': 'نعم',
-          'medicine': 'مسكن للألم',
-          'notes': 'يزداد الألم مع الجلوس لفترة طويلة',
-        };
-
-      case 'ضيق تنفس':
-        return {
-          'location': 'الصدر',
-          'duration': 'من 06:00 م إلى 06:30 م',
-          'repeated': 'مرة واحدة',
-          'medicineUsed': 'لا',
-          'medicine': 'لم يتم استخدام دواء',
-          'notes': 'حدث بعد مجهود بدني',
-        };
-
-      default:
-        return {
-          'location': 'غير محدد',
-          'duration': 'غير محدد',
-          'repeated': 'غير محدد',
-          'medicineUsed': 'لا',
-          'medicine': 'لا يوجد',
-          'notes': 'لا توجد ملاحظات',
-        };
-    }
+  bool get usedMedicine {
+    return medicineName != null &&
+        medicineName!.trim().isNotEmpty;
   }
+
+  // =========================================================
+  // نص التكرار
+  // =========================================================
+
+  String get repeatedText {
+    return isRepeated ? 'نعم' : 'لا';
+  }
+
+  // =========================================================
+  // نص استخدام الدواء
+  // =========================================================
+
+  String get medicineUsedText {
+    return usedMedicine ? 'نعم' : 'لا';
+  }
+
+  // =========================================================
+  // اسم الدواء
+  // =========================================================
+
+  String get medicineText {
+    if (!usedMedicine) {
+      return 'لم يتم استخدام دواء';
+    }
+
+    return medicineName!.trim();
+  }
+
+  // =========================================================
+  // الملاحظات
+  // =========================================================
+
+  String get notesText {
+    if (notes == null || notes!.trim().isEmpty) {
+      return 'لا توجد ملاحظات';
+    }
+
+    return notes!.trim();
+  }
+
+  // =========================================================
+  // BUILD
+  // =========================================================
 
   @override
   Widget build(BuildContext context) {
     final width = screenWidth(context);
     final height = screenHeight(context);
-    final data = details;
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: backgroundColor,
-
-        // =====================================================
-        // APP BAR
-        // نفس AddConditionScreen
-        // =====================================================
-        appBar: AppBar(
-          backgroundColor: backgroundColor,
-          elevation: 0,
-          centerTitle: true,
-
-          // زر الرجوع
-          leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: whiteColor,
-              size: width * 0.05,
-            ),
-          ),
-
-          // عنوان الصفحة
-          title: Text(
-            'تفاصيل العرض',
-            style: TextStyle(
-              fontFamily: thmanyahFont,
-              fontSize: width * 0.065,
-              fontWeight: FontWeight.w700,
-              color: whiteColor,
-            ),
-          ),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textTheme: Theme.of(context).textTheme.apply(
+          fontFamily: thmanyahFont,
         ),
+      ),
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          backgroundColor: backgroundColor,
 
-        // =====================================================
-        // BODY
-        // =====================================================
-        body: SafeArea(
-          top: false,
-          child: SingleChildScrollView(
+          // =====================================================
+          // APP BAR
+          // =====================================================
+
+          appBar: AppBar(
+            backgroundColor: backgroundColor,
+            elevation: 0,
+            centerTitle: true,
+
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: whiteColor,
+                size: width * 0.05,
+              ),
+            ),
+
+            title: Text(
+              'تفاصيل العرض',
+              style: TextStyle(
+                fontFamily: thmanyahFont,
+                fontSize: width * 0.065,
+                fontWeight: FontWeight.w700,
+                color: whiteColor,
+              ),
+            ),
+
+            actions: [
+              IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.more_vert_rounded,
+                  color: whiteColor,
+                  size: width * 0.065,
+                ),
+              ),
+            ],
+          ),
+
+          // =====================================================
+          // BODY
+          // =====================================================
+
+          body: SingleChildScrollView(
             padding: EdgeInsets.symmetric(
               horizontal: width * 0.055,
-              vertical: height * 0.02,
+              vertical: height * 0.018,
             ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // =================================================
-                // TOP SYMPTOM CARD
+                // MAIN SYMPTOM CARD
                 // =================================================
+
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(
@@ -151,91 +162,126 @@ class ConditionDetailsScreen extends StatelessWidget {
                     vertical: height * 0.025,
                   ),
                   decoration: BoxDecoration(
-                    color: color,
+                    color: cardColor,
                     borderRadius: BorderRadius.circular(
                       width * 0.05,
+                    ),
+                    border: Border.all(
+                      color: homeBorderColor,
                     ),
                   ),
                   child: Row(
                     children: [
-                      // ================= ICON =================
+                      // =============================================
+                      // ICON
+                      // =============================================
+
                       Container(
                         width: width * 0.17,
                         height: width * 0.17,
                         decoration: BoxDecoration(
-                          color: cardColor.withOpacity(0.55),
+                          color: color,
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           _getSymptomIcon(),
                           color: homeDarkTextColor,
-                          size: width * 0.09,
+                          size: width * 0.085,
                         ),
                       ),
 
                       SizedBox(width: width * 0.04),
 
-                      // ================= NAME + DATE =================
+                      // =============================================
+                      // TITLE + DATE
+                      // =============================================
+
                       Expanded(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
                           children: [
                             Text(
                               title,
                               style: TextStyle(
                                 fontFamily: thmanyahFont,
-                                fontSize: width * 0.06,
+                                fontSize: width * 0.058,
                                 fontWeight: FontWeight.w700,
                                 color: homeDarkTextColor,
                               ),
                             ),
 
-                            SizedBox(height: height * 0.005),
+                            SizedBox(
+                              height: height * 0.005,
+                            ),
 
-                            Text(
-                              date,
-                              style: TextStyle(
-                                fontFamily: thmanyahFont,
-                                fontSize: width * 0.038,
-                                fontWeight: FontWeight.w500,
-                                color: homeDarkTextColor,
-                              ),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.calendar_today_outlined,
+                                  color: homeDarkTextColor,
+                                  size: width * 0.04,
+                                ),
+
+                                SizedBox(
+                                  width: width * 0.015,
+                                ),
+
+                                Expanded(
+                                  child: Text(
+                                    date,
+                                    style: TextStyle(
+                                      fontFamily: thmanyahFont,
+                                      fontSize: width * 0.036,
+                                      fontWeight: FontWeight.w500,
+                                      color: homeDarkTextColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
                       ),
 
-                      // ================= SEVERITY =================
+                      // =============================================
+                      // SEVERITY
+                      // =============================================
+
                       Column(
                         children: [
+                          Text(
+                            'الشدة',
+                            style: TextStyle(
+                              fontFamily: thmanyahFont,
+                              fontSize: width * 0.034,
+                              fontWeight: FontWeight.w500,
+                              color: homeGreyColor,
+                            ),
+                          ),
+
+                          SizedBox(
+                            height: height * 0.005,
+                          ),
+
                           Container(
-                            width: width * 0.14,
-                            height: width * 0.14,
+                            width: width * 0.13,
+                            height: width * 0.13,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              color: cardColor.withOpacity(0.60),
-                              shape: BoxShape.circle,
+                              color: color,
+                              borderRadius: BorderRadius.circular(
+                                width * 0.035,
+                              ),
                             ),
                             child: Text(
                               severity,
                               style: TextStyle(
                                 fontFamily: thmanyahFont,
-                                fontSize: width * 0.065,
+                                fontSize: width * 0.055,
                                 fontWeight: FontWeight.w700,
                                 color: homeDarkTextColor,
                               ),
-                            ),
-                          ),
-
-                          SizedBox(height: height * 0.006),
-
-                          Text(
-                            'شدة العرض',
-                            style: TextStyle(
-                              fontFamily: thmanyahFont,
-                              fontSize: width * 0.032,
-                              fontWeight: FontWeight.w600,
-                              color: homeDarkTextColor,
                             ),
                           ),
                         ],
@@ -247,12 +293,30 @@ class ConditionDetailsScreen extends StatelessWidget {
                 SizedBox(height: height * 0.025),
 
                 // =================================================
+                // DETAILS TITLE
+                // =================================================
+
+                Text(
+                  'تفاصيل الحالة',
+                  style: TextStyle(
+                    fontFamily: thmanyahFont,
+                    fontSize: width * 0.052,
+                    fontWeight: FontWeight.w700,
+                    color: whiteColor,
+                  ),
+                ),
+
+                SizedBox(height: height * 0.012),
+
+                // =================================================
                 // DETAILS CARD
                 // =================================================
+
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(
                     horizontal: width * 0.04,
+                    vertical: height * 0.01,
                   ),
                   decoration: BoxDecoration(
                     color: cardColor,
@@ -265,68 +329,139 @@ class ConditionDetailsScreen extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      // مكان الألم
+                      // =============================================
+                      // LOCATION
+                      // =============================================
+
                       _detailRow(
                         width: width,
                         height: height,
                         icon: Icons.location_on_outlined,
+                        iconColor: homeLightBlueColor,
                         title: 'مكان الألم',
-                        value: data['location']!,
+                        value: location.isEmpty
+                            ? 'غير محدد'
+                            : location,
                       ),
 
                       _divider(width),
 
-                      // مدة العرض
-                      _detailRow(
-                        width: width,
-                        height: height,
-                        icon: Icons.access_time_rounded,
-                        title: 'مدة العرض',
-                        value: data['duration']!,
-                      ),
+                      // =============================================
+                      // REPEATED
+                      // =============================================
 
-                      _divider(width),
-
-                      // عدد مرات التكرار
                       _detailRow(
                         width: width,
                         height: height,
                         icon: Icons.refresh_rounded,
-                        title: 'عدد مرات التكرار',
-                        value: data['repeated']!,
+                        iconColor: homePinkColor,
+                        title: 'هل تكرر العرض؟',
+                        value: repeatedText,
                       ),
 
                       _divider(width),
 
-                      // استخدام دواء
+                      // =============================================
+                      // MEDICINE USED
+                      // =============================================
+
                       _detailRow(
                         width: width,
                         height: height,
                         icon: Icons.medication_outlined,
-                        title: 'استخدام دواء',
-                        value: data['medicineUsed']!,
+                        iconColor: homeGreenColor,
+                        title: 'هل تم استخدام دواء؟',
+                        value: medicineUsedText,
                       ),
 
-                      _divider(width),
+                      // =============================================
+                      // MEDICINE NAME
+                      // يظهر فقط إذا المستخدم كتب دواء
+                      // =============================================
 
-                      // الدواء
-                      _detailRow(
-                        width: width,
-                        height: height,
-                        icon: Icons.medical_services_outlined,
-                        title: 'الدواء',
-                        value: data['medicine']!,
+                      if (usedMedicine) ...[
+                        _divider(width),
+
+                        _detailRow(
+                          width: width,
+                          height: height,
+                          icon: Icons.medical_services_outlined,
+                          iconColor: homePurpleColor,
+                          title: 'اسم الدواء',
+                          value: medicineText,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+
+                SizedBox(height: height * 0.025),
+
+                // =================================================
+                // NOTES TITLE
+                // =================================================
+
+                Text(
+                  'الملاحظات',
+                  style: TextStyle(
+                    fontFamily: thmanyahFont,
+                    fontSize: width * 0.052,
+                    fontWeight: FontWeight.w700,
+                    color: whiteColor,
+                  ),
+                ),
+
+                SizedBox(height: height * 0.012),
+
+                // =================================================
+                // NOTES CARD
+                // =================================================
+
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: width * 0.045,
+                    vertical: height * 0.022,
+                  ),
+                  decoration: BoxDecoration(
+                    color: cardColor,
+                    borderRadius: BorderRadius.circular(
+                      width * 0.05,
+                    ),
+                    border: Border.all(
+                      color: homeBorderColor,
+                    ),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: width * 0.11,
+                        height: width * 0.11,
+                        decoration: const BoxDecoration(
+                          color: homeYellowColor,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.notes_outlined,
+                          color: homeDarkTextColor,
+                          size: width * 0.055,
+                        ),
                       ),
 
-                      _divider(width),
+                      SizedBox(width: width * 0.03),
 
-                      // الملاحظات
-                      _detailRow(
-                        width: width,
-                        height: height,
-                        icon: Icons.edit_note_rounded,
-                        title: 'ملاحظات',
-                        value: data['notes']!,
+                      Expanded(
+                        child: Text(
+                          notesText,
+                          style: TextStyle(
+                            fontFamily: thmanyahFont,
+                            fontSize: width * 0.041,
+                            fontWeight: FontWeight.w500,
+                            height: 1.6,
+                            color: homeDarkTextColor,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -337,76 +472,84 @@ class ConditionDetailsScreen extends StatelessWidget {
                 // =================================================
                 // BUTTONS
                 // =================================================
+
                 Row(
                   children: [
-                    // ================= EDIT =================
+                    // =============================================
+                    // EDIT
+                    // =============================================
+
                     Expanded(
                       child: SizedBox(
-                        height: height * 0.065,
+                        height: height * 0.062,
                         child: ElevatedButton.icon(
                           onPressed: () {
-                            // نربط التعديل لاحقاً
+                            // نربط التعديل مع Supabase لاحقاً
                           },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: homePrimaryColor,
+                            foregroundColor: whiteColor,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                width * 0.04,
+                              ),
+                            ),
+                          ),
                           icon: Icon(
                             Icons.edit_outlined,
-                            color: whiteColor,
-                            size: width * 0.055,
+                            size: width * 0.05,
                           ),
                           label: Text(
                             'تعديل',
                             style: TextStyle(
                               fontFamily: thmanyahFont,
-                              fontSize: width * 0.043,
+                              fontSize: width * 0.041,
                               fontWeight: FontWeight.w700,
-                              color: whiteColor,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            backgroundColor: homePrimaryColor,
-                            foregroundColor: whiteColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                width * 0.04,
-                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
 
-                    SizedBox(width: width * 0.03),
+                    SizedBox(width: width * 0.025),
 
-                    // ================= DELETE =================
+                    // =============================================
+                    // DELETE
+                    // =============================================
+
                     Expanded(
                       child: SizedBox(
-                        height: height * 0.065,
+                        height: height * 0.062,
                         child: OutlinedButton.icon(
                           onPressed: () {
-                            _showDeleteDialog(context);
+                            _showDeleteDialog(
+                              context,
+                              width,
+                            );
                           },
-                          icon: Icon(
-                            Icons.delete_outline_rounded,
-                            color: Colors.redAccent,
-                            size: width * 0.055,
-                          ),
-                          label: Text(
-                            'حذف',
-                            style: TextStyle(
-                              fontFamily: thmanyahFont,
-                              fontSize: width * 0.043,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.redAccent,
-                            ),
-                          ),
                           style: OutlinedButton.styleFrom(
+                            foregroundColor: homeDarkTextColor,
                             side: const BorderSide(
-                              color: Colors.redAccent,
+                              color: homePinkColor,
+                              width: 1.5,
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
                                 width * 0.04,
                               ),
+                            ),
+                          ),
+                          icon: Icon(
+                            Icons.delete_outline_rounded,
+                            size: width * 0.05,
+                          ),
+                          label: Text(
+                            'حذف',
+                            style: TextStyle(
+                              fontFamily: thmanyahFont,
+                              fontSize: width * 0.041,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
@@ -415,7 +558,7 @@ class ConditionDetailsScreen extends StatelessWidget {
                   ],
                 ),
 
-                SizedBox(height: height * 0.03),
+                SizedBox(height: height * 0.04),
               ],
             ),
           ),
@@ -432,33 +575,47 @@ class ConditionDetailsScreen extends StatelessWidget {
     required double width,
     required double height,
     required IconData icon,
+    required Color iconColor,
     required String title,
     required String value,
   }) {
     return Padding(
       padding: EdgeInsets.symmetric(
-        vertical: height * 0.018,
+        vertical: height * 0.016,
       ),
       child: Row(
         children: [
-          // Icon
-          Icon(
-            icon,
-            color: homeDarkTextColor,
-            size: width * 0.055,
+          // =====================================================
+          // ICON
+          // =====================================================
+
+          Container(
+            width: width * 0.11,
+            height: width * 0.11,
+            decoration: BoxDecoration(
+              color: iconColor,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: homeDarkTextColor,
+              size: width * 0.055,
+            ),
           ),
 
-          SizedBox(width: width * 0.025),
+          SizedBox(width: width * 0.03),
 
-          // Title
-          SizedBox(
-            width: width * 0.27,
+          // =====================================================
+          // TITLE
+          // =====================================================
+
+          Expanded(
             child: Text(
               title,
               style: TextStyle(
                 fontFamily: thmanyahFont,
-                fontSize: width * 0.038,
-                fontWeight: FontWeight.w700,
+                fontSize: width * 0.04,
+                fontWeight: FontWeight.w600,
                 color: homeDarkTextColor,
               ),
             ),
@@ -466,15 +623,18 @@ class ConditionDetailsScreen extends StatelessWidget {
 
           SizedBox(width: width * 0.02),
 
-          // Value
-          Expanded(
+          // =====================================================
+          // VALUE
+          // =====================================================
+
+          Flexible(
             child: Text(
               value,
               textAlign: TextAlign.left,
               style: TextStyle(
                 fontFamily: thmanyahFont,
-                fontSize: width * 0.037,
-                fontWeight: FontWeight.w500,
+                fontSize: width * 0.039,
+                fontWeight: FontWeight.w700,
                 color: homeDarkTextColor,
               ),
             ),
@@ -492,9 +652,9 @@ class ConditionDetailsScreen extends StatelessWidget {
     return Divider(
       height: 1,
       thickness: 1,
-      color: homeBorderColor,
       indent: width * 0.02,
       endIndent: width * 0.02,
+      color: homeBorderColor,
     );
   }
 
@@ -507,17 +667,26 @@ class ConditionDetailsScreen extends StatelessWidget {
       case 'صداع':
         return Icons.psychology_alt_outlined;
 
-      case 'ألم في المعدة':
-        return Icons.sick_outlined;
+      case 'دوخة':
+        return Icons.blur_circular_rounded;
 
       case 'غثيان':
         return Icons.sentiment_dissatisfied_outlined;
+
+      case 'ألم في المعدة':
+        return Icons.sick_outlined;
 
       case 'ألم في الظهر':
         return Icons.accessibility_new_rounded;
 
       case 'ضيق تنفس':
         return Icons.air_rounded;
+
+      case 'تعب عام':
+        return Icons.battery_2_bar_rounded;
+
+      case 'ارتفاع حرارة':
+        return Icons.thermostat_rounded;
 
       default:
         return Icons.health_and_safety_outlined;
@@ -528,24 +697,30 @@ class ConditionDetailsScreen extends StatelessWidget {
   // DELETE DIALOG
   // =========================================================
 
-  void _showDeleteDialog(BuildContext context) {
+  void _showDeleteDialog(
+    BuildContext context,
+    double width,
+  ) {
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: AlertDialog(
             backgroundColor: cardColor,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(
+                width * 0.05,
+              ),
             ),
 
             title: Text(
               'حذف العرض',
               style: TextStyle(
                 fontFamily: thmanyahFont,
-                color: homeDarkTextColor,
+                fontSize: width * 0.05,
                 fontWeight: FontWeight.w700,
+                color: homeDarkTextColor,
               ),
             ),
 
@@ -553,37 +728,42 @@ class ConditionDetailsScreen extends StatelessWidget {
               'هل أنتِ متأكدة من حذف هذا العرض؟',
               style: TextStyle(
                 fontFamily: thmanyahFont,
+                fontSize: width * 0.04,
+                fontWeight: FontWeight.w500,
                 color: homeDarkTextColor,
               ),
             ),
 
             actions: [
-              // إلغاء
               TextButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pop(dialogContext);
                 },
                 child: Text(
                   'إلغاء',
                   style: TextStyle(
                     fontFamily: thmanyahFont,
+                    fontSize: width * 0.038,
                     color: homeDarkTextColor,
                   ),
                 ),
               ),
 
-              // حذف
               TextButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pop(dialogContext);
+
+                  // حالياً يرجع فقط للسجل
+                  // نربط الحذف الحقيقي مع Supabase لاحقاً
                   Navigator.pop(context);
                 },
                 child: Text(
                   'حذف',
                   style: TextStyle(
                     fontFamily: thmanyahFont,
-                    color: Colors.redAccent,
-                    fontWeight: FontWeight.bold,
+                    fontSize: width * 0.038,
+                    fontWeight: FontWeight.w700,
+                    color: homeDarkTextColor,
                   ),
                 ),
               ),
