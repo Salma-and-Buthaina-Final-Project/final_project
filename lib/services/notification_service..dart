@@ -6,32 +6,28 @@ class NotificationService {
   static final FlutterLocalNotificationsPlugin notifications =
       FlutterLocalNotificationsPlugin();
 
+  // تهيئة الإشعارات
   static Future<void> initialize() async {
     tz.initializeTimeZones();
 
     const androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const iosSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
-
     const settings = InitializationSettings(
       android: androidSettings,
-      iOS: iosSettings,
     );
 
-    await notifications.initialize(settings);
+    await notifications.initialize(
+      settings: settings,
+    );
 
-    // طلب صلاحية الإشعارات في Android
     await notifications
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
   }
 
+  // الإشعار اليومي
   static Future<void> scheduleDailyNotification() async {
     final now = tz.TZDateTime.now(tz.local);
 
@@ -40,21 +36,22 @@ class NotificationService {
       now.year,
       now.month,
       now.day,
-      20, // 8 PM
+      20, // الساعة 8 مساءً
       0,
     );
 
-    // إذا تعدت الساعة 8 اليوم، يكون أول إشعار بكرة
     if (scheduledTime.isBefore(now)) {
-      scheduledTime = scheduledTime.add(const Duration(days: 1));
+      scheduledTime = scheduledTime.add(
+        const Duration(days: 1),
+      );
     }
 
     await notifications.zonedSchedule(
-      1,
-      'حالتي 💙',
-      'كيف حالتك اليوم؟',
-      scheduledTime,
-      const NotificationDetails(
+      id: 1,
+      title: 'حالتي 💙',
+      body: 'كيف حالتك اليوم؟',
+      scheduledDate: scheduledTime,
+      notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
           'daily_health_reminder',
           'التذكير اليومي',
@@ -62,11 +59,11 @@ class NotificationService {
           importance: Importance.high,
           priority: Priority.high,
         ),
-        iOS: DarwinNotificationDetails(),
       ),
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      androidScheduleMode:
+          AndroidScheduleMode.inexactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
       payload: 'daily_check',
     );
   }
-}
+} // ← هذا آخر قوس في الملف
