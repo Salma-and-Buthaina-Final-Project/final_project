@@ -10,6 +10,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.scheduleDailyNotification();
   await NotificationService.initialize();
 
   await dotenv.load();
