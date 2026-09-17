@@ -5,10 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> navigatorKey =
+    GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // تهيئة الإشعارات أولاً
+  await NotificationService.initialize();
+
+  // بعدها جدولة الإشعار
+  await NotificationService.scheduleDailyNotification();
 
   // تحميل متغيرات البيئة
   await dotenv.load();
@@ -21,12 +28,6 @@ Future<void> main() async {
     url: url,
     anonKey: publishableKey,
   );
-
-  // تهيئة الإشعارات
-  await NotificationService.initialize();
-
-  // جدولة الإشعار اليومي
-  await NotificationService.scheduleDailyNotification();
 
   runApp(const MyApp());
 }
