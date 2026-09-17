@@ -5,20 +5,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await NotificationService.scheduleDailyNotification();
-  await NotificationService.initialize();
 
+  // تحميل متغيرات البيئة
   await dotenv.load();
 
   final url = dotenv.get('my_url');
   final publishableKey = dotenv.get('my_publishableKey');
 
-  await Supabase.initialize(url: url, anonKey: publishableKey);
+  // تهيئة Supabase
+  await Supabase.initialize(
+    url: url,
+    anonKey: publishableKey,
+  );
+
+  // تهيئة الإشعارات
+  await NotificationService.initialize();
+
+  // جدولة الإشعار اليومي
+  await NotificationService.scheduleDailyNotification();
 
   runApp(const MyApp());
 }
@@ -53,7 +61,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: const SplashScreen(),
     );
   }
 }
