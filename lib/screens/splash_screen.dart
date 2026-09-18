@@ -1,8 +1,10 @@
 import 'package:final_project/constants/colors.dart';
 import 'package:final_project/constants/fonts.dart';
+import 'package:final_project/screens/home_screen.dart';
 import 'package:final_project/screens/signup_screen.dart';
 import 'package:final_project/utils/screen_size.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,14 +30,31 @@ class _SplashScreenState extends State<SplashScreen>
     _scaleAnimation = Tween<double>(
       begin: 1.0,
       end: 1.1,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     _controller.repeat(reverse: true);
+  }
+
+  // =========================================================
+  // START APP
+  // =========================================================
+  void _startApp() {
+    final session = Supabase.instance.client.auth.currentSession;
+
+    // إذا المستخدم مسجل دخول من قبل
+    if (session != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    }
+    // إذا المستخدم غير مسجل دخول
+    else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const SignupScreen()),
+      );
+    }
   }
 
   @override
@@ -54,7 +73,9 @@ class _SplashScreenState extends State<SplashScreen>
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          // Background
+          // =====================================================
+          // BACKGROUND
+          // =====================================================
           Positioned.fill(
             child: Image.asset(
               'assets/background.png',
@@ -75,16 +96,14 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                     child: IntrinsicHeight(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: width * 0.07,
-                        ),
+                        padding: EdgeInsets.symmetric(horizontal: width * 0.07),
                         child: Column(
                           children: [
-                            SizedBox(
-                              height: height * 0.06,
-                            ),
+                            SizedBox(height: height * 0.06),
 
-                            // Animated Logo
+                            // =================================================
+                            // ANIMATED LOGO
+                            // =================================================
                             ScaleTransition(
                               scale: _scaleAnimation,
                               child: Image.asset(
@@ -94,11 +113,11 @@ class _SplashScreenState extends State<SplashScreen>
                               ),
                             ),
 
-                            SizedBox(
-                              height: height * 0.005,
-                            ),
+                            SizedBox(height: height * 0.005),
 
-                            // App Name
+                            // =================================================
+                            // APP NAME
+                            // =================================================
                             FittedBox(
                               fit: BoxFit.scaleDown,
                               child: Text(
@@ -114,11 +133,11 @@ class _SplashScreenState extends State<SplashScreen>
                               ),
                             ),
 
-                            SizedBox(
-                              height: height * 0.03,
-                            ),
+                            SizedBox(height: height * 0.03),
 
-                            // Subtitle
+                            // =================================================
+                            // SUBTITLE
+                            // =================================================
                             Text(
                               'صحتك أقرب إليك',
                               textAlign: TextAlign.center,
@@ -131,11 +150,11 @@ class _SplashScreenState extends State<SplashScreen>
                               ),
                             ),
 
-                            SizedBox(
-                              height: height * 0.05,
-                            ),
+                            SizedBox(height: height * 0.05),
 
-                            // Hadith
+                            // =================================================
+                            // HADITH
+                            // =================================================
                             Padding(
                               padding: EdgeInsets.symmetric(
                                 horizontal: width * 0.02,
@@ -155,11 +174,11 @@ class _SplashScreenState extends State<SplashScreen>
                               ),
                             ),
 
-                            SizedBox(
-                              height: height * 0.05,
-                            ),
+                            SizedBox(height: height * 0.05),
 
-                            // Start Button
+                            // =================================================
+                            // START BUTTON
+                            // =================================================
                             SizedBox(
                               width: double.infinity,
                               height: height * 0.065,
@@ -174,15 +193,10 @@ class _SplashScreenState extends State<SplashScreen>
                                     ),
                                   ),
                                 ),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const SignupScreen(),
-                                    ),
-                                  );
-                                },
+
+                                // هنا نتحقق من تسجيل الدخول
+                                onPressed: _startApp,
+
                                 child: Text(
                                   'ابدأ الآن',
                                   textDirection: TextDirection.rtl,
@@ -195,9 +209,7 @@ class _SplashScreenState extends State<SplashScreen>
                               ),
                             ),
 
-                            SizedBox(
-                              height: height * 0.05,
-                            ),
+                            SizedBox(height: height * 0.05),
                           ],
                         ),
                       ),
