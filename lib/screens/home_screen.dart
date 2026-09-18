@@ -7,6 +7,7 @@ import 'package:final_project/utils/screen_size.dart';
 
 import 'package:final_project/screens/history_screen.dart';
 import 'package:final_project/screens/appointment_screen.dart';
+import 'package:final_project/screens/profile_screen.dart';
 import 'package:final_project/widgets/custom_bottom_navigation.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -227,14 +228,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final String name = user?.userMetadata?['name']?.toString() ?? 'المستخدم';
 
+    // صورة البروفايل المختارة من صفحة حسابي
+    final String profileImage =
+        user?.userMetadata?['profile_image']?.toString() ??
+        'assets/default.png';
+
     return Theme(
       data: Theme.of(context).copyWith(
         textTheme: Theme.of(context).textTheme.apply(fontFamily: thmanyahFont),
       ),
-
       child: Directionality(
         textDirection: TextDirection.rtl,
-
         child: Scaffold(
           backgroundColor: backgroundColor,
 
@@ -243,21 +247,16 @@ class _HomeScreenState extends State<HomeScreen> {
           // =====================================================
           body: SafeArea(
             bottom: false,
-
             child: RefreshIndicator(
               onRefresh: fetchSymptoms,
-
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-
                 padding: EdgeInsets.symmetric(
                   horizontal: width * 0.055,
                   vertical: height * 0.02,
                 ),
-
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-
                   children: [
                     // =================================================
                     // HEADER
@@ -265,57 +264,59 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     Row(
                       children: [
-                        // Person
-                        Container(
-                          width: width * 0.13,
-                          height: width * 0.13,
-
-                          decoration: BoxDecoration(
-                            color: lightBlueColor,
-                            shape: BoxShape.circle,
-
-                            border: Border.all(color: whiteColor, width: 2),
-                          ),
-
-                          child: Icon(
-                            Icons.person_outline_rounded,
-                            color: homeDarkTextColor,
-                            size: width * 0.07,
+                        // =================================================
+                        // PROFILE IMAGE
+                        // =================================================
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ProfileScreen(),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            width: width * 0.13,
+                            height: width * 0.13,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: whiteColor, width: 2),
+                            ),
+                            child: ClipOval(
+                              child: Image.asset(
+                                profileImage,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           ),
                         ),
 
                         SizedBox(width: width * 0.03),
 
-                        // Greeting
+                        // =================================================
+                        // GREETING
+                        // =================================================
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-
                             children: [
                               Text(
                                 'مرحباً بك $name',
-
                                 style: TextStyle(
                                   fontFamily: thmanyahFont,
-
                                   fontSize: width * 0.043,
-
                                   fontWeight: FontWeight.w600,
-
                                   color: whiteColor,
                                 ),
                               ),
 
                               Text(
                                 'كيف حالتك اليوم؟',
-
                                 style: TextStyle(
                                   fontFamily: thmanyahFont,
-
                                   fontSize: width * 0.055,
-
                                   fontWeight: FontWeight.w700,
-
                                   color: whiteColor,
                                 ),
                               ),
@@ -323,18 +324,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
 
-                        // Notification
+                        // =================================================
+                        // NOTIFICATION
+                        // =================================================
                         Container(
                           width: width * 0.13,
                           height: width * 0.13,
-
                           decoration: BoxDecoration(
                             color: lightBlueColor,
                             shape: BoxShape.circle,
-
                             border: Border.all(color: whiteColor, width: 2),
                           ),
-
                           child: Icon(
                             Icons.notifications_none_rounded,
                             color: homeDarkTextColor,
@@ -351,55 +351,39 @@ class _HomeScreenState extends State<HomeScreen> {
                     // =================================================
                     Material(
                       color: Colors.transparent,
-
                       child: InkWell(
                         onTap: () {
                           Navigator.push(
                             context,
-
                             MaterialPageRoute(
                               builder: (context) => const AppointmentScreen(),
                             ),
                           );
                         },
-
                         borderRadius: BorderRadius.circular(width * 0.05),
-
                         child: Container(
                           width: double.infinity,
-
                           padding: EdgeInsets.symmetric(
                             horizontal: width * 0.045,
-
                             vertical: height * 0.022,
                           ),
-
                           decoration: BoxDecoration(
                             color: cardColor,
-
                             borderRadius: BorderRadius.circular(width * 0.05),
-
                             border: Border.all(color: homeBorderColor),
                           ),
-
                           child: Row(
                             children: [
                               Container(
                                 width: width * 0.13,
-
                                 height: width * 0.13,
-
                                 decoration: const BoxDecoration(
                                   color: homePurpleColor,
-
                                   shape: BoxShape.circle,
                                 ),
-
                                 child: Icon(
                                   Icons.calendar_month_outlined,
-
                                   color: homeDarkTextColor,
-
                                   size: width * 0.065,
                                 ),
                               ),
@@ -409,18 +393,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-
                                   children: [
                                     Text(
                                       'موعدك القادم',
-
                                       style: TextStyle(
                                         fontFamily: thmanyahFont,
-
                                         fontSize: width * 0.043,
-
                                         fontWeight: FontWeight.w700,
-
                                         color: homeDarkTextColor,
                                       ),
                                     ),
@@ -429,14 +408,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                     Text(
                                       'متابعة صحية',
-
                                       style: TextStyle(
                                         fontFamily: thmanyahFont,
-
                                         fontSize: width * 0.036,
-
                                         fontWeight: FontWeight.w500,
-
                                         color: homeDarkTextColor,
                                       ),
                                     ),
@@ -446,18 +421,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
-
                                 children: [
                                   Text(
                                     '15 سبتمبر 2026',
-
                                     style: TextStyle(
                                       fontFamily: thmanyahFont,
-
                                       fontSize: width * 0.034,
-
                                       fontWeight: FontWeight.w600,
-
                                       color: homeDarkTextColor,
                                     ),
                                   ),
@@ -466,14 +436,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                   Text(
                                     '10:30 ص',
-
                                     style: TextStyle(
                                       fontFamily: thmanyahFont,
-
                                       fontSize: width * 0.034,
-
                                       fontWeight: FontWeight.w500,
-
                                       color: homeDarkTextColor,
                                     ),
                                   ),
@@ -503,13 +469,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: _statCard(
                               width: width,
                               height: height,
-
                               icon: Icons.favorite_border_rounded,
-
                               number: totalSymptoms.toString(),
-
                               title: 'أعراض مسجلة',
-
                               color: homePinkColor,
                             ),
                           ),
@@ -520,13 +482,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: _statCard(
                               width: width,
                               height: height,
-
                               icon: Icons.show_chart_rounded,
-
                               number: averageSeverity.toStringAsFixed(1),
-
                               title: 'متوسط الشدة',
-
                               color: homeGreenColor,
                             ),
                           ),
@@ -537,13 +495,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: _statCard(
                               width: width,
                               height: height,
-
                               icon: Icons.calendar_today_outlined,
-
                               number: thisMonthSymptoms.toString(),
-
                               title: 'هذا الشهر',
-
                               color: homePurpleColor,
                             ),
                           ),
@@ -557,18 +511,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     // =================================================
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
                       children: [
                         Text(
                           'آخر الأعراض',
-
                           style: TextStyle(
                             fontFamily: thmanyahFont,
-
                             fontSize: width * 0.055,
-
                             fontWeight: FontWeight.w700,
-
                             color: whiteColor,
                           ),
                         ),
@@ -577,23 +526,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           onTap: () {
                             Navigator.pushReplacement(
                               context,
-
                               MaterialPageRoute(
                                 builder: (context) => const HistoryScreen(),
                               ),
                             );
                           },
-
                           child: Text(
                             'عرض الكل',
-
                             style: TextStyle(
                               fontFamily: thmanyahFont,
-
                               fontSize: width * 0.037,
-
                               fontWeight: FontWeight.w600,
-
                               color: whiteColor,
                             ),
                           ),
@@ -611,33 +554,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     else if (latestSymptoms.isEmpty)
                       Container(
                         width: double.infinity,
-
                         padding: EdgeInsets.symmetric(
                           vertical: height * 0.035,
-
                           horizontal: width * 0.04,
                         ),
-
                         decoration: BoxDecoration(
                           color: cardColor,
-
                           borderRadius: BorderRadius.circular(width * 0.04),
-
                           border: Border.all(color: homeBorderColor),
                         ),
-
                         child: Text(
                           'لا توجد أعراض مسجلة',
-
                           textAlign: TextAlign.center,
-
                           style: TextStyle(
                             fontFamily: thmanyahFont,
-
                             fontSize: width * 0.04,
-
                             fontWeight: FontWeight.w600,
-
                             color: homeDarkTextColor,
                           ),
                         ),
@@ -656,19 +588,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         return Padding(
                           padding: EdgeInsets.only(bottom: height * 0.012),
-
                           child: _symptomCard(
                             width: width,
                             height: height,
-
                             title: title,
-
                             date: date,
-
                             severity: severity.toString(),
-
                             color: getSeverityColor(severity),
-
                             icon: getSymptomIcon(title),
                           ),
                         );
@@ -704,21 +630,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }) {
     return Container(
       height: height * 0.145,
-
       padding: EdgeInsets.symmetric(
         horizontal: width * 0.015,
         vertical: height * 0.015,
       ),
-
       decoration: BoxDecoration(
         color: color,
-
         borderRadius: BorderRadius.circular(width * 0.045),
       ),
-
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-
         children: [
           Icon(icon, color: homeDarkTextColor, size: width * 0.055),
 
@@ -726,14 +647,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
           Text(
             number,
-
             style: TextStyle(
               fontFamily: thmanyahFont,
-
               fontSize: width * 0.06,
-
               fontWeight: FontWeight.w700,
-
               color: homeDarkTextColor,
             ),
           ),
@@ -742,19 +659,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
           FittedBox(
             fit: BoxFit.scaleDown,
-
             child: Text(
               title,
-
               maxLines: 1,
-
               style: TextStyle(
                 fontFamily: thmanyahFont,
-
                 fontSize: width * 0.033,
-
                 fontWeight: FontWeight.w600,
-
                 color: homeDarkTextColor,
               ),
             ),
@@ -779,28 +690,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }) {
     return Container(
       width: double.infinity,
-
       padding: EdgeInsets.symmetric(
         horizontal: width * 0.04,
         vertical: height * 0.016,
       ),
-
       decoration: BoxDecoration(
         color: cardColor,
-
         borderRadius: BorderRadius.circular(width * 0.04),
-
         border: Border.all(color: homeBorderColor),
       ),
-
       child: Row(
         children: [
           Container(
             width: width * 0.12,
             height: width * 0.12,
-
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-
             child: Icon(icon, color: homeDarkTextColor, size: width * 0.06),
           ),
 
@@ -809,18 +713,13 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-
               children: [
                 Text(
                   title,
-
                   style: TextStyle(
                     fontFamily: thmanyahFont,
-
                     fontSize: width * 0.045,
-
                     fontWeight: FontWeight.w700,
-
                     color: homeDarkTextColor,
                   ),
                 ),
@@ -829,14 +728,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 Text(
                   date,
-
                   style: TextStyle(
                     fontFamily: thmanyahFont,
-
                     fontSize: width * 0.034,
-
                     fontWeight: FontWeight.w500,
-
                     color: homeDarkTextColor,
                   ),
                 ),
@@ -847,21 +742,14 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             width: width * 0.105,
             height: width * 0.105,
-
             alignment: Alignment.center,
-
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-
             child: Text(
               severity,
-
               style: TextStyle(
                 fontFamily: thmanyahFont,
-
                 fontSize: width * 0.045,
-
                 fontWeight: FontWeight.w700,
-
                 color: homeDarkTextColor,
               ),
             ),
