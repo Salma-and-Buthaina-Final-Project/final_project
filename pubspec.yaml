@@ -24,6 +24,10 @@ flutter:
     - .env
     - assets/background.png
     - assets/logo.png
+    - assets/boy.png
+    - assets/girl.png
+    - assets/default.png
+
   
   fonts:
     - family: Thmanyah

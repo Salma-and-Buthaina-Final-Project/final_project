@@ -12,8 +12,284 @@ import 'package:final_project/screens/personal_info_screen.dart';
 import 'package:final_project/screens/help_support_screen.dart';
 import 'package:final_project/screens/privacy_policy_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  String selectedProfileImage = 'assets/default.png';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileImage();
+  }
+
+  // =========================================================
+  // LOAD PROFILE IMAGE
+  // =========================================================
+  void _loadProfileImage() {
+    final user = Supabase.instance.client.auth.currentUser;
+
+    final savedImage = user?.userMetadata?['profile_image']?.toString();
+
+    if (savedImage != null && savedImage.isNotEmpty) {
+      selectedProfileImage = savedImage;
+    }
+  }
+
+  // =========================================================
+  // CHANGE PROFILE IMAGE
+  // =========================================================
+  Future<void> _changeProfileImage(String imagePath) async {
+    try {
+      await Supabase.instance.client.auth.updateUser(
+        UserAttributes(data: {'profile_image': imagePath}),
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        selectedProfileImage = imagePath;
+      });
+
+      Navigator.pop(context);
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'حدث خطأ أثناء تغيير الصورة',
+            style: TextStyle(fontFamily: thmanyahFont),
+          ),
+        ),
+      );
+    }
+  }
+
+  // =========================================================
+  // PROFILE IMAGE OPTIONS
+  // =========================================================
+  void _showProfileImageOptions() {
+    final width = screenWidth(context);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: cardColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(width * 0.06)),
+      ),
+      builder: (context) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: Padding(
+            padding: EdgeInsets.all(width * 0.06),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'اختر صورة الملف الشخصي',
+                  style: TextStyle(
+                    fontFamily: thmanyahFont,
+                    fontSize: width * 0.05,
+                    fontWeight: FontWeight.w700,
+                    color: homeDarkTextColor,
+                  ),
+                ),
+
+                SizedBox(height: width * 0.06),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _profileImageOption(
+                      width: width,
+                      imagePath: 'assets/girl.png',
+                      title: 'فتاة',
+                    ),
+
+                    _profileImageOption(
+                      width: width,
+                      imagePath: 'assets/boy.png',
+                      title: 'ولد',
+                    ),
+
+                    _profileImageOption(
+                      width: width,
+                      imagePath: 'assets/default.png',
+                      title: 'افتراضي',
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: width * 0.04),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // =========================================================
+  // PROFILE IMAGE OPTION
+  // =========================================================
+  Widget _profileImageOption({
+    required double width,
+    required String imagePath,
+    required String title,
+  }) {
+    final bool isSelected = selectedProfileImage == imagePath;
+
+    return GestureDetector(
+      onTap: () {
+        _changeProfileImage(imagePath);
+      },
+      child: Column(
+        children: [
+          Container(
+            width: width * 0.20,
+            height: width * 0.20,
+            padding: EdgeInsets.all(width * 0.008),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: isSelected ? homePrimaryColor : homeBorderColor,
+                width: isSelected ? 3 : 1,
+              ),
+            ),
+            child: ClipOval(child: Image.asset(imagePath, fit: BoxFit.cover)),
+          ),
+
+          SizedBox(height: width * 0.02),
+
+          Text(
+            title,
+            style: TextStyle(
+              fontFamily: thmanyahFont,
+              fontSize: width * 0.035,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+              color: homeDarkTextColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // =========================================================
+  // LOGOUT CONFIRMATION
+  // =========================================================
+  void _showLogoutDialog() {
+    final width = screenWidth(context);
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: AlertDialog(
+            backgroundColor: cardColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(width * 0.05),
+            ),
+
+            title: Center(
+              child: Text(
+                'تسجيل الخروج',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: thmanyahFont,
+                  fontWeight: FontWeight.w700,
+                  color: homeDarkTextColor,
+                ),
+              ),
+            ),
+
+            content: Text(
+              'هل أنت متأكد من تسجيل الخروج؟',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontFamily: thmanyahFont, color: homeGreyColor),
+            ),
+
+            actionsPadding: EdgeInsets.only(
+              right: width * 0.04,
+              left: width * 0.04,
+              bottom: width * 0.04,
+            ),
+
+            actions: [
+              Row(
+                children: [
+                  // =================================================
+                  // CANCEL BUTTON
+                  // =================================================
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pop(dialogContext);
+                      },
+                      child: Center(
+                        child: Text(
+                          'إلغاء',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: thmanyahFont,
+                            fontWeight: FontWeight.w600,
+                            color: homeGreyColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(width: width * 0.02),
+
+                  // =================================================
+                  // LOGOUT BUTTON
+                  // =================================================
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () async {
+                        Navigator.pop(dialogContext);
+
+                        await Supabase.instance.client.auth.signOut();
+
+                        if (!mounted) return;
+
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
+                          (route) => false,
+                        );
+                      },
+                      child: Center(
+                        child: Text(
+                          'تسجيل الخروج',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: thmanyahFont,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,17 +302,13 @@ class ProfileScreen extends StatelessWidget {
     // الاسم المحفوظ في Supabase
     final String name = user?.userMetadata?['name']?.toString() ?? 'المستخدم';
 
-    // الإيميل
+    // البريد الإلكتروني
     final String email = user?.email ?? '';
 
     return Theme(
-      // =====================================================
-      // خط ثمانية للصفحة كاملة
-      // =====================================================
       data: Theme.of(context).copyWith(
         textTheme: Theme.of(context).textTheme.apply(fontFamily: thmanyahFont),
       ),
-
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
@@ -76,18 +348,45 @@ class ProfileScreen extends StatelessWidget {
                   // PROFILE IMAGE
                   // =================================================
                   Center(
-                    child: Container(
-                      width: width * 0.24,
-                      height: width * 0.24,
-                      decoration: BoxDecoration(
-                        color: homeLightBlueColor,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: whiteColor, width: 3),
-                      ),
-                      child: Icon(
-                        Icons.person_rounded,
-                        color: homeDarkTextColor,
-                        size: width * 0.14,
+                    child: GestureDetector(
+                      onTap: _showProfileImageOptions,
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Container(
+                            width: width * 0.24,
+                            height: width * 0.24,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: whiteColor, width: 3),
+                            ),
+                            child: ClipOval(
+                              child: Image.asset(
+                                selectedProfileImage,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+
+                          Positioned(
+                            bottom: 0,
+                            left: 0,
+                            child: Container(
+                              width: width * 0.075,
+                              height: width * 0.075,
+                              decoration: BoxDecoration(
+                                color: homePrimaryColor,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: whiteColor, width: 2),
+                              ),
+                              child: Icon(
+                                Icons.edit_rounded,
+                                color: whiteColor,
+                                size: width * 0.04,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -194,7 +493,7 @@ class ProfileScreen extends StatelessWidget {
                           title: 'الإشعارات',
                           iconColor: homeYellowColor,
                           onTap: () {
-                            // بنربط صفحة الإشعارات لاحقًا
+                            // سيتم ربط صفحة الإشعارات لاحقًا
                           },
                         ),
 
@@ -252,19 +551,7 @@ class ProfileScreen extends StatelessWidget {
                   SizedBox(
                     height: height * 0.065,
                     child: ElevatedButton(
-                      onPressed: () async {
-                        await Supabase.instance.client.auth.signOut();
-
-                        if (!context.mounted) return;
-
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginScreen(),
-                          ),
-                          (route) => false,
-                        );
-                      },
+                      onPressed: _showLogoutDialog,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: cardColor,
                         foregroundColor: Colors.red,
@@ -336,7 +623,6 @@ class ProfileScreen extends StatelessWidget {
           ),
           child: Row(
             children: [
-              // ICON
               Container(
                 width: width * 0.105,
                 height: width * 0.105,
@@ -353,7 +639,6 @@ class ProfileScreen extends StatelessWidget {
 
               SizedBox(width: width * 0.03),
 
-              // TITLE
               Expanded(
                 child: Text(
                   title,
@@ -366,7 +651,6 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
 
-              // ARROW
               Icon(
                 Icons.arrow_back_ios_new_rounded,
                 color: homeGreyColor,

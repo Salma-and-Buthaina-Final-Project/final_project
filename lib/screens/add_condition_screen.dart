@@ -626,7 +626,7 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                     fontWeight: FontWeight.w500,
                   ),
                   decoration: _inputDecoration(
-                    hint: "اكتبي أي ملاحظات هنا...",
+                    hint: "اكتب أي ملاحظات هنا...",
                     icon: Icons.notes_outlined,
                     iconBackground: homeYellowColor,
                     width: width,

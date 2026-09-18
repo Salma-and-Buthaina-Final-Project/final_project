@@ -14,7 +14,9 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
     return Theme(
       data: Theme.of(context).copyWith(
-        textTheme: Theme.of(context).textTheme.apply(fontFamily: thmanyahFont),
+        textTheme: Theme.of(
+          context,
+        ).textTheme.apply(fontFamily: thmanyahFont),
       ),
       child: Directionality(
         textDirection: TextDirection.rtl,
@@ -68,8 +70,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     padding: EdgeInsets.all(width * 0.05),
                     decoration: BoxDecoration(
                       color: cardColor,
-                      borderRadius: BorderRadius.circular(width * 0.045),
-                      border: Border.all(color: homeBorderColor),
+                      borderRadius: BorderRadius.circular(
+                        width * 0.045,
+                      ),
+                      border: Border.all(
+                        color: homeBorderColor,
+                      ),
                     ),
                     child: Column(
                       children: [
@@ -125,7 +131,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     icon: Icons.person_outline_rounded,
                     color: homeLightBlueColor,
                     title: 'البيانات التي نجمعها',
-                    text: 'قد يتعامل التطبيق مع المعلومات التي تدخلينها أثناء استخدامه، مثل بيانات الحساب والأعراض والمواعيد والملاحظات التي تضيفينها.',
+                    text:
+                        'قد يتعامل التطبيق مع المعلومات التي تدخلها أثناء استخدامه، مثل بيانات الحساب والأعراض والمواعيد والملاحظات التي تضيفها.',
                   ),
 
                   SizedBox(height: height * 0.015),
@@ -135,7 +142,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     icon: Icons.storage_outlined,
                     color: homePurpleColor,
                     title: 'حفظ البيانات',
-                    text: 'تُحفظ بيانات الحساب والبيانات المرتبطة باستخدام التطبيق في قاعدة البيانات المستخدمة بواسطة التطبيق، وذلك لتوفير وظائف الحساب واسترجاع معلوماتك عند تسجيل الدخول.',
+                    text:
+                        'تُحفظ بيانات الحساب والبيانات المرتبطة باستخدام التطبيق في قاعدة البيانات المستخدمة بواسطة التطبيق، وذلك لتوفير وظائف الحساب واسترجاع معلوماتك عند تسجيل الدخول.',
                   ),
 
                   SizedBox(height: height * 0.015),
@@ -145,7 +153,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     icon: Icons.medical_information_outlined,
                     color: homeGreenColor,
                     title: 'البيانات الصحية',
-                    text: 'يتيح لك التطبيق تسجيل معلومات مرتبطة بالأعراض والمراجعات الصحية. تُستخدم هذه المعلومات لعرض سجلك وملخصاتك داخل التطبيق.',
+                    text:
+                        'يتيح لك التطبيق تسجيل معلومات مرتبطة بالأعراض والمراجعات الصحية. تُستخدم هذه المعلومات لعرض سجلك وملخصاتك داخل التطبيق.',
                   ),
 
                   SizedBox(height: height * 0.015),
@@ -155,7 +164,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     icon: Icons.lock_outline_rounded,
                     color: homeYellowColor,
                     title: 'حماية البيانات',
-                    text: 'نسعى إلى التعامل مع البيانات بطريقة آمنة، وينبغي المحافظة على سرية بيانات تسجيل الدخول وعدم مشاركتها مع الآخرين.',
+                    text:
+                        'نسعى إلى التعامل مع البيانات بطريقة آمنة، وينبغي المحافظة على سرية بيانات تسجيل الدخول وعدم مشاركتها مع الآخرين.',
                   ),
 
                   SizedBox(height: height * 0.015),
@@ -165,7 +175,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     icon: Icons.share_outlined,
                     color: homePinkColor,
                     title: 'مشاركة البيانات',
-                    text: 'لا يهدف تطبيق حالتي إلى بيع بيانات المستخدم الشخصية. وقد تعتمد بعض وظائف التطبيق على خدمات تقنية خارجية لازمة لتشغيله.',
+                    text:
+                        'لا يهدف تطبيق حالتي إلى بيع بيانات المستخدم الشخصية. وقد تعتمد بعض وظائف التطبيق على خدمات تقنية خارجية لازمة لتشغيله.',
                   ),
 
                   SizedBox(height: height * 0.015),
@@ -175,7 +186,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     icon: Icons.manage_accounts_outlined,
                     color: homeLightBlueColor,
                     title: 'بيانات حسابك',
-                    text: 'يمكنك الاطلاع على بعض معلومات حسابك وتعديل البيانات المتاحة للتعديل من خلال صفحة معلوماتي الشخصية داخل التطبيق.',
+                    text:
+                        'يمكنك الاطلاع على بعض معلومات حسابك وتعديل البيانات المتاحة للتعديل من خلال صفحة معلوماتي الشخصية داخل التطبيق.',
                   ),
 
                   SizedBox(height: height * 0.015),
@@ -185,7 +197,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     icon: Icons.info_outline_rounded,
                     color: homePurpleColor,
                     title: 'تنبيه',
-                    text: 'تطبيق حالتي مخصص للمساعدة في تسجيل الأعراض وتنظيم المعلومات، ولا يُعد بديلاً عن التشخيص أو الاستشارة الطبية المتخصصة.',
+                    text:
+                        'تطبيق حالتي مخصص للمساعدة في تسجيل الأعراض وتنظيم المعلومات، ولا يُعد بديلاً عن التشخيص أو الاستشارة الطبية المتخصصة.',
                   ),
 
                   SizedBox(height: height * 0.03),
@@ -235,8 +248,15 @@ class PrivacyPolicyScreen extends StatelessWidget {
           Container(
             width: width * 0.11,
             height: width * 0.11,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-            child: Icon(icon, color: homeDarkTextColor, size: width * 0.055),
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: homeDarkTextColor,
+              size: width * 0.055,
+            ),
           ),
 
           SizedBox(width: width * 0.03),

@@ -14,7 +14,9 @@ class HelpSupportScreen extends StatelessWidget {
 
     return Theme(
       data: Theme.of(context).copyWith(
-        textTheme: Theme.of(context).textTheme.apply(fontFamily: thmanyahFont),
+        textTheme: Theme.of(context).textTheme.apply(
+          fontFamily: thmanyahFont,
+        ),
       ),
       child: Directionality(
         textDirection: TextDirection.rtl,
@@ -68,8 +70,12 @@ class HelpSupportScreen extends StatelessWidget {
                     padding: EdgeInsets.all(width * 0.05),
                     decoration: BoxDecoration(
                       color: cardColor,
-                      borderRadius: BorderRadius.circular(width * 0.045),
-                      border: Border.all(color: homeBorderColor),
+                      borderRadius: BorderRadius.circular(
+                        width * 0.045,
+                      ),
+                      border: Border.all(
+                        color: homeBorderColor,
+                      ),
                     ),
                     child: Column(
                       children: [
@@ -90,7 +96,7 @@ class HelpSupportScreen extends StatelessWidget {
                         SizedBox(height: height * 0.015),
 
                         Text(
-                          'كيف نقدر نساعدك؟',
+                          'كيف يمكننا مساعدتك؟',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: thmanyahFont,
@@ -103,7 +109,7 @@ class HelpSupportScreen extends StatelessWidget {
                         SizedBox(height: height * 0.005),
 
                         Text(
-                          'هنا تلقين إجابات لأكثر الأسئلة شيوعاً عن تطبيق حالتي.',
+                          'ستجد هنا إجابات عن أكثر الأسئلة شيوعًا حول تطبيق حالتي.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: thmanyahFont,
@@ -138,8 +144,9 @@ class HelpSupportScreen extends StatelessWidget {
                   // =================================================
                   _questionCard(
                     width: width,
-                    question: 'كيف أسجل عرض جديد؟',
-                    answer: 'من الشريط السفلي اضغطي على زر الإضافة (+)، ثم أدخلي بيانات العرض واضغطي على حفظ العرض.',
+                    question: 'كيف أسجل عرضًا جديدًا؟',
+                    answer:
+                        'من الشريط السفلي، اضغط على زر الإضافة (+)، ثم أدخل بيانات العرض واضغط على حفظ العرض.',
                     color: homeLightBlueColor,
                   ),
 
@@ -150,8 +157,9 @@ class HelpSupportScreen extends StatelessWidget {
                   // =================================================
                   _questionCard(
                     width: width,
-                    question: 'كيف أشوف الأعراض السابقة؟',
-                    answer: 'من الشريط السفلي اختاري السجل، وبتظهر لك الأعراض المسجلة سابقاً.',
+                    question: 'كيف أعرض الأعراض السابقة؟',
+                    answer:
+                        'من الشريط السفلي، اختر السجل، وستظهر لك الأعراض المسجلة سابقًا.',
                     color: homeGreenColor,
                   ),
 
@@ -163,7 +171,8 @@ class HelpSupportScreen extends StatelessWidget {
                   _questionCard(
                     width: width,
                     question: 'كيف أضيف موعد مراجعة؟',
-                    answer: 'من صفحة حسابي اختاري موعد المراجعة، ثم حددي التاريخ وأدخلي بيانات الموعد واضغطي على حفظ الموعد.',
+                    answer:
+                        'من صفحة حسابي، اختر موعد المراجعة، ثم حدد التاريخ وأدخل بيانات الموعد واضغط على حفظ الموعد.',
                     color: homeYellowColor,
                   ),
 
@@ -175,7 +184,8 @@ class HelpSupportScreen extends StatelessWidget {
                   _questionCard(
                     width: width,
                     question: 'كيف أعدل اسمي؟',
-                    answer: 'من حسابي اختاري معلوماتي الشخصية، عدلي الاسم ثم اضغطي على حفظ التعديلات.',
+                    answer:
+                        'من صفحة حسابي، اختر معلوماتي الشخصية، ثم عدل الاسم واضغط على حفظ التعديلات.',
                     color: homePinkColor,
                   ),
 
@@ -185,7 +195,7 @@ class HelpSupportScreen extends StatelessWidget {
                   // SUPPORT TITLE
                   // =================================================
                   Text(
-                    'تحتاجين مساعدة إضافية؟',
+                    'هل تحتاج إلى مساعدة إضافية؟',
                     style: TextStyle(
                       fontFamily: thmanyahFont,
                       fontSize: width * 0.052,
@@ -204,7 +214,7 @@ class HelpSupportScreen extends StatelessWidget {
                     height: height,
                     icon: Icons.report_problem_outlined,
                     title: 'الإبلاغ عن مشكلة',
-                    subtitle: 'واجهتك مشكلة أثناء استخدام التطبيق؟',
+                    subtitle: 'هل واجهت مشكلة أثناء استخدام التطبيق؟',
                     color: homePinkColor,
                     onTap: () {
                       _showReportDialog(context);
@@ -232,7 +242,9 @@ class HelpSupportScreen extends StatelessWidget {
                           Text(
                             'تطبيق يساعد المستخدم على تسجيل الأعراض ومتابعتها وتنظيم مواعيد المراجعة.',
                             textDirection: TextDirection.rtl,
-                            style: TextStyle(fontFamily: thmanyahFont),
+                            style: TextStyle(
+                              fontFamily: thmanyahFont,
+                            ),
                           ),
                         ],
                       );
@@ -277,7 +289,10 @@ class HelpSupportScreen extends StatelessWidget {
           leading: Container(
             width: width * 0.1,
             height: width * 0.1,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
             child: Icon(
               Icons.question_mark_rounded,
               color: homeDarkTextColor,
@@ -353,7 +368,10 @@ class HelpSupportScreen extends StatelessWidget {
               Container(
                 width: width * 0.11,
                 height: width * 0.11,
-                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                ),
                 child: Icon(
                   icon,
                   color: homeDarkTextColor,
@@ -405,7 +423,8 @@ class HelpSupportScreen extends StatelessWidget {
   // REPORT DIALOG
   // =========================================================
   void _showReportDialog(BuildContext context) {
-    final TextEditingController problemController = TextEditingController();
+    final TextEditingController problemController =
+        TextEditingController();
 
     showDialog(
       context: context,
@@ -433,7 +452,7 @@ class HelpSupportScreen extends StatelessWidget {
                 color: homeDarkTextColor,
               ),
               decoration: InputDecoration(
-                hintText: 'اكتبي المشكلة هنا...',
+                hintText: 'اكتب المشكلة هنا...',
                 hintStyle: TextStyle(
                   fontFamily: thmanyahFont,
                   color: homeGreyColor,
@@ -465,8 +484,10 @@ class HelpSupportScreen extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        'تم إرسال البلاغ',
-                        style: TextStyle(fontFamily: thmanyahFont),
+                        'تم إرسال البلاغ بنجاح.',
+                        style: TextStyle(
+                          fontFamily: thmanyahFont,
+                        ),
                       ),
                     ),
                   );
@@ -476,7 +497,10 @@ class HelpSupportScreen extends StatelessWidget {
                 ),
                 child: Text(
                   'إرسال',
-                  style: TextStyle(fontFamily: thmanyahFont, color: whiteColor),
+                  style: TextStyle(
+                    fontFamily: thmanyahFont,
+                    color: whiteColor,
+                  ),
                 ),
               ),
             ],
