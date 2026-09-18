@@ -2,32 +2,32 @@ import 'package:final_project/screens/splash_screen.dart';
 import 'package:final_project/screens/reset_password_screen.dart';
 import 'package:final_project/services/notification_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-final GlobalKey<NavigatorState> navigatorKey =
-    GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // تهيئة الإشعارات أولاً
-  await NotificationService.initialize();
-
-  // بعدها جدولة الإشعار
-  await NotificationService.scheduleDailyNotification();
-
-  // تحميل متغيرات البيئة
+  // Load environment variables
   await dotenv.load();
 
   final url = dotenv.get('my_url');
   final publishableKey = dotenv.get('my_publishableKey');
 
-  // تهيئة Supabase
+  // Initialize Supabase
   await Supabase.initialize(
     url: url,
     anonKey: publishableKey,
   );
+
+  // Notifications only on Android / non-Web
+  if (!kIsWeb) {
+    await NotificationService.initialize();
+    await NotificationService.scheduleDailyNotification();
+  }
 
   runApp(const MyApp());
 }
@@ -44,6 +44,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
+    // Listen for password recovery
     Supabase.instance.client.auth.onAuthStateChange.listen((data) {
       if (data.event == AuthChangeEvent.passwordRecovery) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
