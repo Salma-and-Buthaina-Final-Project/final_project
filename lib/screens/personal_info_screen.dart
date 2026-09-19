@@ -24,8 +24,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
 
     final user = Supabase.instance.client.auth.currentUser;
 
-    final String name =
-        user?.userMetadata?['name']?.toString() ?? '';
+    final String name = user?.userMetadata?['name']?.toString() ?? '';
 
     final String email = user?.email ?? '';
 
@@ -44,11 +43,8 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     final String newName = nameController.text.trim();
 
     if (newName.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('الرجاء كتابة الاسم'),
-        ),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('الرجاء كتابة الاسم')));
       return;
     }
 
@@ -58,32 +54,21 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
 
     try {
       await Supabase.instance.client.auth.updateUser(
-        UserAttributes(
-          data: {
-            'name': newName,
-          },
-        ),
+        UserAttributes(data: {'name': newName}),
       );
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('تم تحديث المعلومات بنجاح'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('تم تحديث المعلومات بنجاح')));
 
       Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'حدث خطأ: $e',
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('حدث خطأ: $e')));
     } finally {
       if (mounted) {
         setState(() {
@@ -100,9 +85,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
 
     return Theme(
       data: Theme.of(context).copyWith(
-        textTheme: Theme.of(context).textTheme.apply(
-          fontFamily: thmanyahFont,
-        ),
+        textTheme: Theme.of(context).textTheme.apply(fontFamily: thmanyahFont),
       ),
       child: Directionality(
         textDirection: TextDirection.rtl,
@@ -155,10 +138,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                       decoration: BoxDecoration(
                         color: homeLightBlueColor,
                         shape: BoxShape.circle,
-                        border: Border.all(
-                          color: whiteColor,
-                          width: 3,
-                        ),
+                        border: Border.all(color: whiteColor, width: 3),
                       ),
                       child: Icon(
                         Icons.person_rounded,
@@ -269,9 +249,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   SizedBox(
                     height: height * 0.065,
                     child: ElevatedButton(
-                      onPressed: isLoading
-                          ? null
-                          : updateUserInfo,
+                      onPressed: isLoading ? null : updateUserInfo,
 
                       style: ElevatedButton.styleFrom(
                         backgroundColor: homePrimaryColor,
@@ -279,9 +257,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                         elevation: 0,
 
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            width * 0.04,
-                          ),
+                          borderRadius: BorderRadius.circular(width * 0.04),
                         ),
                       ),
 
@@ -289,8 +265,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                           ? SizedBox(
                               width: width * 0.055,
                               height: width * 0.055,
-                              child:
-                                  const CircularProgressIndicator(
+                              child: const CircularProgressIndicator(
                                 strokeWidth: 2,
                                 color: whiteColor,
                               ),
@@ -338,46 +313,29 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         child: Container(
           width: 40,
           height: 40,
-          decoration: BoxDecoration(
-            color: iconColor,
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            icon,
-            color: homeDarkTextColor,
-            size: 20,
-          ),
+          decoration: BoxDecoration(color: iconColor, shape: BoxShape.circle),
+          child: Icon(icon, color: homeDarkTextColor, size: 20),
         ),
       ),
 
       filled: true,
       fillColor: cardColor,
 
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 16,
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
 
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(
-          color: homeBorderColor,
-        ),
+        borderSide: const BorderSide(color: homeBorderColor),
       ),
 
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(
-          color: homeBorderColor,
-        ),
+        borderSide: const BorderSide(color: homeBorderColor),
       ),
 
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(
-          color: homePrimaryColor,
-          width: 1.5,
-        ),
+        borderSide: const BorderSide(color: homePrimaryColor, width: 1.5),
       ),
     );
   }

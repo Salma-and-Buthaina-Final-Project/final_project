@@ -72,9 +72,8 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            textTheme: Theme.of(
-              context,
-            ).textTheme.apply(fontFamily: thmanyahFont),
+            textTheme: Theme.of(context).textTheme
+                .apply(fontFamily: thmanyahFont),
           ),
           child: child!,
         );
@@ -89,9 +88,8 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            textTheme: Theme.of(
-              context,
-            ).textTheme.apply(fontFamily: thmanyahFont),
+            textTheme: Theme.of(context).textTheme
+                .apply(fontFamily: thmanyahFont),
           ),
           child: child!,
         );
@@ -118,9 +116,7 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
     final date =
         "${selectedDateTime.day}/${selectedDateTime.month}/${selectedDateTime.year}";
 
-    final time = TimeOfDay.fromDateTime(
-      selectedDateTime,
-    ).format(context);
+    final time = TimeOfDay.fromDateTime(selectedDateTime).format(context);
 
     return "$date - $time";
   }
@@ -176,8 +172,7 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
         'is_repeated': isRepeated,
         'took_medicine': tookMedicine,
 
-        'medicine_name':
-            tookMedicine ? medicineController.text.trim() : null,
+        'medicine_name': tookMedicine ? medicineController.text.trim() : null,
 
         'symptom_date': selectedDateTime.toIso8601String(),
 
@@ -197,9 +192,7 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
           content: Text(
             'تم حفظ العرض بنجاح',
             textDirection: TextDirection.rtl,
-            style: const TextStyle(
-              fontFamily: thmanyahFont,
-            ),
+            style: const TextStyle(fontFamily: thmanyahFont),
           ),
           backgroundColor: homePrimaryColor,
         ),
@@ -226,9 +219,7 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
         isSaving = false;
       });
 
-      _showMessage(
-        'حدث خطأ أثناء حفظ العرض:\n$error',
-      );
+      _showMessage('حدث خطأ أثناء حفظ العرض:\n$error');
     }
   }
 
@@ -241,9 +232,7 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
         content: Text(
           message,
           textDirection: TextDirection.rtl,
-          style: const TextStyle(
-            fontFamily: thmanyahFont,
-          ),
+          style: const TextStyle(fontFamily: thmanyahFont),
         ),
       ),
     );
@@ -256,9 +245,7 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
 
     return Theme(
       data: Theme.of(context).copyWith(
-        textTheme: Theme.of(
-          context,
-        ).textTheme.apply(fontFamily: thmanyahFont),
+        textTheme: Theme.of(context).textTheme.apply(fontFamily: thmanyahFont),
       ),
       child: Directionality(
         textDirection: TextDirection.rtl,
@@ -399,9 +386,7 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                       decoration: BoxDecoration(
                         color: cardColor,
                         borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: homeBorderColor,
-                        ),
+                        border: Border.all(color: homeBorderColor),
                       ),
                       child: Row(
                         children: [
@@ -459,15 +444,12 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                   decoration: BoxDecoration(
                     color: cardColor,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: homeBorderColor,
-                    ),
+                    border: Border.all(color: homeBorderColor),
                   ),
                   child: Column(
                     children: [
                       Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             "خفيف",
@@ -507,9 +489,7 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                               });
                             },
                             child: AnimatedContainer(
-                              duration: const Duration(
-                                milliseconds: 150,
-                              ),
+                              duration: const Duration(milliseconds: 150),
                               width: width * 0.065,
                               height: width * 0.065,
                               alignment: Alignment.center,
@@ -610,10 +590,7 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                 // =================================================
                 // الملاحظات
                 // =================================================
-                _title(
-                  "ملاحظات إضافية ",
-                  width,
-                ),
+                _title("ملاحظات إضافية ", width),
 
                 TextField(
                   controller: notesController,
@@ -651,17 +628,14 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
                       foregroundColor: whiteColor,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          width * 0.04,
-                        ),
+                        borderRadius: BorderRadius.circular(width * 0.04),
                       ),
                     ),
                     child: isSaving
                         ? SizedBox(
                             width: width * 0.055,
                             height: width * 0.055,
-                            child:
-                                const CircularProgressIndicator(
+                            child: const CircularProgressIndicator(
                               strokeWidth: 2.5,
                               color: whiteColor,
                             ),
@@ -686,10 +660,7 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
           // =====================================================
           // BOTTOM NAVIGATION
           // =====================================================
-          bottomNavigationBar:
-              const CustomBottomNavigation(
-            selectedIndex: 2,
-          ),
+          bottomNavigationBar: const CustomBottomNavigation(selectedIndex: 2),
         ),
       ),
     );
@@ -741,42 +712,28 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
             color: iconBackground,
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            icon,
-            color: homeDarkTextColor,
-            size: 20,
-          ),
+          child: Icon(icon, color: homeDarkTextColor, size: 20),
         ),
       ),
 
       filled: true,
       fillColor: cardColor,
 
-      contentPadding: const EdgeInsets.symmetric(
-        vertical: 16,
-        horizontal: 14,
-      ),
+      contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
 
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(
-          color: homeBorderColor,
-        ),
+        borderSide: const BorderSide(color: homeBorderColor),
       ),
 
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(
-          color: homeBorderColor,
-        ),
+        borderSide: const BorderSide(color: homeBorderColor),
       ),
 
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(
-          color: homePrimaryColor,
-          width: 1.5,
-        ),
+        borderSide: const BorderSide(color: homePrimaryColor, width: 1.5),
       ),
     );
   }
@@ -799,9 +756,7 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: homeBorderColor,
-          ),
+          border: Border.all(color: homeBorderColor),
         ),
         child: CheckboxListTile(
           value: value,
@@ -810,21 +765,13 @@ class _AddConditionScreenState extends State<AddConditionScreen> {
           checkColor: whiteColor,
           tileColor: cardColor,
           selectedTileColor: cardColor,
-          controlAffinity:
-              ListTileControlAffinity.leading,
+          controlAffinity: ListTileControlAffinity.leading,
 
           secondary: Container(
             width: width * 0.11,
             height: width * 0.11,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              color: homeDarkTextColor,
-              size: width * 0.055,
-            ),
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            child: Icon(icon, color: homeDarkTextColor, size: width * 0.055),
           ),
 
           title: Text(

@@ -1,8 +1,10 @@
 import 'package:final_project/constants/colors.dart';
+import 'package:final_project/screens/home_screen.dart';
 import 'package:final_project/screens/login_screen.dart';
 import 'package:final_project/services/database.dart';
 import 'package:final_project/utils/screen_size.dart';
 import 'package:flutter/material.dart';
+import 'package:final_project/constants/fonts.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -31,265 +33,296 @@ class _SignupScreenState extends State<SignupScreen> {
     final width = screenWidth(context);
     final height = screenHeight(context);
 
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      resizeToAvoidBottomInset: false,
-      body: Stack(
-        children: [
-          // =====================================================
-          // BACKGROUND
-          // =====================================================
-          Positioned.fill(
-            child: Image.asset(
-              "assets/background.png",
-              width: width,
-              height: height,
-              fit: BoxFit.cover,
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textTheme: Theme.of(context).textTheme.apply(fontFamily: thmanyahFont),
+        inputDecorationTheme: Theme.of(context).inputDecorationTheme
+            .copyWith(hintStyle: const TextStyle(fontFamily: thmanyahFont)),
+      ),
+      child: Scaffold(
+        backgroundColor: backgroundColor,
+        resizeToAvoidBottomInset: false,
+        body: Stack(
+          children: [
+            // =====================================================
+            // BACKGROUND
+            // =====================================================
+            Positioned.fill(
+              child: Image.asset(
+                "assets/background.png",
+                width: width,
+                height: height,
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
 
-          // =====================================================
-          // BODY
-          // =====================================================
-          SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: width * 0.07),
-              child: Column(
-                children: [
-                  SizedBox(height: height * 0.06),
+            // =====================================================
+            // BODY
+            // =====================================================
+            SafeArea(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: width * 0.07),
+                child: Column(
+                  children: [
+                    SizedBox(height: height * 0.06),
 
-                  // =================================================
-                  // LOGO
-                  // =================================================
-                  Image.asset(
-                    "assets/logo.png",
-                    width: width * 0.25,
-                    height: height * 0.105,
-                    fit: BoxFit.contain,
-                  ),
-
-                  SizedBox(height: height * 0.005),
-
-                  // =================================================
-                  // TITLE
-                  // =================================================
-                  Text(
-                    "إنشاء حساب",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: width * 0.07,
-                      fontWeight: FontWeight.bold,
-                      color: mainTextColor,
+                    // =================================================
+                    // LOGO
+                    // =================================================
+                    Image.asset(
+                      "assets/logo.png",
+                      width: width * 0.25,
+                      height: height * 0.105,
+                      fit: BoxFit.contain,
                     ),
-                  ),
 
-                  SizedBox(height: height * 0.006),
+                    SizedBox(height: height * 0.005),
 
-                  Text(
-                    "ابدأ رحلتك لمتابعة حالتك الصحية",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: width * 0.035,
-                      color: secondaryTextColor,
-                    ),
-                  ),
-
-                  SizedBox(height: height * 0.03),
-
-                  // =================================================
-                  // NAME
-                  // =================================================
-                  SizedBox(
-                    width: width,
-                    height: height * 0.065,
-                    child: TextField(
-                      controller: nameController,
-                      textAlign: TextAlign.right,
+                    // =================================================
+                    // TITLE
+                    // =================================================
+                    Text(
+                      "إنشاء حساب",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: width * 0.037,
-                        color: inputTextColor,
-                      ),
-                      decoration: inputDecoration(
-                        context: context,
-                        hint: "الاسم الكامل",
-                        icon: Icons.person_outline,
+                        fontSize: width * 0.07,
+                        fontWeight: FontWeight.bold,
+                        color: mainTextColor,
                       ),
                     ),
-                  ),
 
-                  SizedBox(height: height * 0.015),
+                    SizedBox(height: height * 0.006),
 
-                  // =================================================
-                  // EMAIL
-                  // =================================================
-                  SizedBox(
-                    width: width,
-                    height: height * 0.065,
-                    child: TextField(
-                      controller: emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      textAlign: TextAlign.right,
+                    Text(
+                      "ابدأ رحلتك لمتابعة حالتك الصحية",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: width * 0.037,
-                        color: inputTextColor,
-                      ),
-                      decoration: inputDecoration(
-                        context: context,
-                        hint: "البريد الإلكتروني",
-                        icon: Icons.email_outlined,
+                        fontSize: width * 0.035,
+                        color: secondaryTextColor,
                       ),
                     ),
-                  ),
 
-                  SizedBox(height: height * 0.015),
+                    SizedBox(height: height * 0.03),
+                    SizedBox(height: height * 0.015),
 
-                  // =================================================
-                  // PASSWORD
-                  // =================================================
-                  SizedBox(
-                    width: width,
-                    height: height * 0.065,
-                    child: TextField(
-                      controller: passwordController,
-                      obscureText: obscurePassword,
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                        fontSize: width * 0.037,
-                        color: inputTextColor,
-                      ),
-                      decoration: inputDecoration(
-                        context: context,
-                        hint: "كلمة المرور",
-                        icon: Icons.lock_outline,
-                        suffix: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              obscurePassword = !obscurePassword;
-                            });
-                          },
-                          icon: Icon(
-                            obscurePassword
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
-                            color: primaryColor,
-                            size: width * 0.05,
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HomeScreen(),
                           ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: height * 0.025),
-
-                  // =================================================
-                  // SIGNUP BUTTON
-                  // =================================================
-                  SizedBox(
-                    width: width,
-                    height: height * 0.065,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: primaryColor,
-                        foregroundColor: whiteColor,
-                        elevation: 0,
-                        padding: EdgeInsets.zero,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(width * 0.04),
-                        ),
-                      ),
-
-                      onPressed: () async {
-                        try {
-                          // إنشاء الحساب
-                          await Database().signupUser(
-                            name: nameController.text.trim(),
-                            email: emailController.text.trim(),
-                            password: passwordController.text.trim(),
-                          );
-
-                          if (!mounted) return;
-
-                          // بعد نجاح إنشاء الحساب
-                          // الانتقال إلى تسجيل الدخول
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const LoginScreen(),
-                            ),
-                            (route) => false,
-                          );
-                        } catch (e) {
-                          if (!mounted) return;
-
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text(e.toString())));
-                        }
+                          (route) => false,
+                        );
                       },
+                      child: Text(
+                        "الاستمرار كزائر",
+                        style: TextStyle(
+                          fontFamily: thmanyahFont,
+                          fontSize: width * 0.035,
+                          fontWeight: FontWeight.w600,
+                          color: whiteColor,
+                          decoration: TextDecoration.underline,
+                          decorationColor: whiteColor,
+                        ),
+                      ),
+                    ),
 
-                      child: Center(
-                        child: Text(
-                          "إنشاء حساب",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: width * 0.04,
-                            fontWeight: FontWeight.bold,
+                    SizedBox(height: height * 0.015),
+
+                    // NAME
+                    SizedBox(
+                      width: width,
+                      height: height * 0.065,
+                      child: TextField(
+                        controller: nameController,
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: width * 0.037,
+                          color: inputTextColor,
+                        ),
+                        decoration: inputDecoration(
+                          context: context,
+                          hint: "الاسم الكامل",
+                          icon: Icons.person_outline,
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: height * 0.015),
+
+                    // =================================================
+                    // EMAIL
+                    // =================================================
+                    SizedBox(
+                      width: width,
+                      height: height * 0.065,
+                      child: TextField(
+                        controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: width * 0.037,
+                          color: inputTextColor,
+                        ),
+                        decoration: inputDecoration(
+                          context: context,
+                          hint: "البريد الإلكتروني",
+                          icon: Icons.email_outlined,
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: height * 0.015),
+
+                    // =================================================
+                    // PASSWORD
+                    // =================================================
+                    SizedBox(
+                      width: width,
+                      height: height * 0.065,
+                      child: TextField(
+                        controller: passwordController,
+                        obscureText: obscurePassword,
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: width * 0.037,
+                          color: inputTextColor,
+                        ),
+                        decoration: inputDecoration(
+                          context: context,
+                          hint: "كلمة المرور",
+                          icon: Icons.lock_outline,
+                          suffix: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                obscurePassword = !obscurePassword;
+                              });
+                            },
+                            icon: Icon(
+                              obscurePassword
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                              color: primaryColor,
+                              size: width * 0.05,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
 
-                  SizedBox(height: height * 0.02),
+                    SizedBox(height: height * 0.025),
 
-                  // =================================================
-                  // ALREADY HAVE ACCOUNT
-                  // =================================================
-                  Container(
-                    width: width,
-                    height: height * 0.065,
-                    decoration: BoxDecoration(
-                      color: cardColor,
-                      borderRadius: BorderRadius.circular(width * 0.04),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      textDirection: TextDirection.rtl,
-                      children: [
-                        Text(
-                          "لديك حساب بالفعل؟",
-                          style: TextStyle(
-                            fontSize: width * 0.032,
-                            color: inputTextColor,
+                    // =================================================
+                    // SIGNUP BUTTON
+                    // =================================================
+                    SizedBox(
+                      width: width,
+                      height: height * 0.065,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColor,
+                          foregroundColor: whiteColor,
+                          elevation: 0,
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(width * 0.04),
                           ),
                         ),
 
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pushReplacement(
+                        onPressed: () async {
+                          try {
+                            // إنشاء الحساب
+                            await Database().signupUser(
+                              name: nameController.text.trim(),
+                              email: emailController.text.trim(),
+                              password: passwordController.text.trim(),
+                            );
+
+                            if (!mounted) return;
+
+                            // بعد نجاح إنشاء الحساب
+                            // الانتقال إلى تسجيل الدخول
+                            Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => const LoginScreen(),
                               ),
+                              (route) => false,
                             );
-                          },
+                          } catch (e) {
+                            if (!mounted) return;
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(e.toString())),
+                            );
+                          }
+                        },
+
+                        child: Center(
                           child: Text(
-                            "تسجيل الدخول",
+                            "إنشاء حساب",
+                            textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: width * 0.032,
-                              color: primaryColor,
+                              fontSize: width * 0.04,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
+
+                    SizedBox(height: height * 0.02),
+
+                    // =================================================
+                    // ALREADY HAVE ACCOUNT
+                    // =================================================
+                    Container(
+                      width: width,
+                      height: height * 0.065,
+                      decoration: BoxDecoration(
+                        color: cardColor,
+                        borderRadius: BorderRadius.circular(width * 0.04),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        textDirection: TextDirection.rtl,
+                        children: [
+                          Text(
+                            "لديك حساب بالفعل؟",
+                            style: TextStyle(
+                              fontSize: width * 0.032,
+                              color: inputTextColor,
+                            ),
+                          ),
+
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const LoginScreen(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              "تسجيل الدخول",
+                              style: TextStyle(
+                                fontSize: width * 0.032,
+                                color: primaryColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -308,7 +341,11 @@ class _SignupScreenState extends State<SignupScreen> {
     return InputDecoration(
       hintText: hint,
 
-      hintStyle: TextStyle(color: hintTextColor, fontSize: width * 0.034),
+      hintStyle: TextStyle(
+        color: hintTextColor,
+        fontSize: width * 0.034,
+        fontFamily: thmanyahFont,
+      ),
 
       prefixIcon: Icon(icon, color: primaryColor, size: width * 0.05),
 

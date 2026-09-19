@@ -14,95 +14,93 @@ class AppointmentScreen extends StatefulWidget {
 
 class _AppointmentScreenState extends State<AppointmentScreen> {
   // موعد المراجعة القادمة فقط
-  DateTime nextAppointment = DateTime(2026, 9, 15);
+  DateTime? nextAppointment;
   String? appointmentId;
-bool isLoading = true;
+  bool isLoading = true;
 
-Future<void> saveAppointment() async {
-  final user = Supabase.instance.client.auth.currentUser;
+  Future<void> saveAppointment() async {
+    final user = Supabase.instance.client.auth.currentUser;
 
-  if (user == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('يجب تسجيل الدخول أولاً'),
-      ),
-    );
-    return;
-  }
-
-  try {
-    final appointmentData = {
-      'user_id': user.id,
-      'appointment_date':
-          nextAppointment.toIso8601String(),
-
-      'doctor_name':
-          doctorController.text.trim().isEmpty
-              ? null
-              : doctorController.text.trim(),
-
-      'clinic_name':
-          clinicController.text.trim().isEmpty
-              ? null
-              : clinicController.text.trim(),
-
-      'notes':
-          notesController.text.trim().isEmpty
-              ? null
-              : notesController.text.trim(),
-
-      'updated_at':
-          DateTime.now().toIso8601String(),
-    };
-
-    // يوجد موعد سابق -> تعديل
-    if (appointmentId != null) {
-      await Supabase.instance.client
-          .from('appointments')
-          .update(appointmentData)
-          .eq('id', appointmentId!);
+    if (user == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('يجب تسجيل الدخول أولاً')));
+      return;
     }
-
-    // لا يوجد موعد -> إنشاء أول موعد
-    else {
-      final data = await Supabase.instance.client
-          .from('appointments')
-          .insert(appointmentData)
-          .select()
-          .single();
-
-      appointmentId = data['id'];
-    }
-
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('تم حفظ تعديلات الموعد بنجاح'),
-      ),
-    );
-  } catch (error) {
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'حدث خطأ أثناء حفظ الموعد: $error',
+    if (nextAppointment == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'الرجاء تحديد موعد المراجعة أولاً',
+            textDirection: TextDirection.rtl,
+            style: TextStyle(fontFamily: thmanyahFont),
+          ),
         ),
-      ),
-    );
+      );
+      return;
+    }
+
+    try {
+      final appointmentData = {
+        'user_id': user.id,
+        'appointment_date': nextAppointment!.toIso8601String(),
+
+        'doctor_name': doctorController.text.trim().isEmpty
+            ? null
+            : doctorController.text.trim(),
+
+        'clinic_name': clinicController.text.trim().isEmpty
+            ? null
+            : clinicController.text.trim(),
+
+        'notes': notesController.text.trim().isEmpty
+            ? null
+            : notesController.text.trim(),
+
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+
+      // يوجد موعد سابق -> تعديل
+      if (appointmentId != null) {
+        await Supabase.instance.client
+            .from('appointments')
+            .update(appointmentData)
+            .eq('id', appointmentId!);
+      }
+      // لا يوجد موعد -> إنشاء أول موعد
+      else {
+        final data = await Supabase.instance.client
+            .from('appointments')
+            .insert(appointmentData)
+            .select()
+            .single();
+
+        appointmentId = data['id'];
+      }
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تم حفظ تعديلات الموعد بنجاح')),
+      );
+    } catch (error) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('حدث خطأ أثناء حفظ الموعد: $error')),
+      );
+    }
   }
-}
 
   final TextEditingController doctorController = TextEditingController();
   final TextEditingController clinicController = TextEditingController();
   final TextEditingController notesController = TextEditingController();
 
-@override
-void initState() {
-  super.initState();
-  loadAppointment();
-}
+  @override
+  void initState() {
+    super.initState();
+    loadAppointment();
+  }
 
   @override
   void dispose() {
@@ -113,71 +111,80 @@ void initState() {
   }
 
   String _formatDate(DateTime date) {
-    return '${date.day} سبتمبر ${date.year}';
+    const months = [
+      '',
+      'يناير',
+      'فبراير',
+      'مارس',
+      'أبريل',
+      'مايو',
+      'يونيو',
+      'يوليو',
+      'أغسطس',
+      'سبتمبر',
+      'أكتوبر',
+      'نوفمبر',
+      'ديسمبر',
+    ];
+
+    return '${date.day} ${months[date.month]} ${date.year}';
   }
 
   Future<void> loadAppointment() async {
-  final user = Supabase.instance.client.auth.currentUser;
+    final user = Supabase.instance.client.auth.currentUser;
 
-  if (user == null) {
-    if (mounted) {
+    if (user == null) {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+      return;
+    }
+
+    try {
+      final data = await Supabase.instance.client
+          .from('appointments')
+          .select()
+          .eq('user_id', user.id)
+          .order('updated_at', ascending: false)
+          .limit(1)
+          .maybeSingle();
+
+      if (!mounted) return;
+
+      if (data != null) {
+        setState(() {
+          appointmentId = data['id'];
+
+          nextAppointment = DateTime.parse(data['appointment_date']).toLocal();
+
+          doctorController.text = data['doctor_name'] ?? '';
+
+          clinicController.text = data['clinic_name'] ?? '';
+
+          notesController.text = data['notes'] ?? '';
+
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (error) {
+      if (!mounted) return;
+
       setState(() {
         isLoading = false;
       });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('حدث خطأ أثناء تحميل الموعد: $error')),
+      );
     }
-    return;
   }
 
-  try {
-    final data = await Supabase.instance.client
-        .from('appointments')
-        .select()
-        .eq('user_id', user.id)
-        .order('updated_at', ascending: false)
-        .limit(1)
-        .maybeSingle();
-
-    if (!mounted) return;
-
-    if (data != null) {
-      setState(() {
-        appointmentId = data['id'];
-
-        nextAppointment =
-            DateTime.parse(data['appointment_date']).toLocal();
-
-        doctorController.text =
-            data['doctor_name'] ?? '';
-
-        clinicController.text =
-            data['clinic_name'] ?? '';
-
-        notesController.text =
-            data['notes'] ?? '';
-
-        isLoading = false;
-      });
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  } catch (error) {
-    if (!mounted) return;
-
-    setState(() {
-      isLoading = false;
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'حدث خطأ أثناء تحميل الموعد: $error',
-        ),
-      ),
-    );
-  }
-}
   @override
   Widget build(BuildContext context) {
     final width = screenWidth(context);
@@ -187,7 +194,6 @@ void initState() {
       data: Theme.of(context).copyWith(
         textTheme: Theme.of(context).textTheme.apply(fontFamily: thmanyahFont),
       ),
-
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
@@ -200,7 +206,6 @@ void initState() {
             backgroundColor: backgroundColor,
             elevation: 0,
             centerTitle: true,
-
             title: Text(
               'موعد المراجعة',
               style: TextStyle(
@@ -210,7 +215,6 @@ void initState() {
                 color: whiteColor,
               ),
             ),
-
             leading: IconButton(
               onPressed: () {
                 Navigator.pop(context);
@@ -239,33 +243,45 @@ void initState() {
                   // NEXT APPOINTMENT
                   // =================================================
                   GestureDetector(
-  behavior: HitTestBehavior.opaque,
-  onTap: () async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: nextAppointment.isBefore(DateTime.now())
-          ? DateTime.now()
-          : nextAppointment,
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2035),
-    );
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () async {
+                      final now = DateTime.now();
 
-    if (pickedDate != null) {
-      setState(() {
-        nextAppointment = pickedDate;
-      });
-    }
-  },
-  child: _appointmentCard(
-    width: width,
-    height: height,
-    title: 'موعد المراجعة القادمة',
-    date: _formatDate(nextAppointment),
-    subtitle: 'اضغط لتعديل التاريخ',
-    color: homeGreenColor,
-    icon: Icons.event_available_outlined,
-  ),
-),
+                      final today = DateTime(now.year, now.month, now.day);
+
+                      final DateTime initialDate =
+                          nextAppointment == null ||
+                              nextAppointment!.isBefore(today)
+                          ? today
+                          : nextAppointment!;
+
+                      final DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: initialDate,
+                        firstDate: today,
+                        lastDate: DateTime(2035, 12, 31),
+                      );
+
+                      if (pickedDate != null && mounted) {
+                        setState(() {
+                          nextAppointment = pickedDate;
+                        });
+                      }
+                    },
+                    child: _appointmentCard(
+                      width: width,
+                      height: height,
+                      title: 'موعد المراجعة القادمة',
+                      date: nextAppointment == null
+                          ? ''
+                          : _formatDate(nextAppointment!),
+                      subtitle: nextAppointment == null
+                          ? 'اضغط لتحديد التاريخ'
+                          : 'اضغط لتعديل التاريخ',
+                      color: homeGreenColor,
+                      icon: Icons.event_available_outlined,
+                    ),
+                  ),
 
                   SizedBox(height: height * 0.025),
 
@@ -353,29 +369,25 @@ void initState() {
                   SizedBox(
                     height: height * 0.065,
                     child: ElevatedButton(
-  onPressed: saveAppointment,
-
-  style: ElevatedButton.styleFrom(
-    backgroundColor: homePrimaryColor,
-    foregroundColor: whiteColor,
-    elevation: 0,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(
-        width * 0.04,
-      ),
-    ),
-  ),
-
-  child: Text(
-    'حفظ الموعد',
-    style: TextStyle(
-      fontFamily: thmanyahFont,
-      fontSize: width * 0.045,
-      fontWeight: FontWeight.w700,
-      color: whiteColor,
-    ),
-  ),
-),
+                      onPressed: saveAppointment,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: homePrimaryColor,
+                        foregroundColor: whiteColor,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(width * 0.04),
+                        ),
+                      ),
+                      child: Text(
+                        'حفظ الموعد',
+                        style: TextStyle(
+                          fontFamily: thmanyahFont,
+                          fontSize: width * 0.045,
+                          fontWeight: FontWeight.w700,
+                          color: whiteColor,
+                        ),
+                      ),
+                    ),
                   ),
 
                   SizedBox(height: height * 0.03),

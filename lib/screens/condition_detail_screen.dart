@@ -20,7 +20,7 @@ class ConditionDetailsScreen extends StatelessWidget {
 
   const ConditionDetailsScreen({
     super.key,
-     required this.symptomId,
+    required this.symptomId,
     required this.title,
     required this.date,
     required this.severity,
@@ -36,8 +36,7 @@ class ConditionDetailsScreen extends StatelessWidget {
   // =========================================================
 
   bool get usedMedicine {
-    return medicineName != null &&
-        medicineName!.trim().isNotEmpty;
+    return medicineName != null && medicineName!.trim().isNotEmpty;
   }
 
   // =========================================================
@@ -91,9 +90,7 @@ class ConditionDetailsScreen extends StatelessWidget {
 
     return Theme(
       data: Theme.of(context).copyWith(
-        textTheme: Theme.of(context).textTheme.apply(
-          fontFamily: thmanyahFont,
-        ),
+        textTheme: Theme.of(context).textTheme.apply(fontFamily: thmanyahFont),
       ),
       child: Directionality(
         textDirection: TextDirection.rtl,
@@ -103,7 +100,6 @@ class ConditionDetailsScreen extends StatelessWidget {
           // =====================================================
           // APP BAR
           // =====================================================
-
           appBar: AppBar(
             backgroundColor: backgroundColor,
             elevation: 0,
@@ -134,7 +130,6 @@ class ConditionDetailsScreen extends StatelessWidget {
           // =====================================================
           // BODY
           // =====================================================
-
           body: SingleChildScrollView(
             padding: EdgeInsets.symmetric(
               horizontal: width * 0.055,
@@ -155,12 +150,8 @@ class ConditionDetailsScreen extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: cardColor,
-                    borderRadius: BorderRadius.circular(
-                      width * 0.05,
-                    ),
-                    border: Border.all(
-                      color: homeBorderColor,
-                    ),
+                    borderRadius: BorderRadius.circular(width * 0.05),
+                    border: Border.all(color: homeBorderColor),
                   ),
                   child: Row(
                     children: [
@@ -187,11 +178,9 @@ class ConditionDetailsScreen extends StatelessWidget {
                       // =============================================
                       // TITLE + DATE
                       // =============================================
-
                       Expanded(
                         child: Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               title,
@@ -203,9 +192,7 @@ class ConditionDetailsScreen extends StatelessWidget {
                               ),
                             ),
 
-                            SizedBox(
-                              height: height * 0.005,
-                            ),
+                            SizedBox(height: height * 0.005),
 
                             Row(
                               children: [
@@ -215,9 +202,7 @@ class ConditionDetailsScreen extends StatelessWidget {
                                   size: width * 0.04,
                                 ),
 
-                                SizedBox(
-                                  width: width * 0.015,
-                                ),
+                                SizedBox(width: width * 0.015),
 
                                 Expanded(
                                   child: Text(
@@ -239,7 +224,6 @@ class ConditionDetailsScreen extends StatelessWidget {
                       // =============================================
                       // SEVERITY
                       // =============================================
-
                       Column(
                         children: [
                           Text(
@@ -252,9 +236,7 @@ class ConditionDetailsScreen extends StatelessWidget {
                             ),
                           ),
 
-                          SizedBox(
-                            height: height * 0.005,
-                          ),
+                          SizedBox(height: height * 0.005),
 
                           Container(
                             width: width * 0.13,
@@ -287,7 +269,6 @@ class ConditionDetailsScreen extends StatelessWidget {
                 // =================================================
                 // DETAILS TITLE
                 // =================================================
-
                 Text(
                   'تفاصيل الحالة',
                   style: TextStyle(
@@ -303,7 +284,6 @@ class ConditionDetailsScreen extends StatelessWidget {
                 // =================================================
                 // DETAILS CARD
                 // =================================================
-
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(
@@ -312,12 +292,8 @@ class ConditionDetailsScreen extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: cardColor,
-                    borderRadius: BorderRadius.circular(
-                      width * 0.05,
-                    ),
-                    border: Border.all(
-                      color: homeBorderColor,
-                    ),
+                    borderRadius: BorderRadius.circular(width * 0.05),
+                    border: Border.all(color: homeBorderColor),
                   ),
                   child: Column(
                     children: [
@@ -331,9 +307,7 @@ class ConditionDetailsScreen extends StatelessWidget {
                         icon: Icons.location_on_outlined,
                         iconColor: homeLightBlueColor,
                         title: 'مكان الألم',
-                        value: location.isEmpty
-                            ? 'غير محدد'
-                            : location,
+                        value: location.isEmpty ? 'غير محدد' : location,
                       ),
 
                       _divider(width),
@@ -341,7 +315,6 @@ class ConditionDetailsScreen extends StatelessWidget {
                       // =============================================
                       // REPEATED
                       // =============================================
-
                       _detailRow(
                         width: width,
                         height: height,
@@ -356,7 +329,6 @@ class ConditionDetailsScreen extends StatelessWidget {
                       // =============================================
                       // MEDICINE USED
                       // =============================================
-
                       _detailRow(
                         width: width,
                         height: height,
@@ -370,7 +342,6 @@ class ConditionDetailsScreen extends StatelessWidget {
                       // MEDICINE NAME
                       // يظهر فقط إذا المستخدم كتب دواء
                       // =============================================
-
                       if (usedMedicine) ...[
                         _divider(width),
 
@@ -392,7 +363,6 @@ class ConditionDetailsScreen extends StatelessWidget {
                 // =================================================
                 // NOTES TITLE
                 // =================================================
-
                 Text(
                   'الملاحظات',
                   style: TextStyle(
@@ -408,7 +378,6 @@ class ConditionDetailsScreen extends StatelessWidget {
                 // =================================================
                 // NOTES CARD
                 // =================================================
-
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(
@@ -417,12 +386,8 @@ class ConditionDetailsScreen extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: cardColor,
-                    borderRadius: BorderRadius.circular(
-                      width * 0.05,
-                    ),
-                    border: Border.all(
-                      color: homeBorderColor,
-                    ),
+                    borderRadius: BorderRadius.circular(width * 0.05),
+                    border: Border.all(color: homeBorderColor),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -464,7 +429,6 @@ class ConditionDetailsScreen extends StatelessWidget {
                 // =================================================
                 // BUTTONS
                 // =================================================
-
                 Row(
                   children: [
                     // =============================================
@@ -483,15 +447,10 @@ class ConditionDetailsScreen extends StatelessWidget {
                             foregroundColor: whiteColor,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                width * 0.04,
-                              ),
+                              borderRadius: BorderRadius.circular(width * 0.04),
                             ),
                           ),
-                          icon: Icon(
-                            Icons.edit_outlined,
-                            size: width * 0.05,
-                          ),
+                          icon: Icon(Icons.edit_outlined, size: width * 0.05),
                           label: Text(
                             'تعديل',
                             style: TextStyle(
@@ -506,51 +465,45 @@ class ConditionDetailsScreen extends StatelessWidget {
 
                     SizedBox(width: width * 0.025),
 
-                  // =============================================
-// DELETE
-// =============================================
+                    // =============================================
+                    // DELETE
+                    // =============================================
+                    Expanded(
+                      child: SizedBox(
+                        height: height * 0.062,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            _showDeleteDialog(context, width);
+                          },
 
-Expanded(
-  child: SizedBox(
-    height: height * 0.062,
-    child: ElevatedButton.icon(
-      onPressed: () {
-        _showDeleteDialog(
-          context,
-          width,
-        );
-      },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: whiteColor,
+                            foregroundColor: Colors.red,
+                            elevation: 0,
+                            side: BorderSide.none,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(width * 0.04),
+                            ),
+                          ),
 
-      style: ElevatedButton.styleFrom(
-        backgroundColor: whiteColor,
-        foregroundColor: Colors.red,
-        elevation: 0,
-        side: BorderSide.none,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(
-            width * 0.04,
-          ),
-        ),
-      ),
+                          icon: Icon(
+                            Icons.delete_outline_rounded,
+                            color: Colors.red,
+                            size: width * 0.05,
+                          ),
 
-      icon: Icon(
-        Icons.delete_outline_rounded,
-        color: Colors.red,
-        size: width * 0.05,
-      ),
-
-      label: Text(
-        'حذف',
-        style: TextStyle(
-          fontFamily: thmanyahFont,
-          fontSize: width * 0.041,
-          fontWeight: FontWeight.w700,
-          color: Colors.red,
-        ),
-      ),
-    ),
-  ),
-),
+                          label: Text(
+                            'حذف',
+                            style: TextStyle(
+                              fontFamily: thmanyahFont,
+                              fontSize: width * 0.041,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
 
@@ -576,9 +529,7 @@ Expanded(
     required String value,
   }) {
     return Padding(
-      padding: EdgeInsets.symmetric(
-        vertical: height * 0.016,
-      ),
+      padding: EdgeInsets.symmetric(vertical: height * 0.016),
       child: Row(
         children: [
           // =====================================================
@@ -588,15 +539,8 @@ Expanded(
           Container(
             width: width * 0.11,
             height: width * 0.11,
-            decoration: BoxDecoration(
-              color: iconColor,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              color: homeDarkTextColor,
-              size: width * 0.055,
-            ),
+            decoration: BoxDecoration(color: iconColor, shape: BoxShape.circle),
+            child: Icon(icon, color: homeDarkTextColor, size: width * 0.055),
           ),
 
           SizedBox(width: width * 0.03),
@@ -604,7 +548,6 @@ Expanded(
           // =====================================================
           // TITLE
           // =====================================================
-
           Expanded(
             child: Text(
               title,
@@ -622,7 +565,6 @@ Expanded(
           // =====================================================
           // VALUE
           // =====================================================
-
           Flexible(
             child: Text(
               value,
@@ -693,175 +635,147 @@ Expanded(
   // DELETE DIALOG
   // =========================================================
 
-void _showDeleteDialog(
-  BuildContext context,
-  double width,
-) {
-  showDialog(
-    context: context,
-    builder: (dialogContext) {
-      return Directionality(
-        textDirection: TextDirection.rtl,
-        child: AlertDialog(
-          backgroundColor: cardColor,
+  void _showDeleteDialog(BuildContext context, double width) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: AlertDialog(
+            backgroundColor: cardColor,
 
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(
-              width * 0.05,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(width * 0.05),
             ),
-          ),
 
-          // العنوان
-          title: Center(
-            child: Text(
-              'حذف العرض',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: thmanyahFont,
-                fontWeight: FontWeight.w700,
-                color: homeDarkTextColor,
+            // العنوان
+            title: Center(
+              child: Text(
+                'حذف العرض',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: thmanyahFont,
+                  fontWeight: FontWeight.w700,
+                  color: homeDarkTextColor,
+                ),
               ),
             ),
-          ),
 
-          // الرسالة
-          content: Text(
-            'هل أنت متأكد من حذف هذا العرض؟',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: thmanyahFont,
-              color: homeGreyColor,
+            // الرسالة
+            content: Text(
+              'هل أنت متأكد من حذف هذا العرض؟',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontFamily: thmanyahFont, color: homeGreyColor),
             ),
-          ),
 
-          actionsPadding: EdgeInsets.only(
-            right: width * 0.04,
-            left: width * 0.04,
-            bottom: width * 0.04,
-          ),
+            actionsPadding: EdgeInsets.only(
+              right: width * 0.04,
+              left: width * 0.04,
+              bottom: width * 0.04,
+            ),
 
-          actions: [
-            Row(
-              children: [
-                // إلغاء
-                Expanded(
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pop(dialogContext);
-                    },
-                    child: Text(
-                      'إلغاء',
-                      style: TextStyle(
-                        fontFamily: thmanyahFont,
-                        fontWeight: FontWeight.w600,
-                        color: homeGreyColor,
+            actions: [
+              Row(
+                children: [
+                  // إلغاء
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pop(dialogContext);
+                      },
+                      child: Text(
+                        'إلغاء',
+                        style: TextStyle(
+                          fontFamily: thmanyahFont,
+                          fontWeight: FontWeight.w600,
+                          color: homeGreyColor,
+                        ),
                       ),
                     ),
                   ),
-                ),
 
-                SizedBox(
-                  width: width * 0.02,
-                ),
+                  SizedBox(width: width * 0.02),
 
-                // حذف
-                Expanded(
-                  child: TextButton(
-                    onPressed: () async {
-                      try {
-                        final user =
-                            Supabase.instance.client.auth.currentUser;
+                  // حذف
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () async {
+                        try {
+                          final user =
+                              Supabase.instance.client.auth.currentUser;
 
-                        if (user == null) {
-                          throw Exception(
-                            'المستخدم غير مسجل الدخول',
-                          );
-                        }
+                          if (user == null) {
+                            throw Exception('المستخدم غير مسجل الدخول');
+                          }
 
-                        final deleted = await Supabase
-                            .instance.client
-                            .from('symptoms')
-                            .delete()
-                            .eq('id', symptomId)
-                            .eq('user_id', user.id)
-                            .select();
+                          final deleted = await Supabase.instance.client
+                              .from('symptoms')
+                              .delete()
+                              .eq('id', symptomId)
+                              .eq('user_id', user.id)
+                              .select();
 
-                        debugPrint(
-                          'symptomId: $symptomId',
-                        );
+                          debugPrint('symptomId: $symptomId');
 
-                        debugPrint(
-                          'userId: ${user.id}',
-                        );
+                          debugPrint('userId: ${user.id}');
 
-                        debugPrint(
-                          'deleted: $deleted',
-                        );
+                          debugPrint('deleted: $deleted');
 
-                        if (!context.mounted) return;
+                          if (!context.mounted) return;
 
-                        if (deleted.isEmpty) {
+                          if (deleted.isEmpty) {
+                            Navigator.pop(dialogContext);
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'لم يتم حذف العرض',
+                                  textDirection: TextDirection.rtl,
+                                ),
+                              ),
+                            );
+
+                            return;
+                          }
+
+                          // إغلاق نافذة التأكيد
                           Navigator.pop(dialogContext);
 
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(
-                            const SnackBar(
+                          // الرجوع إلى السجل وإرسال true
+                          Navigator.pop(context, true);
+                        } catch (error) {
+                          debugPrint('DELETE ERROR: $error');
+
+                          if (!context.mounted) return;
+
+                          Navigator.pop(dialogContext);
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
                               content: Text(
-                                'لم يتم حذف العرض',
-                                textDirection:
-                                    TextDirection.rtl,
+                                'خطأ أثناء الحذف: $error',
+                                textDirection: TextDirection.rtl,
                               ),
                             ),
                           );
-
-                          return;
                         }
-
-                        // إغلاق نافذة التأكيد
-                        Navigator.pop(dialogContext);
-
-                        // الرجوع إلى السجل وإرسال true
-                        Navigator.pop(
-                          context,
-                          true,
-                        );
-                      } catch (error) {
-                        debugPrint(
-                          'DELETE ERROR: $error',
-                        );
-
-                        if (!context.mounted) return;
-
-                        Navigator.pop(dialogContext);
-
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'خطأ أثناء الحذف: $error',
-                              textDirection:
-                                  TextDirection.rtl,
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                    child: Text(
-                      'حذف',
-                      style: TextStyle(
-                        fontFamily: thmanyahFont,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.red,
+                      },
+                      child: Text(
+                        'حذف',
+                        style: TextStyle(
+                          fontFamily: thmanyahFont,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.red,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }

@@ -23,31 +23,31 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         backgroundColor: backgroundColor,
 
         appBar: AppBar(
-  backgroundColor: Colors.transparent,
-  surfaceTintColor: Colors.transparent,
-  shadowColor: Colors.transparent,
-  elevation: 0,
-  scrolledUnderElevation: 0,
-  centerTitle: true,
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          centerTitle: true,
 
-  title: Text(
-    'الإشعارات',
-    style: TextStyle(
-      fontFamily: thmanyahFont,
-      fontSize: width * 0.055,
-      fontWeight: FontWeight.w700,
-      color: whiteColor,
-    ),
-  ),
+          title: Text(
+            'الإشعارات',
+            style: TextStyle(
+              fontFamily: thmanyahFont,
+              fontSize: width * 0.055,
+              fontWeight: FontWeight.w700,
+              color: whiteColor,
+            ),
+          ),
 
-  leading: IconButton(
-    onPressed: () => Navigator.pop(context),
-    icon: const Icon(
-      Icons.arrow_back_ios_new_rounded,
-      color: whiteColor,
-    ),
-  ),
-),
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: whiteColor,
+            ),
+          ),
+        ),
 
         body: SafeArea(
           child: Padding(
@@ -78,8 +78,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              const AddConditionScreen(),
+                          builder: (context) => const AddConditionScreen(),
                         ),
                       );
                     },
@@ -88,11 +87,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       padding: EdgeInsets.all(width * 0.045),
                       decoration: BoxDecoration(
                         color: cardColor,
-                        borderRadius:
-                            BorderRadius.circular(width * 0.045),
-                        border: Border.all(
-                          color: homeBorderColor,
-                        ),
+                        borderRadius: BorderRadius.circular(width * 0.045),
+                        border: Border.all(color: homeBorderColor),
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,8 +116,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
                           Expanded(
                             child: Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   'كيف حالتك اليوم؟',

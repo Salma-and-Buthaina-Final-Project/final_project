@@ -2,6 +2,7 @@ import 'package:final_project/constants/colors.dart';
 import 'package:final_project/utils/screen_size.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:final_project/constants/fonts.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -21,7 +22,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     if (email.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text("اكتبي البريد الإلكتروني")));
+      ).showSnackBar(const SnackBar(content: Text("اكتب البريد الإلكتروني")));
       return;
     }
 
@@ -39,7 +40,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك"),
+          content: Text(
+            "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك",
+            style: const TextStyle(fontFamily: thmanyahFont),
+          ),
         ),
       );
     } on AuthException catch (e) {
@@ -51,7 +55,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("حدث خطأ أثناء إرسال الرابط")),
+        const SnackBar(
+          content: Text(
+            "حدث خطأ أثناء إرسال الرابط",
+            style: TextStyle(fontFamily: thmanyahFont),
+          ),
+        ),
       );
     } finally {
       if (mounted) {
@@ -73,187 +82,188 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     final width = screenWidth(context);
     final height = screenHeight(context);
 
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      resizeToAvoidBottomInset: false,
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textTheme: Theme.of(context).textTheme.apply(fontFamily: thmanyahFont),
+      ),
+      child: Scaffold(
+        backgroundColor: backgroundColor,
+        resizeToAvoidBottomInset: false,
 
-      body: Stack(
-        children: [
-          // الخلفية
-          Positioned.fill(
-            child: Image.asset(
-              "assets/background.png",
-              width: width,
-              height: height,
-              fit: BoxFit.cover,
+        body: Stack(
+          children: [
+            // الخلفية
+            Positioned.fill(
+              child: Image.asset(
+                "assets/background.png",
+                width: width,
+                height: height,
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
 
-          SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: width * 0.07),
-              child: Column(
-                children: [
-                  SizedBox(height: height * 0.015),
+            SafeArea(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: width * 0.07),
+                child: Column(
+                  children: [
+                    SizedBox(height: height * 0.015),
 
-                  // زر الرجوع
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      width: width * 0.10,
-                      height: width * 0.10,
-                      decoration: const BoxDecoration(
-                        color: cardColor,
-                        shape: BoxShape.circle,
-                      ),
+                    // زر الرجوع
+                    Align(
+                      alignment: Alignment.centerLeft,
                       child: IconButton(
                         padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
                         onPressed: () {
                           Navigator.pop(context);
                         },
                         icon: Icon(
                           Icons.arrow_back_ios_new,
-                          size: width * 0.04,
-                          color: darkBlueColor,
+                          size: width * 0.05,
+                          color: whiteColor,
                         ),
                       ),
                     ),
-                  ),
 
-                  SizedBox(height: height * 0.03),
+                    SizedBox(height: height * 0.03),
 
-                  // الشعار
-                  Image.asset(
-                    "assets/logo.png",
-                    width: width * 0.28,
-                    height: height * 0.13,
-                    fit: BoxFit.contain,
-                  ),
-
-                  SizedBox(height: height * 0.015),
-
-                  // العنوان
-                  Text(
-                    "نسيت كلمة المرور؟",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: width * 0.07,
-                      fontWeight: FontWeight.bold,
-                      color: mainTextColor,
+                    // الشعار
+                    Image.asset(
+                      "assets/logo.png",
+                      width: width * 0.28,
+                      height: height * 0.13,
+                      fit: BoxFit.contain,
                     ),
-                  ),
 
-                  SizedBox(height: height * 0.01),
+                    SizedBox(height: height * 0.015),
 
-                  Text(
-                    "أدخلي بريدك الإلكتروني وسنرسل لك رابطًا لإعادة تعيين كلمة المرور",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: width * 0.035,
-                      color: secondaryTextColor,
-                    ),
-                  ),
-
-                  SizedBox(height: height * 0.04),
-
-                  // البريد الإلكتروني
-                  SizedBox(
-                    width: width,
-                    height: height * 0.065,
-                    child: TextField(
-                      controller: emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      textAlign: TextAlign.right,
+                    // العنوان
+                    Text(
+                      "نسيت كلمة المرور؟",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: width * 0.037,
-                        color: inputTextColor,
-                      ),
-                      decoration: inputDecoration(
-                        context: context,
-                        hint: "البريد الإلكتروني",
-                        icon: Icons.email_outlined,
+                        fontSize: width * 0.07,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: thmanyahFont,
+                        color: mainTextColor,
                       ),
                     ),
-                  ),
 
-                  SizedBox(height: height * 0.025),
+                    SizedBox(height: height * 0.01),
 
-                  // زر إرسال الرابط
-                  SizedBox(
-                    width: width,
-                    height: height * 0.065,
-                    child: ElevatedButton(
-                      onPressed: isLoading ? null : resetPassword,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: primaryColor,
-                        foregroundColor: whiteColor,
-                        elevation: 0,
-                        padding: EdgeInsets.zero,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(width * 0.04),
+                    Text(
+                      "أدخل بريدك الإلكتروني وسنرسل لك رابطًا لإعادة تعيين كلمة المرور",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: thmanyahFont,
+                        fontSize: width * 0.035,
+                        color: secondaryTextColor,
+                      ),
+                    ),
+
+                    SizedBox(height: height * 0.04),
+
+                    // البريد الإلكتروني
+                    SizedBox(
+                      width: width,
+                      height: height * 0.065,
+                      child: TextField(
+                        controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: width * 0.037,
+                          fontFamily: thmanyahFont,
+                          color: inputTextColor,
+                        ),
+                        decoration: inputDecoration(
+                          context: context,
+                          hint: "البريد الإلكتروني",
+                          icon: Icons.email_outlined,
                         ),
                       ),
-                      child: isLoading
-                          ? SizedBox(
-                              width: width * 0.055,
-                              height: width * 0.055,
-                              child: const CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: whiteColor,
+                    ),
+
+                    SizedBox(height: height * 0.025),
+
+                    // زر إرسال الرابط
+                    SizedBox(
+                      width: width,
+                      height: height * 0.065,
+                      child: ElevatedButton(
+                        onPressed: isLoading ? null : resetPassword,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColor,
+                          foregroundColor: whiteColor,
+                          elevation: 0,
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(width * 0.04),
+                          ),
+                        ),
+                        child: isLoading
+                            ? SizedBox(
+                                width: width * 0.055,
+                                height: width * 0.055,
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: whiteColor,
+                                ),
+                              )
+                            : Text(
+                                "إرسال الرابط",
+                                style: TextStyle(
+                                  fontSize: width * 0.04,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            )
-                          : Text(
-                              "إرسال الرابط",
+                      ),
+                    ),
+
+                    SizedBox(height: height * 0.02),
+
+                    // الرجوع لتسجيل الدخول
+                    Container(
+                      width: width,
+                      height: height * 0.065,
+                      decoration: BoxDecoration(
+                        color: cardColor,
+                        borderRadius: BorderRadius.circular(width * 0.04),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        textDirection: TextDirection.rtl,
+                        children: [
+                          Text(
+                            "تذكرت كلمة المرور؟",
+                            style: TextStyle(
+                              fontSize: width * 0.032,
+                              color: inputTextColor,
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              "تسجيل الدخول",
                               style: TextStyle(
-                                fontSize: width * 0.04,
+                                fontSize: width * 0.032,
+                                color: primaryColor,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                    ),
-                  ),
-
-                  SizedBox(height: height * 0.02),
-
-                  // الرجوع لتسجيل الدخول
-                  Container(
-                    width: width,
-                    height: height * 0.065,
-                    decoration: BoxDecoration(
-                      color: cardColor,
-                      borderRadius: BorderRadius.circular(width * 0.04),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      textDirection: TextDirection.rtl,
-                      children: [
-                        Text(
-                          "تذكرت كلمة المرور؟",
-                          style: TextStyle(
-                            fontSize: width * 0.032,
-                            color: inputTextColor,
                           ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text(
-                            "تسجيل الدخول",
-                            style: TextStyle(
-                              fontSize: width * 0.032,
-                              color: primaryColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -268,7 +278,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return InputDecoration(
       hintText: hint,
 
-      hintStyle: TextStyle(color: hintTextColor, fontSize: width * 0.034),
+      hintStyle: TextStyle(
+        color: hintTextColor,
+        fontSize: width * 0.034,
+        fontFamily: thmanyahFont,
+      ),
 
       prefixIcon: Icon(icon, color: primaryColor, size: width * 0.05),
 

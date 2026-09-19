@@ -11,7 +11,7 @@ import 'package:final_project/screens/profile_screen.dart';
 import 'package:final_project/widgets/custom_bottom_navigation.dart';
 import 'package:final_project/screens/notifications_screen.dart';
 import 'package:final_project/services/notification_service.dart';
-
+import 'package:final_project/screens/login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,83 +22,159 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   DateTime? nextAppointment;
-String? appointmentClinic;
-String? appointmentDoctor;
+  String? appointmentClinic;
+  String? appointmentDoctor;
   List<Map<String, dynamic>> symptoms = [];
+  bool get isGuest => Supabase.instance.client.auth.currentUser == null;
 
   bool isLoading = true;
   bool hasUnreadNotification = false;
   String formatAppointmentDate(DateTime date) {
-  const months = [
-    'يناير',
-    'فبراير',
-    'مارس',
-    'أبريل',
-    'مايو',
-    'يونيو',
-    'يوليو',
-    'أغسطس',
-    'سبتمبر',
-    'أكتوبر',
-    'نوفمبر',
-    'ديسمبر',
-  ];
+    const months = [
+      'يناير',
+      'فبراير',
+      'مارس',
+      'أبريل',
+      'مايو',
+      'يونيو',
+      'يوليو',
+      'أغسطس',
+      'سبتمبر',
+      'أكتوبر',
+      'نوفمبر',
+      'ديسمبر',
+    ];
 
-  return '${date.day} ${months[date.month - 1]} ${date.year}';
-}
+    return '${date.day} ${months[date.month - 1]} ${date.year}';
+  }
+
+  void _goToLogin() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (route) => false,
+    );
+  }
+
+  void _showLoginRequired() {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: AlertDialog(
+            backgroundColor: cardColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: const Text(
+              'تسجيل الدخول مطلوب',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: thmanyahFont,
+                fontWeight: FontWeight.w700,
+                color: homeDarkTextColor,
+              ),
+            ),
+            content: const Text(
+              'سجّل الدخول أولاً لاستخدام هذه الميزة.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: thmanyahFont,
+                color: homeDarkTextColor,
+              ),
+            ),
+            actionsAlignment: MainAxisAlignment.center,
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(dialogContext);
+                },
+                child: const Text(
+                  'إلغاء',
+                  style: TextStyle(
+                    fontFamily: thmanyahFont,
+                    fontWeight: FontWeight.w600,
+                    color: homeDarkTextColor,
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(dialogContext);
+                  _goToLogin();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: homePrimaryColor,
+                  foregroundColor: whiteColor,
+                ),
+                child: const Text(
+                  'تسجيل الدخول',
+                  style: TextStyle(
+                    fontFamily: thmanyahFont,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   // =========================================================
   // INIT
   // =========================================================
-Future<void> fetchAppointment() async {
-  final user = Supabase.instance.client.auth.currentUser;
+  Future<void> fetchAppointment() async {
+    final user = Supabase.instance.client.auth.currentUser;
 
-  if (user == null) return;
+    if (user == null) return;
 
-  try {
-    final data = await Supabase.instance.client
-        .from('appointments')
-        .select()
-        .eq('user_id', user.id)
-        .order('updated_at', ascending: false)
-        .limit(1)
-        .maybeSingle();
+    try {
+      final data = await Supabase.instance.client
+          .from('appointments')
+          .select()
+          .eq('user_id', user.id)
+          .order('updated_at', ascending: false)
+          .limit(1)
+          .maybeSingle();
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    if (data != null) {
-      setState(() {
-        nextAppointment =
-            DateTime.parse(data['appointment_date']).toLocal();
+      if (data != null) {
+        setState(() {
+          nextAppointment = DateTime.parse(data['appointment_date']).toLocal();
 
-        appointmentClinic = data['clinic_name'];
-        appointmentDoctor = data['doctor_name'];
-      });
+          appointmentClinic = data['clinic_name'];
+          appointmentDoctor = data['doctor_name'];
+        });
+      }
+    } catch (error) {
+      debugPrint('Error loading appointment: $error');
     }
-  } catch (error) {
-    debugPrint('Error loading appointment: $error');
   }
-}
 
   @override
   void initState() {
     super.initState();
 
     fetchSymptoms();
-     fetchAppointment();
-     checkNotification();
+    if (!isGuest) {
+      fetchAppointment();
+      checkNotification();
+    }
   }
 
   Future<void> checkNotification() async {
-  final unread =
-      await NotificationService.hasUnreadNotification();
+    final unread = await NotificationService.hasUnreadNotification();
 
-  if (!mounted) return;
+    if (!mounted) return;
 
-  setState(() {
-    hasUnreadNotification = unread;
-  });
-}
+    setState(() {
+      hasUnreadNotification = unread;
+    });
+  }
 
   // =========================================================
   // FETCH CURRENT USER SYMPTOMS
@@ -293,7 +369,9 @@ Future<void> fetchAppointment() async {
 
     final user = Supabase.instance.client.auth.currentUser;
 
-    final String name = user?.userMetadata?['name']?.toString() ?? 'المستخدم';
+    final String name = user == null
+        ? 'زائر'
+        : user.userMetadata?['name']?.toString() ?? 'المستخدم';
 
     // صورة البروفايل المختارة من صفحة حسابي
     final String profileImage =
@@ -336,6 +414,10 @@ Future<void> fetchAppointment() async {
                         // =================================================
                         GestureDetector(
                           onTap: () {
+                            if (isGuest) {
+                              _showLoginRequired();
+                              return;
+                            }
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
@@ -394,69 +476,73 @@ Future<void> fetchAppointment() async {
                         // =================================================
                         // NOTIFICATION
                         // =================================================
-                   Material(
-  color: Colors.transparent,
-  child: InkWell(
-    customBorder: const CircleBorder(),
+                        Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
 
-    onTap: () async {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) =>
-              const NotificationsScreen(),
-        ),
-      );
+                            onTap: () async {
+                              if (isGuest) {
+                                _showLoginRequired();
+                                return;
+                              }
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const NotificationsScreen(),
+                                ),
+                              );
 
-      // عندما يرجع المستخدم للـ Home
-      // نتحقق مرة ثانية
-      await checkNotification();
-    },
+                              // عندما يرجع المستخدم للـ Home
+                              // نتحقق مرة ثانية
+                              await checkNotification();
+                            },
 
-    child: Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          width: width * 0.13,
-          height: width * 0.13,
-          decoration: BoxDecoration(
-            color: lightBlueColor,
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: whiteColor,
-              width: 2,
-            ),
-          ),
-          child: Icon(
-            Icons.notifications_none_rounded,
-            color: homeDarkTextColor,
-            size: width * 0.065,
-          ),
-        ),
+                            child: Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                Container(
+                                  width: width * 0.13,
+                                  height: width * 0.13,
+                                  decoration: BoxDecoration(
+                                    color: lightBlueColor,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: whiteColor,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.notifications_none_rounded,
+                                    color: homeDarkTextColor,
+                                    size: width * 0.065,
+                                  ),
+                                ),
 
-        // النقطة الحمراء تظهر فقط
-        // إذا إشعار اليوم غير مقروء
-        if (hasUnreadNotification)
-          Positioned(
-            top: 0,
-            right: 0,
-            child: Container(
-              width: width * 0.035,
-              height: width * 0.035,
-              decoration: BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: whiteColor,
-                  width: 2,
-                ),
-              ),
-            ),
-          ),
-      ],
-    ),
-  ),
-),
+                                // النقطة الحمراء تظهر فقط
+                                // إذا إشعار اليوم غير مقروء
+                                if (hasUnreadNotification)
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: Container(
+                                      width: width * 0.035,
+                                      height: width * 0.035,
+                                      decoration: BoxDecoration(
+                                        color: Colors.red,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: whiteColor,
+                                          width: 2,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                     ),
 
@@ -469,15 +555,19 @@ Future<void> fetchAppointment() async {
                       color: Colors.transparent,
                       child: InkWell(
                         onTap: () async {
-  await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => const AppointmentScreen(),
-    ),
-  );
+                          if (isGuest) {
+                            _showLoginRequired();
+                            return;
+                          }
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const AppointmentScreen(),
+                            ),
+                          );
 
-  await fetchAppointment();
-},
+                          await fetchAppointment();
+                        },
                         borderRadius: BorderRadius.circular(width * 0.05),
                         child: Container(
                           width: double.infinity,
@@ -525,9 +615,12 @@ Future<void> fetchAppointment() async {
                                     SizedBox(height: height * 0.004),
 
                                     Text(
-                                     appointmentClinic?.isNotEmpty == true
-      ? appointmentClinic!
-      : 'متابعة صحية',
+                                      isGuest
+                                          ? 'سجّل الدخول لعرض موعدك'
+                                          : appointmentClinic?.isNotEmpty ==
+                                                true
+                                          ? appointmentClinic!
+                                          : 'متابعة صحية',
                                       style: TextStyle(
                                         fontFamily: thmanyahFont,
                                         fontSize: width * 0.036,
@@ -543,9 +636,13 @@ Future<void> fetchAppointment() async {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text(
-                                    nextAppointment != null
-      ? formatAppointmentDate(nextAppointment!)
-      : 'لا يوجد موعد',
+                                    isGuest
+                                        ? ''
+                                        : nextAppointment != null
+                                        ? formatAppointmentDate(
+                                            nextAppointment!,
+                                          )
+                                        : 'لا يوجد موعد',
                                     style: TextStyle(
                                       fontFamily: thmanyahFont,
                                       fontSize: width * 0.034,
@@ -555,7 +652,6 @@ Future<void> fetchAppointment() async {
                                   ),
 
                                   SizedBox(height: height * 0.004),
-
                                 ],
                               ),
                             ],
@@ -583,7 +679,7 @@ Future<void> fetchAppointment() async {
                               width: width,
                               height: height,
                               icon: Icons.favorite_border_rounded,
-                              number: totalSymptoms.toString(),
+                              number: isGuest ? '—' : totalSymptoms.toString(),
                               title: 'أعراض مسجلة',
                               color: homePinkColor,
                             ),
@@ -596,7 +692,9 @@ Future<void> fetchAppointment() async {
                               width: width,
                               height: height,
                               icon: Icons.show_chart_rounded,
-                              number: averageSeverity.toStringAsFixed(1),
+                              number: isGuest
+                                  ? '—'
+                                  : averageSeverity.toStringAsFixed(1),
                               title: 'متوسط الشدة',
                               color: homeGreenColor,
                             ),
@@ -609,7 +707,9 @@ Future<void> fetchAppointment() async {
                               width: width,
                               height: height,
                               icon: Icons.calendar_today_outlined,
-                              number: thisMonthSymptoms.toString(),
+                              number: isGuest
+                                  ? '—'
+                                  : thisMonthSymptoms.toString(),
                               title: 'هذا الشهر',
                               color: homePurpleColor,
                             ),
@@ -637,6 +737,11 @@ Future<void> fetchAppointment() async {
 
                         InkWell(
                           onTap: () {
+                            if (isGuest) {
+                              _showLoginRequired();
+                              return;
+                            }
+
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
@@ -662,7 +767,9 @@ Future<void> fetchAppointment() async {
                     // =================================================
                     // LATEST SYMPTOMS
                     // =================================================
-                    if (isLoading)
+                    if (isGuest)
+                      _guestLoginCard(width, height)
+                    else if (isLoading)
                       const SizedBox.shrink()
                     else if (latestSymptoms.isEmpty)
                       Container(
@@ -729,6 +836,88 @@ Future<void> fetchAppointment() async {
     );
   }
 
+  Widget _guestLoginCard(double width, double height) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: width * 0.05,
+        vertical: height * 0.03,
+      ),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(width * 0.04),
+        border: Border.all(color: homeBorderColor),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: width * 0.15,
+            height: width * 0.15,
+            decoration: const BoxDecoration(
+              color: homeLightBlueColor,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.lock_outline_rounded,
+              color: homeDarkTextColor,
+              size: width * 0.07,
+            ),
+          ),
+
+          SizedBox(height: height * 0.015),
+
+          Text(
+            'سجّل الدخول لعرض بياناتك',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: thmanyahFont,
+              fontSize: width * 0.043,
+              fontWeight: FontWeight.w700,
+              color: homeDarkTextColor,
+            ),
+          ),
+
+          SizedBox(height: height * 0.006),
+
+          Text(
+            'تابع أعراضك ومواعيدك وتقاريرك الصحية بعد تسجيل الدخول.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: thmanyahFont,
+              fontSize: width * 0.033,
+              color: homeGreyColor,
+            ),
+          ),
+
+          SizedBox(height: height * 0.018),
+
+          ElevatedButton(
+            onPressed: _goToLogin,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: homePrimaryColor,
+              foregroundColor: whiteColor,
+              elevation: 0,
+              padding: EdgeInsets.symmetric(
+                horizontal: width * 0.08,
+                vertical: height * 0.012,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(width * 0.035),
+              ),
+            ),
+            child: Text(
+              'تسجيل الدخول',
+              style: TextStyle(
+                fontFamily: thmanyahFont,
+                fontSize: width * 0.037,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
   // =============================================================
   // STAT CARD
   // =============================================================
@@ -741,53 +930,79 @@ Future<void> fetchAppointment() async {
     required String title,
     required Color color,
   }) {
-    return Container(
-      height: height * 0.145,
-      padding: EdgeInsets.symmetric(
-        horizontal: width * 0.015,
-        vertical: height * 0.015,
-      ),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(width * 0.045),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: homeDarkTextColor, size: width * 0.055),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final cardWidth = constraints.maxWidth;
 
-          SizedBox(height: height * 0.004),
+        final cardHeight = (cardWidth * 0.95).clamp(120.0, 155.0);
 
-          Text(
-            number,
-            style: TextStyle(
-              fontFamily: thmanyahFont,
-              fontSize: width * 0.06,
-              fontWeight: FontWeight.w700,
-              color: homeDarkTextColor,
+        final iconSize = (cardWidth * 0.22).clamp(22.0, 30.0);
+
+        final numberSize = (cardWidth * 0.27).clamp(25.0, 36.0);
+
+        final titleSize = (cardWidth * 0.14).clamp(13.0, 17.0);
+
+        return Container(
+          height: cardHeight,
+          padding: EdgeInsets.symmetric(
+            horizontal: cardWidth * 0.06,
+            vertical: cardHeight * 0.08,
+          ),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(
+              (cardWidth * 0.16).clamp(18.0, 28.0),
             ),
           ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: homeDarkTextColor, size: iconSize),
 
-          SizedBox(height: height * 0.002),
+              SizedBox(height: cardHeight * 0.025),
 
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              title,
-              maxLines: 1,
-              style: TextStyle(
-                fontFamily: thmanyahFont,
-                fontSize: width * 0.033,
-                fontWeight: FontWeight.w600,
-                color: homeDarkTextColor,
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    number,
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontFamily: thmanyahFont,
+                      fontSize: numberSize,
+                      fontWeight: FontWeight.w700,
+                      color: homeDarkTextColor,
+                      height: 1,
+                    ),
+                  ),
+                ),
               ),
-            ),
+
+              SizedBox(height: cardHeight * 0.035),
+
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: thmanyahFont,
+                      fontSize: titleSize,
+                      fontWeight: FontWeight.w600,
+                      color: homeDarkTextColor,
+                      height: 1,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
-
   // =============================================================
   // SYMPTOM CARD
   // =============================================================
@@ -871,4 +1086,4 @@ Future<void> fetchAppointment() async {
       ),
     );
   }
-} 
+}

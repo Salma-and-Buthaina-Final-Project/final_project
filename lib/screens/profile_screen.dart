@@ -22,11 +22,95 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String selectedProfileImage = 'assets/default.png';
+  bool get isGuest => Supabase.instance.client.auth.currentUser == null;
 
   @override
   void initState() {
     super.initState();
-    _loadProfileImage();
+
+    if (isGuest) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _showLoginRequired();
+        }
+      });
+    } else {
+      _loadProfileImage();
+    }
+  }
+
+  void _showLoginRequired() {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: AlertDialog(
+            backgroundColor: cardColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: const Text(
+              'تسجيل الدخول مطلوب',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: thmanyahFont,
+                fontWeight: FontWeight.w700,
+                color: homeDarkTextColor,
+              ),
+            ),
+            content: const Text(
+              'سجّل الدخول أولاً لاستخدام هذه الميزة.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: thmanyahFont,
+                fontWeight: FontWeight.w500,
+                color: homeDarkTextColor,
+              ),
+            ),
+            actionsAlignment: MainAxisAlignment.center,
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(dialogContext);
+                },
+                child: const Text(
+                  'إلغاء',
+                  style: TextStyle(
+                    fontFamily: thmanyahFont,
+                    fontWeight: FontWeight.w600,
+                    color: homeDarkTextColor,
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(dialogContext);
+
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    (route) => false,
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: homePrimaryColor,
+                  foregroundColor: whiteColor,
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'تسجيل الدخول',
+                  style: TextStyle(
+                    fontFamily: thmanyahFont,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   // =========================================================
@@ -249,10 +333,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
 
                   SizedBox(width: width * 0.02),
-
-                  // =================================================
-                  // LOGOUT BUTTON
-                  // =================================================
                   Expanded(
                     child: TextButton(
                       onPressed: () async {
@@ -270,7 +350,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           (route) => false,
                         );
                       },
-                      child: Center(
+                      child: const Center(
                         child: Text(
                           'تسجيل الخروج',
                           textAlign: TextAlign.center,
@@ -283,6 +363,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ),
+
+                  // =================================================
+                  // LOGOUT BUTTON
+                  // =================================================
                 ],
               ),
             ],
@@ -301,10 +385,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final user = Supabase.instance.client.auth.currentUser;
 
     // الاسم المحفوظ في Supabase
-    final String name = user?.userMetadata?['name']?.toString() ?? 'المستخدم';
+    final String name = isGuest
+        ? 'زائر'
+        : user?.userMetadata?['name']?.toString() ?? 'المستخدم';
 
-    // البريد الإلكتروني
-    final String email = user?.email ?? '';
+    final String email = isGuest
+        ? 'سجّل الدخول للوصول إلى حسابك'
+        : user?.email ?? '';
 
     return Theme(
       data: Theme.of(context).copyWith(
@@ -350,7 +437,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // =================================================
                   Center(
                     child: GestureDetector(
-                      onTap: _showProfileImageOptions,
+                      onTap: () {
+                        if (isGuest) {
+                          _showLoginRequired();
+                          return;
+                        }
+
+                        _showProfileImageOptions();
+                      },
                       child: Stack(
                         clipBehavior: Clip.none,
                         children: [
@@ -451,6 +545,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           title: 'معلوماتي الشخصية',
                           iconColor: homeLightBlueColor,
                           onTap: () {
+                            if (isGuest) {
+                              _showLoginRequired();
+                              return;
+                            }
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -473,6 +571,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           title: 'موعد المراجعة',
                           iconColor: homeGreenColor,
                           onTap: () {
+                            if (isGuest) {
+                              _showLoginRequired();
+                              return;
+                            }
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -487,22 +589,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         // =================================================
                         // NOTIFICATIONS
                         // =================================================
-                _profileItem(
-  width: width,
-  height: height,
-  icon: Icons.notifications_none_rounded,
-  title: 'الإشعارات',
-  iconColor: homeYellowColor,
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            const NotificationsScreen(),
-      ),
-    );
-  },
-),
+                        _profileItem(
+                          width: width,
+                          height: height,
+                          icon: Icons.notifications_none_rounded,
+                          title: 'الإشعارات',
+                          iconColor: homeYellowColor,
+                          onTap: () {
+                            if (isGuest) {
+                              _showLoginRequired();
+                              return;
+                            }
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const NotificationsScreen(),
+                              ),
+                            );
+                          },
+                        ),
                         _divider(width),
 
                         // =================================================
@@ -557,34 +663,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   SizedBox(
                     height: height * 0.065,
                     child: ElevatedButton(
-                      onPressed: _showLogoutDialog,
+                      onPressed: () {
+                        if (isGuest) {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const LoginScreen(),
+                            ),
+                            (route) => false,
+                          );
+                          return;
+                        }
+
+                        _showLogoutDialog();
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: cardColor,
-                        foregroundColor: Colors.red,
+                        foregroundColor: isGuest ? Colors.green : Colors.red,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(width * 0.04),
-                          side: const BorderSide(color: homePinkColor),
+                          side: BorderSide(
+                            color: isGuest ? Colors.green : Colors.red,
+                          ),
                         ),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.logout_rounded,
-                            color: Colors.red,
+                            isGuest
+                                ? Icons.login_rounded
+                                : Icons.logout_rounded,
+                            color: isGuest ? Colors.green : Colors.red,
                             size: width * 0.055,
                           ),
 
                           SizedBox(width: width * 0.02),
 
                           Text(
-                            'تسجيل الخروج',
+                            isGuest ? 'تسجيل الدخول' : 'تسجيل الخروج',
                             style: TextStyle(
                               fontFamily: thmanyahFont,
                               fontSize: width * 0.042,
                               fontWeight: FontWeight.w700,
-                              color: Colors.red,
+                              color: isGuest ? Colors.green : Colors.red,
                             ),
                           ),
                         ],
