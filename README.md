@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  Track Symptoms • Review History • Monitor Health Patterns • Generate PDF Reports • AI-Powered Summaries
+  Track Symptoms • Monitor Health Patterns • Generate Reports • AI-Powered Summaries
 </p>
 
 <p align="center">
@@ -20,131 +20,260 @@
 
 ---
 
-## 💙 About Halati
-
-**Halati (حالتي)** is a smart Arabic health tracking application built with **Flutter**.
-
-The application helps users record and organize their symptoms, monitor health patterns, manage medical appointments, review their health history, and generate structured health reports.
-
-Halati combines **Flutter, Dart, Supabase, Google Gemini AI, REST APIs, PDF generation, and local notifications** to provide a complete and easy-to-use health tracking experience.
-
-> **Medical Disclaimer:** Halati organizes and summarizes user-provided health information. It is not a diagnostic system and does not replace professional medical advice, diagnosis, or treatment.
-
----
-
-# 🎬 App Demo
+# 🎬 Halati App Demo
 
 <p align="center">
-  <img src="halati_demo.gif" width="300" alt="Halati App Demo">
+  <img src="halati_demo.gif" width="230" alt="Halati Application Demo">
+</p>
+
+<p align="center">
+  <strong>See Halati in Action 💙</strong>
+</p>
+
+<p align="center">
+  <sub>
+    Explore the complete application experience — from symptom tracking
+    to smart health reports and AI-powered summaries.
+  </sub>
 </p>
 
 <p align="center">
   <a href="halati_demo.mp4">
-    <strong>▶️ Watch Full App Demo</strong>
+    <strong>▶️ Watch Full Application Demo</strong>
   </a>
 </p>
 
 ---
 
+# 💙 About Halati
+
+**Halati (حالتي)** is a smart Arabic health tracking application developed using **Flutter**.
+
+The application helps users record and organize symptoms, review their health history, monitor recurring health patterns, manage medical appointments, and generate structured health reports.
+
+Halati combines **Flutter, Dart, Supabase, Google Gemini AI, REST APIs, PDF generation, and local notifications** to provide a complete and easy-to-use health tracking experience.
+
+> **Medical Disclaimer:** Halati organizes and summarizes user-provided health information. It is not a medical diagnostic system and does not replace professional medical advice, diagnosis, or treatment.
+
+---
+
+# ✨ Key Features
+
+| Feature | Description |
+|:---|:---|
+| 🩺 **Symptom Tracking** | Record symptoms, severity, location, recurrence, medications, and notes |
+| 📚 **Health History** | Review previously recorded symptoms |
+| 🔍 **Search & Filtering** | Search and filter health records |
+| 📊 **Health Analytics** | Calculate symptom statistics and recurring patterns |
+| 🤖 **AI Summary** | Generate Arabic health summaries using Google Gemini |
+| 📄 **PDF Reports** | Export structured Arabic health reports |
+| 📅 **Appointments** | Save upcoming medical appointments |
+| 🔔 **Notifications** | Receive daily health reminders |
+| 🔐 **Authentication** | Secure account management using Supabase |
+| 👤 **Guest Mode** | Explore public areas without creating an account |
+| 🇸🇦 **Arabic RTL** | Arabic-first Right-to-Left interface |
+| 📱 **Responsive UI** | Adaptable interface for different screen sizes |
+
+---
+
 # 📱 Application Preview
+
+<p align="center">
+  A visual tour of the main screens and features of <strong>Halati</strong>.
+</p>
+
+<br>
 
 ## 🔐 Authentication
 
 <p align="center">
-  <img src="signup.png" width="230" alt="Create Account">
-  &nbsp;&nbsp;
-  <img src="login.png" width="230" alt="Login">
-  &nbsp;&nbsp;
-  <img src="forgot_password.png" width="230" alt="Forgot Password">
+  <img src="signup.png" width="180" alt="Create Account">
+  &nbsp;&nbsp;&nbsp;
+  <img src="login.png" width="180" alt="Login">
+  &nbsp;&nbsp;&nbsp;
+  <img src="forgot_password.png" width="180" alt="Password Recovery">
 </p>
 
-<p align="center">
-  <strong>Create Account • Login • Password Recovery</strong>
-</p>
+| Create Account | Login | Password Recovery |
+|:---:|:---:|:---:|
+| Create a new Halati account | Securely access an existing account | Recover access to the account |
 
-Halati provides a complete authentication flow using **Supabase Authentication**.
+Halati uses **Supabase Authentication** to provide account creation, secure login, password recovery, and authentication session management.
 
-Users can create an account, log in securely, recover their password, and maintain their authenticated session inside the application.
-
-The application also supports **Guest Mode**, allowing users to explore available public sections before signing in.
+The application also supports **Guest Mode**, allowing visitors to explore available public sections before signing in.
 
 ---
 
-# 🏠 Home Dashboard
+## 🏠 Home & Health Tracking
 
 <p align="center">
-  <img src="home.png" width="300" alt="Halati Home Screen">
+  <img src="home.png" width="180" alt="Home Dashboard">
+  &nbsp;&nbsp;&nbsp;
+  <img src="add_symptom.png" width="180" alt="Add Symptom">
+  &nbsp;&nbsp;&nbsp;
+  <img src="history.png" width="180" alt="Health History">
 </p>
 
-The home screen gives users a simple overview of their recorded health information.
+| Home Dashboard | Add Symptom | Health History |
+|:---:|:---:|:---:|
+| Health overview and quick access | Record new health information | Review previous health records |
 
-It provides quick access to:
+The **Home Dashboard** provides users with a quick overview of their health activity.
+
+It provides access to:
 
 - Upcoming medical appointments
 - Symptoms recorded during the month
 - Average symptom severity
 - Latest recorded symptoms
-- Notifications
 - Health history
 - Health reports
+- Notifications
 - Profile
 - Adding a new symptom
 
----
-
-# 🔔 Notifications
-
-<p align="center">
-  <img src="notifications.png" width="300" alt="Halati Notifications">
-</p>
-
-Halati includes local notification functionality to encourage consistent health tracking.
-
-The application can schedule a daily reminder asking users to record or review their health status.
-
-Example:
-
-> **حالتي 💙**  
-> كيف حالتك اليوم؟
-
-The notification system uses **flutter_local_notifications** and **timezone** for scheduling.
+The symptom tracking system allows users to record detailed health information including symptom type, location, severity, recurrence, medications, date, and additional notes.
 
 ---
 
-# ➕ Add New Symptom
+## 📊 Reports, AI & Notifications
 
 <p align="center">
-  <img src="add_symptom.png" width="300" alt="Add New Symptom">
+  <img src="report_stats.png" width="180" alt="Health Statistics">
+  &nbsp;&nbsp;&nbsp;
+  <img src="ai_summary.png" width="180" alt="AI Summary">
+  &nbsp;&nbsp;&nbsp;
+  <img src="notifications.png" width="180" alt="Notifications">
 </p>
 
-Halati provides a structured form that allows users to record detailed information about their symptoms.
+| Health Statistics | AI-Powered Summary | Notifications |
+|:---:|:---:|:---:|
+| Analyze recorded symptoms | Gemini-generated Arabic summary | Daily health reminders |
 
-Users can enter:
+Halati processes recorded information and automatically generates useful health statistics.
 
-- Symptom type
-- Pain or symptom location
-- Date and time
-- Severity level
-- Whether the symptom is recurring
-- Whether medication was taken
-- Medication name
+The reporting system can display:
+
+- Number of symptom types
+- Average symptom severity
+- Number of recurring cases
+- Most frequently recorded symptoms
+- Number of occurrences
+- Medication information
+- Selected report period
+- AI-generated summary
+
+The notification system also encourages users to consistently record and review their health status.
+
+---
+
+## 📄 PDF Health Reports
+
+<p align="center">
+  <img src="pdf_report_1.png" width="280" alt="PDF Report Page 1">
+  &nbsp;&nbsp;&nbsp;
+  <img src="pdf_report_2.png" width="280" alt="PDF Report Page 2">
+</p>
+
+| PDF Report — Page 1 | PDF Report — Page 2 |
+|:---:|:---:|
+| Health statistics and symptom information | AI summary, medications and report details |
+
+Halati can dynamically generate a professional Arabic **PDF health report** based on the user's selected reporting period.
+
+The generated report can contain:
+
+- Selected date range
+- Health statistics
+- Recorded symptoms
+- Symptom frequency
+- Medication information
+- AI-generated Arabic summary
+- Medical disclaimer
+
+This gives users an organized document containing the health information they recorded during a selected period.
+
+---
+
+## 👤 Profile, Personal Information & Appointments
+
+<p align="center">
+  <img src="profile.png" width="180" alt="Profile">
+  &nbsp;&nbsp;&nbsp;
+  <img src="personal_info.png" width="180" alt="Personal Information">
+  &nbsp;&nbsp;&nbsp;
+  <img src="appointment.png" width="180" alt="Appointments">
+</p>
+
+| Profile | Personal Information | Appointments |
+|:---:|:---:|:---:|
+| Manage application features | Review account information | Manage medical appointments |
+
+The profile area provides access to personal information, appointments, notifications, support, privacy information, and account management.
+
+Users can save medical appointment information including:
+
+- Appointment date
+- Doctor name
+- Clinic name
 - Additional notes
 
-Each symptom is stored in the application's backend and associated with the authenticated user.
+The upcoming appointment can also be displayed directly on the Home Dashboard.
+
+---
+
+## 💙 Help, Privacy & Account
+
+<p align="center">
+  <img src="help_support.png" width="180" alt="Help and Support">
+  &nbsp;&nbsp;&nbsp;
+  <img src="privacy.png" width="180" alt="Privacy Policy">
+  &nbsp;&nbsp;&nbsp;
+  <img src="logout.png" width="180" alt="Logout">
+</p>
+
+| Help & Support | Privacy Policy | Account Management |
+|:---:|:---:|:---:|
+| Application guidance and FAQs | Privacy and data information | Secure account logout |
+
+The **Help & Support** section provides answers to common questions about using Halati.
+
+The **Privacy Policy** section provides information about how user information is handled within the application.
+
+Authenticated users can also securely sign out of their account.
+
+---
+
+# 🩺 Symptom Tracking
+
+Halati provides a structured system for recording health information.
+
+Each symptom record can include:
+
+| Information | Description |
+|:---|:---|
+| **Symptom** | Name or type of symptom |
+| **Location** | Affected body area |
+| **Severity** | Severity level from 1–10 |
+| **Date** | Date and time of the symptom |
+| **Recurrence** | Whether the symptom is recurring |
+| **Medication** | Whether medication was taken |
+| **Medication Name** | Name of the medication |
+| **Notes** | Additional information entered by the user |
+
+Each record is stored in the application's backend and associated with the authenticated user.
+
+The stored information can later be accessed through the user's Health History and Smart Reports.
 
 ---
 
 # 📚 Health History
 
-<p align="center">
-  <img src="history.png" width="300" alt="Health History">
-</p>
-
-The **Health History** screen provides an organized timeline of previously recorded symptoms.
+The **Health History** feature provides an organized timeline of previously recorded symptoms.
 
 Users can:
 
-- View previous symptoms
+- View recorded symptoms
 - Review symptom dates
 - Review severity levels
 - View medication information
@@ -153,7 +282,7 @@ Users can:
 - Filter records by time period
 - Open individual symptom details
 
-This allows users to review their health information without relying only on memory.
+This allows users to maintain an organized record of their health information over time.
 
 ---
 
@@ -174,24 +303,19 @@ Records can also be filtered according to a selected period.
 
 # 📊 Smart Health Reports
 
-<p align="center">
-  <img src="report_stats.png" width="300" alt="Health Report Statistics">
-</p>
-
 One of the main features of Halati is its **Smart Health Reporting System**.
 
-The application processes recorded symptom information and automatically calculates useful statistics.
+The application processes stored symptom information and automatically calculates useful statistics.
 
-Reports can include:
-
-- Number of symptom types
-- Average symptom severity
-- Number of recurring cases
-- Most frequently recorded symptoms
-- Number of occurrences for each symptom
-- Medication history
-- Selected report period
-- AI-generated health summary
+| Statistic | Description |
+|:---|:---|
+| **Symptom Types** | Number of different symptoms recorded |
+| **Average Severity** | Average severity of recorded symptoms |
+| **Recurring Cases** | Number of recurring symptoms |
+| **Symptom Frequency** | Number of occurrences for each symptom |
+| **Medications** | Medications recorded during the selected period |
+| **Date Range** | Selected report period |
+| **AI Summary** | Gemini-generated Arabic summary |
 
 ---
 
@@ -210,22 +334,20 @@ Analyze Symptoms
     ↓
 Calculate Statistics
     ↓
-Generate Report
+Generate AI Summary
+    ↓
+Create Health Report
 ```
 
-This allows users to generate focused reports for a specific period instead of analyzing their complete health history every time.
+This allows users to create focused reports for specific periods instead of always analyzing their complete health history.
 
 ---
 
 # 🤖 AI-Powered Health Summary
 
-<p align="center">
-  <img src="ai_summary.png" width="300" alt="AI Health Summary">
-</p>
-
 Halati integrates **Google Gemini AI** to generate a concise Arabic summary based on health information recorded by the user.
 
-The application prepares structured information such as:
+The application prepares structured information including:
 
 - Symptom name
 - Symptom location
@@ -238,13 +360,13 @@ The application prepares structured information such as:
 
 The information is sent to the AI model through an HTTP request.
 
-The generated summary can highlight:
+The generated summary can describe:
 
 - Frequently recorded symptoms
 - General recorded severity
 - Recurring symptoms
 - Medication usage
-- Patterns supported by the recorded information
+- Patterns supported by recorded information
 
 ---
 
@@ -265,172 +387,104 @@ The purpose of the AI feature is to organize recorded health information, not re
 
 ---
 
-# 📄 PDF Health Reports
+# 📄 PDF Report Generation
 
-<p align="center">
-  <img src="pdf_report_1.png" width="390" alt="PDF Health Report Page 1">
-  &nbsp;&nbsp;
-  <img src="pdf_report_2.png" width="390" alt="PDF Health Report Page 2">
-</p>
+Halati uses the **pdf** package to dynamically generate health reports.
 
-Halati can dynamically generate a professional Arabic **PDF health report** containing the user's recorded information.
+The PDF system supports:
 
-The generated report can include:
+- A4 documents
+- Dynamic user data
+- Arabic text
+- Health statistics
+- Symptom lists
+- Medication information
+- AI summaries
+- Medical disclaimers
 
-### 📅 Report Information
-
-- Report title
-- Selected reporting period
-- Date range
-
-### 📊 Health Statistics
-
-- Number of symptom types
-- Average severity
-- Number of recurring symptoms
-
-### 🩺 Symptoms
-
-- Recorded symptom names
-- Number of occurrences
-
-### 💊 Medications
-
-- Medications recorded during the selected period
-
-### 🤖 AI Summary
-
-- AI-generated Arabic summary
-
-### ⚠️ Medical Disclaimer
-
-The generated PDF clearly explains that the report summarizes recorded information and does not constitute a medical diagnosis.
+The **printing** package works alongside the PDF package to provide functionality related to generated PDF documents on supported platforms.
 
 ---
 
 # 📅 Appointment Management
 
-<p align="center">
-  <img src="appointment.png" width="300" alt="Appointment Management">
-</p>
-
-Halati allows users to store information about upcoming medical appointments.
+Halati allows authenticated users to save upcoming medical appointments.
 
 Appointment information can include:
 
-- Appointment date
-- Doctor name
-- Clinic name
-- Additional notes
+```text
+Appointment Date
+Doctor Name
+Clinic Name
+Notes
+```
 
-The upcoming appointment can also be displayed directly on the home screen.
+Appointment information is stored in Supabase and associated with the authenticated user.
 
----
-
-# 👤 Profile
-
-<p align="center">
-  <img src="profile.png" width="300" alt="Halati Profile">
-</p>
-
-The profile screen provides access to account and application settings.
-
-Users can access:
-
-- Personal information
-- Medical appointments
-- Notifications
-- Help & Support
-- Privacy Policy
-- Account management
-
-Users can also select their profile image.
+The nearest upcoming appointment can also be displayed on the application's Home Dashboard.
 
 ---
 
-# 📝 Personal Information
+# 🔔 Daily Health Reminders
 
-<p align="center">
-  <img src="personal_info.png" width="300" alt="Personal Information">
-</p>
+Halati includes local notification functionality for supported Android environments.
 
-The Personal Information screen allows authenticated users to review and manage their account information.
+Example notification:
 
----
+> **حالتي 💙**  
+> كيف حالتك اليوم؟
 
-# 💬 Help & Support
+The notification system helps encourage consistent health tracking.
 
-<p align="center">
-  <img src="help_support.png" width="300" alt="Help and Support">
-</p>
+Halati uses:
 
-Halati includes a dedicated **Help & Support** section.
+```text
+flutter_local_notifications
+timezone
+```
 
-It provides answers to common questions about using the application, including:
-
-- How to record a symptom
-- How to review previous symptoms
-- How to add an appointment
-- How to manage account information
+for notification initialization and scheduling.
 
 ---
 
-# 🔐 Privacy Policy
+# 🔐 Authentication System
 
-<p align="center">
-  <img src="privacy.png" width="300" alt="Privacy Policy">
-</p>
+Halati uses **Supabase Authentication** for account functionality.
 
-Halati includes a dedicated privacy section explaining how user information is handled within the application.
+The authentication flow includes:
 
-Because Halati handles user-provided health information, privacy and secure data handling are important parts of the project.
+- User registration
+- User login
+- Authentication session handling
+- Password recovery
+- Password reset
+- Authentication state monitoring
+- Secure logout
 
----
-
-# 🚪 Account Management
-
-<p align="center">
-  <img src="logout.png" width="300" alt="Logout Confirmation">
-</p>
-
-Authenticated users can securely sign out of their account.
-
-The application also supports **Guest Mode**.
-
-Guests can explore available public sections of the application, while features that require personal health information are protected until the user signs in.
+Guest Mode is also supported for users who want to explore the application before signing in.
 
 ---
 
-# ✨ Key Features
+# 👤 Guest Mode
 
-| Feature | Description |
-|---|---|
-| 🩺 **Symptom Tracking** | Record detailed health symptoms |
-| ➕ **Add Health Records** | Add severity, location, medication and notes |
-| 📚 **Health History** | Review previously recorded symptoms |
-| 🔍 **Search & Filter** | Search and filter health records |
-| 📊 **Health Analytics** | Calculate statistics and symptom patterns |
-| 🤖 **AI Summary** | Generate Arabic summaries using Gemini |
-| 📄 **PDF Reports** | Export structured Arabic health reports |
-| 📅 **Appointments** | Save upcoming medical appointments |
-| 🔔 **Notifications** | Daily health reminders |
-| 🔐 **Authentication** | Account management with Supabase |
-| 👤 **Guest Mode** | Explore public sections without an account |
-| 🇸🇦 **Arabic RTL** | Arabic-first user interface |
-| 📱 **Responsive Design** | Adaptable interface for different screen sizes |
+Halati includes a dedicated **Guest Mode**.
+
+Guest users can explore public areas of the application without creating an account.
+
+Features that require personal health information remain protected until the user signs in.
+
+This approach allows new users to explore the application while keeping personal health functionality connected to authenticated accounts.
 
 ---
 
 # 🛠️ Technology Stack
 
-Halati combines mobile development, backend services, artificial intelligence, API integration, database management, notifications, and document generation.
-
 | Technology / Package | Purpose |
-|---|---|
+|:---|:---|
 | **Flutter** | Cross-platform application development |
 | **Dart** | Main programming language |
 | **Supabase** | Backend and database |
-| **Supabase Authentication** | User authentication and password recovery |
+| **Supabase Authentication** | Authentication and password recovery |
 | **Google Gemini API** | AI-generated health summaries |
 | **HTTP** | REST API communication |
 | **JSON** | Structured API data exchange |
@@ -442,6 +496,223 @@ Halati combines mobile development, backend services, artificial intelligence, A
 | **Git** | Version control |
 | **GitHub** | Source code collaboration |
 | **VS Code** | Development environment |
+
+---
+
+# 💙 Flutter
+
+**Flutter** is the main framework used to build Halati.
+
+Flutter is responsible for:
+
+- User interface development
+- Navigation
+- Forms
+- Responsive layouts
+- User interactions
+- Application logic
+- Cross-platform development
+
+Using Flutter allows Halati to share a single Dart codebase across supported platforms.
+
+---
+
+# 🎯 Dart
+
+**Dart** is the programming language used throughout the application.
+
+Dart handles:
+
+- Application logic
+- Asynchronous operations
+- Data processing
+- API communication
+- JSON processing
+- UI behavior
+- Database communication
+- PDF generation
+- Notification scheduling
+
+---
+
+# 🟢 Supabase
+
+**Supabase** provides the backend infrastructure for Halati.
+
+It is used primarily for:
+
+```text
+Authentication
+      +
+Database
+```
+
+## Authentication
+
+Supabase Authentication handles:
+
+- Sign up
+- Login
+- User sessions
+- Password recovery
+- Authentication events
+
+## Database
+
+The Supabase database stores health-related information entered through the application.
+
+Symptom records can contain information such as:
+
+```text
+condition_name
+location
+severity
+is_repeated
+took_medicine
+medicine_name
+symptom_date
+notes
+```
+
+The application performs database operations including:
+
+- Creating symptom records
+- Reading symptom records
+- Retrieving health history
+- Filtering records by date
+- Ordering records
+- Generating report datasets
+
+---
+
+# 🌐 REST API Integration
+
+Halati communicates with external services using HTTP-based APIs.
+
+The Dart **http** package handles:
+
+- HTTP requests
+- POST requests
+- Request headers
+- JSON request bodies
+- API responses
+- Status codes
+- Error handling
+
+This is primarily used for communication with the **Google Gemini API**.
+
+---
+
+# 🧠 Google Gemini API
+
+**Google Gemini** provides the artificial intelligence functionality used by Halati.
+
+The general workflow is:
+
+```text
+Health Records
+      ↓
+Flutter Application
+      ↓
+Prepare Structured Data
+      ↓
+JSON Encoding
+      ↓
+HTTP Request
+      ↓
+Google Gemini API
+      ↓
+AI-Generated Arabic Summary
+      ↓
+Health Report
+```
+
+This integration demonstrates how generative AI can be incorporated into an application while keeping its role focused on summarizing provided information.
+
+---
+
+# 🔄 JSON Processing
+
+Halati uses JSON when exchanging structured information with external APIs.
+
+Dart provides:
+
+```dart
+dart:convert
+```
+
+for operations such as:
+
+```dart
+jsonEncode()
+jsonDecode()
+```
+
+JSON is particularly important when communicating with Gemini and processing API responses.
+
+---
+
+# 🇸🇦 Arabic & RTL Support
+
+Halati is designed primarily around an Arabic user experience.
+
+The interface uses:
+
+```dart
+TextDirection.rtl
+```
+
+where appropriate to provide natural **Right-to-Left (RTL)** content presentation.
+
+Arabic-compatible typography is also used when generating PDF reports.
+
+This ensures Arabic health information is displayed correctly both inside the application and in generated reports.
+
+---
+
+# 🎨 UI/UX Design
+
+Halati follows a consistent visual identity designed around a calm and friendly healthcare experience.
+
+The interface uses:
+
+- Soft blue backgrounds
+- White rounded cards
+- Dark navy typography
+- Pastel accent colors
+- Consistent spacing
+- Custom Arabic typography
+- Clear visual hierarchy
+- Reusable navigation components
+- Responsive layouts
+
+The design aims to make health information simple, organized, and easy to navigate.
+
+---
+
+# 📱 Responsive Design
+
+Halati uses responsive screen dimensions to adapt interface elements to different screen sizes.
+
+Reusable screen-size utilities calculate dimensions dynamically instead of relying entirely on fixed pixel values.
+
+This helps maintain visual consistency across supported screen sizes.
+
+---
+
+# 🧩 Reusable Components
+
+Reusable Flutter widgets and utilities are used throughout the application.
+
+Examples include:
+
+- Custom bottom navigation
+- Screen size utilities
+- Shared color constants
+- Shared font constants
+- Reusable interface components
+
+This reduces duplicated code and improves maintainability.
 
 ---
 
@@ -591,15 +862,13 @@ GEMINI_API_KEY=YOUR_GEMINI_API_KEY
 
 The real `.env` file should **never be committed to GitHub**.
 
-Add:
+Add the following to `.gitignore`:
 
 ```gitignore
 .env
 ```
 
-to `.gitignore`.
-
-The repository can provide an `.env_example` file containing placeholder values only.
+The repository can provide an `.env_example` containing placeholder values only.
 
 ---
 
@@ -659,7 +928,7 @@ flutter run
 
 Because Halati handles user-provided health information, security and privacy are important considerations.
 
-### Environment Variables
+## Environment Variables
 
 Sensitive configuration values should not be committed to Git.
 
@@ -667,7 +936,7 @@ Sensitive configuration values should not be committed to Git.
 .env
 ```
 
-### API Keys
+## API Keys
 
 Real API keys should never be stored in:
 
@@ -680,11 +949,11 @@ Public repositories
 
 If a secret is accidentally committed, it should be rotated.
 
-### Supabase Security
+## Supabase Security
 
-Supabase **Row Level Security (RLS)** should be configured so authenticated users can only access records they are authorized to access.
+Supabase **Row Level Security (RLS)** should be configured so authenticated users can access only records they are authorized to access.
 
-### Production AI Security
+## Production AI Security
 
 Environment variables bundled with a Flutter client should not be considered secure storage for production secrets.
 
@@ -698,35 +967,39 @@ Secure Backend / Server Function
 Google Gemini API
 ```
 
+This allows the Gemini API key to remain on the server rather than being distributed with the application.
+
 ---
 
 # 🌐 Platform Support
 
 | Platform | Application | Local Notifications |
-|---|---:|---:|
+|:---|:---:|:---:|
 | **Android** | ✅ | ✅ |
-| **Chrome / Web** | ✅ | Not enabled |
-| **iOS** | Flutter project available | Not primary target |
-| **Windows** | Flutter project available | Not primary target |
-| **macOS** | Flutter project available | Not primary target |
-| **Linux** | Flutter project available | Not primary target |
+| **Chrome / Web** | ✅ | Not Enabled |
+| **iOS** | Flutter Project Available | Not Primary Target |
+| **Windows** | Flutter Project Available | Not Primary Target |
+| **macOS** | Flutter Project Available | Not Primary Target |
+| **Linux** | Flutter Project Available | Not Primary Target |
 
 ---
 
 # 🎓 Flutter Bootcamp Final Project
 
-Halati was developed as a **Flutter Bootcamp Final Project** demonstrating practical experience with:
+Halati was developed as a **Flutter Bootcamp Final Project**.
+
+The project demonstrates practical experience with:
 
 ```text
 Flutter Development
         +
 Dart Programming
         +
-Responsive UI
+Responsive UI Development
         +
 Supabase Backend
         +
-Database Integration
+Database Management
         +
 Authentication
         +
@@ -740,6 +1013,8 @@ Local Notifications
         +
 Git & GitHub Collaboration
 ```
+
+Rather than focusing on a single technology, Halati demonstrates how multiple technologies can be integrated to build a complete software solution.
 
 ---
 
