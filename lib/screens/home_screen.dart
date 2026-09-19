@@ -9,6 +9,9 @@ import 'package:final_project/screens/history_screen.dart';
 import 'package:final_project/screens/appointment_screen.dart';
 import 'package:final_project/screens/profile_screen.dart';
 import 'package:final_project/widgets/custom_bottom_navigation.dart';
+import 'package:final_project/screens/notifications_screen.dart';
+import 'package:final_project/services/notification_service.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,20 +21,84 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  DateTime? nextAppointment;
+String? appointmentClinic;
+String? appointmentDoctor;
   List<Map<String, dynamic>> symptoms = [];
 
   bool isLoading = true;
+  bool hasUnreadNotification = false;
+  String formatAppointmentDate(DateTime date) {
+  const months = [
+    'يناير',
+    'فبراير',
+    'مارس',
+    'أبريل',
+    'مايو',
+    'يونيو',
+    'يوليو',
+    'أغسطس',
+    'سبتمبر',
+    'أكتوبر',
+    'نوفمبر',
+    'ديسمبر',
+  ];
+
+  return '${date.day} ${months[date.month - 1]} ${date.year}';
+}
 
   // =========================================================
   // INIT
   // =========================================================
+Future<void> fetchAppointment() async {
+  final user = Supabase.instance.client.auth.currentUser;
+
+  if (user == null) return;
+
+  try {
+    final data = await Supabase.instance.client
+        .from('appointments')
+        .select()
+        .eq('user_id', user.id)
+        .order('updated_at', ascending: false)
+        .limit(1)
+        .maybeSingle();
+
+    if (!mounted) return;
+
+    if (data != null) {
+      setState(() {
+        nextAppointment =
+            DateTime.parse(data['appointment_date']).toLocal();
+
+        appointmentClinic = data['clinic_name'];
+        appointmentDoctor = data['doctor_name'];
+      });
+    }
+  } catch (error) {
+    debugPrint('Error loading appointment: $error');
+  }
+}
 
   @override
   void initState() {
     super.initState();
 
     fetchSymptoms();
+     fetchAppointment();
+     checkNotification();
   }
+
+  Future<void> checkNotification() async {
+  final unread =
+      await NotificationService.hasUnreadNotification();
+
+  if (!mounted) return;
+
+  setState(() {
+    hasUnreadNotification = unread;
+  });
+}
 
   // =========================================================
   // FETCH CURRENT USER SYMPTOMS
@@ -126,11 +193,11 @@ class _HomeScreenState extends State<HomeScreen> {
   // =========================================================
 
   List<Map<String, dynamic>> get latestSymptoms {
-    if (symptoms.length <= 2) {
+    if (symptoms.length <= 4) {
       return symptoms;
     }
 
-    return symptoms.take(2).toList();
+    return symptoms.take(4).toList();
   }
 
   // =========================================================
@@ -327,20 +394,69 @@ class _HomeScreenState extends State<HomeScreen> {
                         // =================================================
                         // NOTIFICATION
                         // =================================================
-                        Container(
-                          width: width * 0.13,
-                          height: width * 0.13,
-                          decoration: BoxDecoration(
-                            color: lightBlueColor,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: whiteColor, width: 2),
-                          ),
-                          child: Icon(
-                            Icons.notifications_none_rounded,
-                            color: homeDarkTextColor,
-                            size: width * 0.065,
-                          ),
-                        ),
+                   Material(
+  color: Colors.transparent,
+  child: InkWell(
+    customBorder: const CircleBorder(),
+
+    onTap: () async {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              const NotificationsScreen(),
+        ),
+      );
+
+      // عندما يرجع المستخدم للـ Home
+      // نتحقق مرة ثانية
+      await checkNotification();
+    },
+
+    child: Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          width: width * 0.13,
+          height: width * 0.13,
+          decoration: BoxDecoration(
+            color: lightBlueColor,
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: whiteColor,
+              width: 2,
+            ),
+          ),
+          child: Icon(
+            Icons.notifications_none_rounded,
+            color: homeDarkTextColor,
+            size: width * 0.065,
+          ),
+        ),
+
+        // النقطة الحمراء تظهر فقط
+        // إذا إشعار اليوم غير مقروء
+        if (hasUnreadNotification)
+          Positioned(
+            top: 0,
+            right: 0,
+            child: Container(
+              width: width * 0.035,
+              height: width * 0.035,
+              decoration: BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: whiteColor,
+                  width: 2,
+                ),
+              ),
+            ),
+          ),
+      ],
+    ),
+  ),
+),
                       ],
                     ),
 
@@ -352,14 +468,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const AppointmentScreen(),
-                            ),
-                          );
-                        },
+                        onTap: () async {
+  await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const AppointmentScreen(),
+    ),
+  );
+
+  await fetchAppointment();
+},
                         borderRadius: BorderRadius.circular(width * 0.05),
                         child: Container(
                           width: double.infinity,
@@ -407,7 +525,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     SizedBox(height: height * 0.004),
 
                                     Text(
-                                      'متابعة صحية',
+                                     appointmentClinic?.isNotEmpty == true
+      ? appointmentClinic!
+      : 'متابعة صحية',
                                       style: TextStyle(
                                         fontFamily: thmanyahFont,
                                         fontSize: width * 0.036,
@@ -423,7 +543,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text(
-                                    '15 سبتمبر 2026',
+                                    nextAppointment != null
+      ? formatAppointmentDate(nextAppointment!)
+      : 'لا يوجد موعد',
                                     style: TextStyle(
                                       fontFamily: thmanyahFont,
                                       fontSize: width * 0.034,
@@ -434,15 +556,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                   SizedBox(height: height * 0.004),
 
-                                  Text(
-                                    '10:30 ص',
-                                    style: TextStyle(
-                                      fontFamily: thmanyahFont,
-                                      fontSize: width * 0.034,
-                                      fontWeight: FontWeight.w500,
-                                      color: homeDarkTextColor,
-                                    ),
-                                  ),
                                 ],
                               ),
                             ],
@@ -758,4 +871,4 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-}
+} 

@@ -107,77 +107,99 @@ class _HistoryScreenState extends State<HistoryScreen> {
   // =========================================================
 
   List<Map<String, dynamic>> get filteredSymptoms {
-    List<Map<String, dynamic>> result = List<Map<String, dynamic>>.from(
-      symptoms,
+  List<Map<String, dynamic>> result =
+      List<Map<String, dynamic>>.from(symptoms);
+
+  // =====================================================
+  // SEARCH
+  // =====================================================
+
+  final search = searchController.text.trim().toLowerCase();
+
+  if (search.isNotEmpty) {
+    result = result.where((symptom) {
+      final condition =
+          (symptom['condition_name'] ?? '').toString().toLowerCase();
+
+      final location =
+          (symptom['location'] ?? '').toString().toLowerCase();
+
+      final notes =
+          (symptom['notes'] ?? '').toString().toLowerCase();
+
+      final medicine =
+          (symptom['medicine_name'] ?? '').toString().toLowerCase();
+
+      return condition.contains(search) ||
+          location.contains(search) ||
+          notes.contains(search) ||
+          medicine.contains(search);
+    }).toList();
+  }
+
+  // =====================================================
+  // DATE FILTER
+  // =====================================================
+
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+
+  // =====================================================
+  // هذا الأسبوع
+  // من الاثنين إلى الأحد
+  // =====================================================
+
+  if (selectedFilter == 1) {
+    final startOfWeek = today.subtract(
+      Duration(days: today.weekday - 1),
     );
 
-    // =====================================================
-    // SEARCH
-    // =====================================================
+    final endOfWeek = startOfWeek.add(
+      const Duration(days: 7),
+    );
 
-    final search = searchController.text.trim().toLowerCase();
+    result = result.where((symptom) {
+      final parsedDate =
+          DateTime.tryParse(symptom['symptom_date'].toString());
 
-    if (search.isNotEmpty) {
-      result = result.where((symptom) {
-        final condition = (symptom['condition_name'] ?? '')
-            .toString()
-            .toLowerCase();
+      if (parsedDate == null) {
+        return false;
+      }
 
-        final location = (symptom['location'] ?? '').toString().toLowerCase();
+      final date = DateTime(
+        parsedDate.year,
+        parsedDate.month,
+        parsedDate.day,
+      );
 
-        final notes = (symptom['notes'] ?? '').toString().toLowerCase();
-
-        final medicine = (symptom['medicine_name'] ?? '')
-            .toString()
-            .toLowerCase();
-
-        return condition.contains(search) ||
-            location.contains(search) ||
-            notes.contains(search) ||
-            medicine.contains(search);
-      }).toList();
-    }
-
-    // =====================================================
-    // DATE FILTER
-    // =====================================================
-
-    final now = DateTime.now();
-
-    // هذا الأسبوع
-    if (selectedFilter == 1) {
-      final startOfWeek = DateTime(
-        now.year,
-        now.month,
-        now.day,
-      ).subtract(Duration(days: now.weekday - 1));
-
-      result = result.where((symptom) {
-        final date = DateTime.tryParse(symptom['symptom_date'].toString());
-
-        if (date == null) {
-          return false;
-        }
-
-        return date.isAfter(startOfWeek.subtract(const Duration(seconds: 1)));
-      }).toList();
-    }
-
-    // هذا الشهر
-    if (selectedFilter == 2) {
-      result = result.where((symptom) {
-        final date = DateTime.tryParse(symptom['symptom_date'].toString());
-
-        if (date == null) {
-          return false;
-        }
-
-        return date.year == now.year && date.month == now.month;
-      }).toList();
-    }
-
-    return result;
+      return !date.isBefore(startOfWeek) &&
+          date.isBefore(endOfWeek);
+    }).toList();
   }
+
+  // =====================================================
+  // هذا الشهر
+  // =====================================================
+
+  else if (selectedFilter == 2) {
+    result = result.where((symptom) {
+      final parsedDate =
+          DateTime.tryParse(symptom['symptom_date'].toString());
+
+      if (parsedDate == null) {
+        return false;
+      }
+
+      return parsedDate.year == now.year &&
+          parsedDate.month == now.month;
+    }).toList();
+  }
+
+  // selectedFilter == 0
+  // ما نسوي فلترة = الكل
+
+  return result;
+}
 
   // =========================================================
   // DATE FORMAT
@@ -741,29 +763,28 @@ class _HistoryScreenState extends State<HistoryScreen> {
         // =====================================================
         // OPEN CONDITION DETAILS
         // =====================================================
-        onTap: () {
-          Navigator.push(
-            context,
+onTap: () async {
+  final result = await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ConditionDetailsScreen(
+        symptomId: symptom['id'].toString(),
+        title: title,
+        date: date,
+        severity: severity,
+        color: color,
+        location: (symptom['location'] ?? 'غير محدد').toString(),
+        isRepeated: symptom['is_repeated'] == true,
+        medicineName: symptom['medicine_name']?.toString(),
+        notes: symptom['notes']?.toString(),
+      ),
+    ),
+  );
 
-            MaterialPageRoute(
-              builder: (context) => ConditionDetailsScreen(
-                title: title,
-                date: date,
-                severity: severity,
-                color: color,
-
-                // بيانات Supabase الحقيقية
-                location: (symptom['location'] ?? 'غير محدد').toString(),
-
-                isRepeated: symptom['is_repeated'] == true,
-
-                medicineName: symptom['medicine_name']?.toString(),
-
-                notes: symptom['notes']?.toString(),
-              ),
-            ),
-          );
-        },
+  if (result == true) {
+    await fetchSymptoms();
+  }
+},
 
         child: Padding(
           padding: EdgeInsets.symmetric(

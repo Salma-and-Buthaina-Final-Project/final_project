@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:final_project/constants/colors.dart';
 import 'package:final_project/constants/fonts.dart';
 import 'package:final_project/utils/screen_size.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ConditionDetailsScreen extends StatelessWidget {
   final String title;
@@ -15,9 +16,11 @@ class ConditionDetailsScreen extends StatelessWidget {
   final bool isRepeated;
   final String? medicineName;
   final String? notes;
+  final String symptomId;
 
   const ConditionDetailsScreen({
     super.key,
+     required this.symptomId,
     required this.title,
     required this.date,
     required this.severity,
@@ -126,17 +129,6 @@ class ConditionDetailsScreen extends StatelessWidget {
                 color: whiteColor,
               ),
             ),
-
-            actions: [
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.more_vert_rounded,
-                  color: whiteColor,
-                  size: width * 0.065,
-                ),
-              ),
-            ],
           ),
 
           // =====================================================
@@ -514,47 +506,51 @@ class ConditionDetailsScreen extends StatelessWidget {
 
                     SizedBox(width: width * 0.025),
 
-                    // =============================================
-                    // DELETE
-                    // =============================================
+                  // =============================================
+// DELETE
+// =============================================
 
-                    Expanded(
-                      child: SizedBox(
-                        height: height * 0.062,
-                        child: OutlinedButton.icon(
-                          onPressed: () {
-                            _showDeleteDialog(
-                              context,
-                              width,
-                            );
-                          },
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: homeDarkTextColor,
-                            side: const BorderSide(
-                              color: homePinkColor,
-                              width: 1.5,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                width * 0.04,
-                              ),
-                            ),
-                          ),
-                          icon: Icon(
-                            Icons.delete_outline_rounded,
-                            size: width * 0.05,
-                          ),
-                          label: Text(
-                            'حذف',
-                            style: TextStyle(
-                              fontFamily: thmanyahFont,
-                              fontSize: width * 0.041,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+Expanded(
+  child: SizedBox(
+    height: height * 0.062,
+    child: ElevatedButton.icon(
+      onPressed: () {
+        _showDeleteDialog(
+          context,
+          width,
+        );
+      },
+
+      style: ElevatedButton.styleFrom(
+        backgroundColor: whiteColor,
+        foregroundColor: Colors.red,
+        elevation: 0,
+        side: BorderSide.none,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(
+            width * 0.04,
+          ),
+        ),
+      ),
+
+      icon: Icon(
+        Icons.delete_outline_rounded,
+        color: Colors.red,
+        size: width * 0.05,
+      ),
+
+      label: Text(
+        'حذف',
+        style: TextStyle(
+          fontFamily: thmanyahFont,
+          fontSize: width * 0.041,
+          fontWeight: FontWeight.w700,
+          color: Colors.red,
+        ),
+      ),
+    ),
+  ),
+),
                   ],
                 ),
 
@@ -697,80 +693,175 @@ class ConditionDetailsScreen extends StatelessWidget {
   // DELETE DIALOG
   // =========================================================
 
-  void _showDeleteDialog(
-    BuildContext context,
-    double width,
-  ) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: AlertDialog(
-            backgroundColor: cardColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(
-                width * 0.05,
-              ),
-            ),
+void _showDeleteDialog(
+  BuildContext context,
+  double width,
+) {
+  showDialog(
+    context: context,
+    builder: (dialogContext) {
+      return Directionality(
+        textDirection: TextDirection.rtl,
+        child: AlertDialog(
+          backgroundColor: cardColor,
 
-            title: Text(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
+              width * 0.05,
+            ),
+          ),
+
+          // العنوان
+          title: Center(
+            child: Text(
               'حذف العرض',
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: thmanyahFont,
-                fontSize: width * 0.05,
                 fontWeight: FontWeight.w700,
                 color: homeDarkTextColor,
               ),
             ),
-
-            content: Text(
-              'هل أنتِ متأكدة من حذف هذا العرض؟',
-              style: TextStyle(
-                fontFamily: thmanyahFont,
-                fontSize: width * 0.04,
-                fontWeight: FontWeight.w500,
-                color: homeDarkTextColor,
-              ),
-            ),
-
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(dialogContext);
-                },
-                child: Text(
-                  'إلغاء',
-                  style: TextStyle(
-                    fontFamily: thmanyahFont,
-                    fontSize: width * 0.038,
-                    color: homeDarkTextColor,
-                  ),
-                ),
-              ),
-
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(dialogContext);
-
-                  // حالياً يرجع فقط للسجل
-                  // نربط الحذف الحقيقي مع Supabase لاحقاً
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  'حذف',
-                  style: TextStyle(
-                    fontFamily: thmanyahFont,
-                    fontSize: width * 0.038,
-                    fontWeight: FontWeight.w700,
-                    color: homeDarkTextColor,
-                  ),
-                ),
-              ),
-            ],
           ),
-        );
-      },
-    );
-  }
+
+          // الرسالة
+          content: Text(
+            'هل أنت متأكد من حذف هذا العرض؟',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: thmanyahFont,
+              color: homeGreyColor,
+            ),
+          ),
+
+          actionsPadding: EdgeInsets.only(
+            right: width * 0.04,
+            left: width * 0.04,
+            bottom: width * 0.04,
+          ),
+
+          actions: [
+            Row(
+              children: [
+                // إلغاء
+                Expanded(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pop(dialogContext);
+                    },
+                    child: Text(
+                      'إلغاء',
+                      style: TextStyle(
+                        fontFamily: thmanyahFont,
+                        fontWeight: FontWeight.w600,
+                        color: homeGreyColor,
+                      ),
+                    ),
+                  ),
+                ),
+
+                SizedBox(
+                  width: width * 0.02,
+                ),
+
+                // حذف
+                Expanded(
+                  child: TextButton(
+                    onPressed: () async {
+                      try {
+                        final user =
+                            Supabase.instance.client.auth.currentUser;
+
+                        if (user == null) {
+                          throw Exception(
+                            'المستخدم غير مسجل الدخول',
+                          );
+                        }
+
+                        final deleted = await Supabase
+                            .instance.client
+                            .from('symptoms')
+                            .delete()
+                            .eq('id', symptomId)
+                            .eq('user_id', user.id)
+                            .select();
+
+                        debugPrint(
+                          'symptomId: $symptomId',
+                        );
+
+                        debugPrint(
+                          'userId: ${user.id}',
+                        );
+
+                        debugPrint(
+                          'deleted: $deleted',
+                        );
+
+                        if (!context.mounted) return;
+
+                        if (deleted.isEmpty) {
+                          Navigator.pop(dialogContext);
+
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'لم يتم حذف العرض',
+                                textDirection:
+                                    TextDirection.rtl,
+                              ),
+                            ),
+                          );
+
+                          return;
+                        }
+
+                        // إغلاق نافذة التأكيد
+                        Navigator.pop(dialogContext);
+
+                        // الرجوع إلى السجل وإرسال true
+                        Navigator.pop(
+                          context,
+                          true,
+                        );
+                      } catch (error) {
+                        debugPrint(
+                          'DELETE ERROR: $error',
+                        );
+
+                        if (!context.mounted) return;
+
+                        Navigator.pop(dialogContext);
+
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'خطأ أثناء الحذف: $error',
+                              textDirection:
+                                  TextDirection.rtl,
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    child: Text(
+                      'حذف',
+                      style: TextStyle(
+                        fontFamily: thmanyahFont,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
 }

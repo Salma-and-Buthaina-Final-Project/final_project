@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:final_project/constants/colors.dart';
 import 'package:final_project/constants/fonts.dart';
 import 'package:final_project/utils/screen_size.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AppointmentScreen extends StatefulWidget {
   const AppointmentScreen({super.key});
@@ -14,10 +15,94 @@ class AppointmentScreen extends StatefulWidget {
 class _AppointmentScreenState extends State<AppointmentScreen> {
   // موعد المراجعة القادمة فقط
   DateTime nextAppointment = DateTime(2026, 9, 15);
+  String? appointmentId;
+bool isLoading = true;
+
+Future<void> saveAppointment() async {
+  final user = Supabase.instance.client.auth.currentUser;
+
+  if (user == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('يجب تسجيل الدخول أولاً'),
+      ),
+    );
+    return;
+  }
+
+  try {
+    final appointmentData = {
+      'user_id': user.id,
+      'appointment_date':
+          nextAppointment.toIso8601String(),
+
+      'doctor_name':
+          doctorController.text.trim().isEmpty
+              ? null
+              : doctorController.text.trim(),
+
+      'clinic_name':
+          clinicController.text.trim().isEmpty
+              ? null
+              : clinicController.text.trim(),
+
+      'notes':
+          notesController.text.trim().isEmpty
+              ? null
+              : notesController.text.trim(),
+
+      'updated_at':
+          DateTime.now().toIso8601String(),
+    };
+
+    // يوجد موعد سابق -> تعديل
+    if (appointmentId != null) {
+      await Supabase.instance.client
+          .from('appointments')
+          .update(appointmentData)
+          .eq('id', appointmentId!);
+    }
+
+    // لا يوجد موعد -> إنشاء أول موعد
+    else {
+      final data = await Supabase.instance.client
+          .from('appointments')
+          .insert(appointmentData)
+          .select()
+          .single();
+
+      appointmentId = data['id'];
+    }
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('تم حفظ تعديلات الموعد بنجاح'),
+      ),
+    );
+  } catch (error) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'حدث خطأ أثناء حفظ الموعد: $error',
+        ),
+      ),
+    );
+  }
+}
 
   final TextEditingController doctorController = TextEditingController();
   final TextEditingController clinicController = TextEditingController();
   final TextEditingController notesController = TextEditingController();
+
+@override
+void initState() {
+  super.initState();
+  loadAppointment();
+}
 
   @override
   void dispose() {
@@ -31,34 +116,68 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     return '${date.day} سبتمبر ${date.year}';
   }
 
-  // =========================================================
-  // اختيار موعد المراجعة
-  // =========================================================
-  Future<void> _selectNextAppointment() async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: nextAppointment,
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2035),
+  Future<void> loadAppointment() async {
+  final user = Supabase.instance.client.auth.currentUser;
 
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            textTheme: Theme.of(context).textTheme
-                .apply(fontFamily: thmanyahFont),
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (pickedDate != null) {
+  if (user == null) {
+    if (mounted) {
       setState(() {
-        nextAppointment = pickedDate;
+        isLoading = false;
       });
     }
+    return;
   }
 
+  try {
+    final data = await Supabase.instance.client
+        .from('appointments')
+        .select()
+        .eq('user_id', user.id)
+        .order('updated_at', ascending: false)
+        .limit(1)
+        .maybeSingle();
+
+    if (!mounted) return;
+
+    if (data != null) {
+      setState(() {
+        appointmentId = data['id'];
+
+        nextAppointment =
+            DateTime.parse(data['appointment_date']).toLocal();
+
+        doctorController.text =
+            data['doctor_name'] ?? '';
+
+        clinicController.text =
+            data['clinic_name'] ?? '';
+
+        notesController.text =
+            data['notes'] ?? '';
+
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  } catch (error) {
+    if (!mounted) return;
+
+    setState(() {
+      isLoading = false;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'حدث خطأ أثناء تحميل الموعد: $error',
+        ),
+      ),
+    );
+  }
+}
   @override
   Widget build(BuildContext context) {
     final width = screenWidth(context);
@@ -119,19 +238,34 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   // =================================================
                   // NEXT APPOINTMENT
                   // =================================================
-                  InkWell(
-                    onTap: _selectNextAppointment,
-                    borderRadius: BorderRadius.circular(width * 0.045),
-                    child: _appointmentCard(
-                      width: width,
-                      height: height,
-                      title: 'موعد المراجعة القادمة',
-                      date: _formatDate(nextAppointment),
-                      subtitle: 'اضغط لتعديل التاريخ',
-                      color: homeGreenColor,
-                      icon: Icons.event_available_outlined,
-                    ),
-                  ),
+                  GestureDetector(
+  behavior: HitTestBehavior.opaque,
+  onTap: () async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: nextAppointment.isBefore(DateTime.now())
+          ? DateTime.now()
+          : nextAppointment,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2035),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        nextAppointment = pickedDate;
+      });
+    }
+  },
+  child: _appointmentCard(
+    width: width,
+    height: height,
+    title: 'موعد المراجعة القادمة',
+    date: _formatDate(nextAppointment),
+    subtitle: 'اضغط لتعديل التاريخ',
+    color: homeGreenColor,
+    icon: Icons.event_available_outlined,
+  ),
+),
 
                   SizedBox(height: height * 0.025),
 
@@ -219,33 +353,29 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   SizedBox(
                     height: height * 0.065,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // نربطه مع Supabase لاحقاً
+  onPressed: saveAppointment,
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('تم حفظ موعد المراجعة')),
-                        );
-                      },
+  style: ElevatedButton.styleFrom(
+    backgroundColor: homePrimaryColor,
+    foregroundColor: whiteColor,
+    elevation: 0,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(
+        width * 0.04,
+      ),
+    ),
+  ),
 
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: homePrimaryColor,
-                        foregroundColor: whiteColor,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(width * 0.04),
-                        ),
-                      ),
-
-                      child: Text(
-                        'حفظ الموعد',
-                        style: TextStyle(
-                          fontFamily: thmanyahFont,
-                          fontSize: width * 0.045,
-                          fontWeight: FontWeight.w700,
-                          color: whiteColor,
-                        ),
-                      ),
-                    ),
+  child: Text(
+    'حفظ الموعد',
+    style: TextStyle(
+      fontFamily: thmanyahFont,
+      fontSize: width * 0.045,
+      fontWeight: FontWeight.w700,
+      color: whiteColor,
+    ),
+  ),
+),
                   ),
 
                   SizedBox(height: height * 0.03),

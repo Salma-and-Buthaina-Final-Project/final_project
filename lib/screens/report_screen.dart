@@ -39,11 +39,15 @@ class _ReportScreenState extends State<ReportScreen> {
   DateTime? lastDate;
   DateTime? selectedFromDate;
 DateTime? selectedToDate;
+DateTime? reportFromDate;
+DateTime? reportToDate;
+
+bool hasGeneratedPeriodReport = false;
 
   @override
   void initState() {
     super.initState();
-    fetchReportData();
+    isLoading = false;
    
   }
 
@@ -60,15 +64,18 @@ Future<void> selectFromDate() async {
   );
 
   if (picked != null) {
-    setState(() {
-      selectedFromDate = picked;
+  setState(() {
+    selectedFromDate = picked;
 
-      if (selectedToDate != null &&
-          selectedToDate!.isBefore(picked)) {
-        selectedToDate = null;
-      }
-    });
-  }
+    hasGeneratedPeriodReport = false;
+    aiSummary = null;
+
+    if (selectedToDate != null &&
+        selectedToDate!.isBefore(picked)) {
+      selectedToDate = null;
+    }
+  });
+}
 }
 
 Future<void> selectToDate() async {
@@ -81,55 +88,87 @@ Future<void> selectToDate() async {
   );
 
   if (picked != null) {
-    setState(() {
-      selectedToDate = picked;
-    });
-  }
+  setState(() {
+    selectedToDate = picked;
+
+    hasGeneratedPeriodReport = false;
+    aiSummary = null;
+  });
+}
 }
 
-  Future<void> fetchReportData() async {
+Future<void> fetchReportData() async {
   try {
+    final user = Supabase.instance.client.auth.currentUser;
+
+    if (user == null) {
+      setState(() {
+        isLoading = false;
+        errorMessage = 'المستخدم غير مسجل الدخول';
+      });
+      return;
+    }
+
+    if (selectedFromDate == null || selectedToDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'الرجاء تحديد الفترة أولاً',
+            textDirection: TextDirection.rtl,
+            style: TextStyle(
+              fontFamily: thmanyahFont,
+            ),
+          ),
+        ),
+      );
+      return;
+    }
+
     setState(() {
       isLoading = true;
       errorMessage = null;
       aiSummary = null;
+
+      // مهم: تنظيف التقرير القديم قبل تحميل الجديد
+      records = [];
+      symptoms = [];
+      medicines = [];
+      symptomTypesCount = 0;
+      repeatedCount = 0;
+      averageSeverity = 0;
     });
 
-    var query = Supabase.instance.client
-        .from('symptoms')
-        .select();
-
-    if (selectedFromDate != null) {
-      final from = DateTime(
-        selectedFromDate!.year,
-        selectedFromDate!.month,
-        selectedFromDate!.day,
-      );
-
-      query = query.gte(
-        'symptom_date',
-        from.toIso8601String(),
-      );
-    }
-
-    if (selectedToDate != null) {
-      // بداية اليوم التالي، حتى ندخل كامل اليوم المختار.
-      final nextDay = DateTime(
-        selectedToDate!.year,
-        selectedToDate!.month,
-        selectedToDate!.day + 1,
-      );
-
-      query = query.lt(
-        'symptom_date',
-        nextDay.toIso8601String(),
-      );
-    }
-
-    final response = await query.order(
-      'symptom_date',
-      ascending: true,
+    // بداية اليوم المختار
+    final from = DateTime(
+      selectedFromDate!.year,
+      selectedFromDate!.month,
+      selectedFromDate!.day,
     );
+
+    // بداية اليوم التالي لتاريخ النهاية
+    // حتى يدخل كامل اليوم الأخير
+    final toExclusive = DateTime(
+      selectedToDate!.year,
+      selectedToDate!.month,
+      selectedToDate!.day,
+    ).add(const Duration(days: 1));
+
+    final response = await Supabase.instance.client
+        .from('symptoms')
+        .select()
+        .eq('user_id', user.id)
+        .gte(
+          'symptom_date',
+          from.toIso8601String(),
+        )
+        .lt(
+          'symptom_date',
+          toExclusive.toIso8601String(),
+        )
+        .order(
+          'symptom_date',
+          ascending: true,
+        );
 
     final data =
         List<Map<String, dynamic>>.from(response);
@@ -140,8 +179,25 @@ Future<void> selectToDate() async {
 
     setState(() {
       records = data;
+
+      reportFromDate = selectedFromDate;
+      reportToDate = selectedToDate;
+      hasGeneratedPeriodReport = true;
+
       isLoading = false;
     });
+
+    debugPrint(
+      'REPORT RECORDS: ${data.length}',
+    );
+
+    for (final record in data) {
+      debugPrint(
+        'REPORT SYMPTOM: '
+        '${record['condition_name']} - '
+        '${record['symptom_date']}',
+      );
+    }
   } catch (error) {
     if (!mounted) return;
 
@@ -149,17 +205,55 @@ Future<void> selectToDate() async {
       isLoading = false;
       errorMessage = error.toString();
     });
+
+    debugPrint('REPORT ERROR: $error');
   }
 }
+
 Future<void> generateAiSummary() async {
-  if (records.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('لا توجد بيانات لتحليلها'),
+  if (selectedFromDate == null || selectedToDate == null) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text(
+        'الرجاء تحديد فترة التقرير أولاً',
+        textDirection: TextDirection.rtl,
+        style: TextStyle(
+          fontFamily: thmanyahFont,
+        ),
       ),
-    );
-    return;
-  }
+    ),
+  );
+  return;
+}
+if (!hasGeneratedPeriodReport) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text(
+        'الرجاء الضغط على إنشاء تقرير الفترة أولاً',
+        textDirection: TextDirection.rtl,
+        style: TextStyle(
+          fontFamily: thmanyahFont,
+        ),
+      ),
+    ),
+  );
+
+  return;
+}
+if (records.isEmpty) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text(
+        'لا توجد بيانات في الفترة المحددة',
+        textDirection: TextDirection.rtl,
+        style: TextStyle(
+          fontFamily: thmanyahFont,
+        ),
+      ),
+    ),
+  );
+  return;
+}
 
   final apiKey = dotenv.env['GEMINI_API_KEY'];
 
@@ -193,22 +287,53 @@ Future<void> generateAiSummary() async {
     }).toList();
 
     final prompt = '''
-أنت مساعد يقوم بتلخيص سجلات الأعراض الصحية للمستخدم.
+أنت مساعد يقوم بتلخيص سجلات الأعراض الصحية للمستخدم لإضافتها إلى تقرير صحي يمكن عرضه على الطبيب.
 
-قم بكتابة ملخص عربي واضح ومختصر للسجلات التالية.
+فترة التقرير المحددة:
+من ${_formatArabicDate(reportFromDate!)}
+إلى ${_formatArabicDate(reportToDate!)}
 
-التعليمات:
+مهم جداً:
+حلل فقط السجلات الموجودة ضمن هذه الفترة، ولا تتحدث عن أي فترة أخرى.
+
+اكتب التقرير بالشكل التالي:
+
+• فترة التقرير:
+من ${_formatArabicDate(reportFromDate!)} إلى ${_formatArabicDate(reportToDate!)}
+
+• الأعراض المسجلة:
+اذكر جميع أنواع الأعراض الموجودة في السجلات وعدد مرات تسجيل كل عرض، وحدد الأكثر تكراراً.
+
+• شدة الأعراض:
+لخص مستويات الشدة المسجلة، ووضح متوسط الشدة وأي اختلافات واضحة بينها.
+
+• الحالات المتكررة:
+اذكر الحالات المسجلة كحالات متكررة، إن وجدت.
+
+• مواقع الأعراض:
+اذكر أماكن الأعراض المسجلة واربط كل موقع بالعرض المرتبط به عندما تسمح البيانات بذلك.
+
+• الأدوية المستخدمة:
+اذكر الأدوية المسجلة خلال هذه الفترة والأعراض المرتبطة بها إذا كانت هذه العلاقة موجودة بوضوح في البيانات.
+
+• الملاحظات:
+لخص الملاحظات المهمة التي سجلها المستخدم دون إضافة أي معلومات جديدة.
+
+• النمط الزمني:
+اذكر أي تكرار أو تغير زمني واضح خلال الفترة فقط إذا كان مدعوماً بالسجلات.
+
+• خلاصة الفترة:
+اكتب خلاصة موجزة لأهم ما يظهر في سجلات هذه الفترة.
+
+قواعد مهمة:
+- استخدم نقاطاً واضحة ومرتبة.
 - لا تقدم تشخيصاً طبياً.
-- لا تقترح أن المستخدم مصاب بمرض معين.
-- لا تخترع أي معلومات غير موجودة في السجلات.
-- اذكر الأعراض الأكثر تكراراً.
-- صف شدة الأعراض بشكل عام.
-- اذكر الحالات المتكررة إن وجدت.
-- اذكر الأدوية المسجلة فقط إن وجدت.
-- اذكر الأنماط الزمنية فقط إذا كانت واضحة من البيانات.
-- اجعل النص مناسباً لإضافته إلى تقرير صحي يمكن عرضه على الطبيب.
-- استخدم لغة عربية واضحة ومهنية.
-- اجعل الملخص فقرة قصيرة وليس قائمة.
+- لا تقترح وجود مرض معين.
+- لا تقدم علاجاً أو توصيات طبية.
+- لا تخترع أي معلومات.
+- اعتمد حصراً على السجلات المقدمة.
+- لا تذكر قسماً لا توجد له معلومات.
+- استخدم لغة عربية واضحة ومهنية ومناسبة لتقرير صحي.
 
 السجلات:
 ${jsonEncode(cleanRecords)}
@@ -238,11 +363,17 @@ ${jsonEncode(cleanRecords)}
       }),
     );
 
-    if (response.statusCode != 200) {
-      throw Exception(
-        'Gemini Error ${response.statusCode}: ${response.body}',
-      );
-    }
+   if (response.statusCode == 503) {
+  throw Exception(
+    'الخدمة مشغولة حالياً، الرجاء المحاولة مرة أخرى بعد قليل',
+  );
+}
+
+if (response.statusCode != 200) {
+  throw Exception(
+    'تعذر إنشاء الملخص الذكي، الرجاء المحاولة مرة أخرى',
+  );
+}
 
     final data = jsonDecode(response.body);
 
@@ -416,13 +547,15 @@ ${jsonEncode(cleanRecords)}
     return '${date.day} ${months[date.month]} ${date.year}';
   }
 
-  String get dateRangeText {
-    if (firstDate == null || lastDate == null) {
-      return 'لا توجد بيانات';
-    }
-
-    return '${_formatArabicDate(firstDate!)} - ${_formatArabicDate(lastDate!)}';
+ String get dateRangeText {
+  if (reportFromDate != null &&
+      reportToDate != null) {
+    return 'من ${_formatArabicDate(reportFromDate!)} '
+        'إلى ${_formatArabicDate(reportToDate!)}';
   }
+
+  return 'لم يتم تحديد فترة التقرير';
+}
 
   // =========================================================
   // SYMPTOM ICON
@@ -589,37 +722,67 @@ ${jsonEncode(cleanRecords)}
 
       SizedBox(height: height * 0.015),
 
-      SizedBox(
-        width: double.infinity,
-        child: ElevatedButton.icon(
-          onPressed:
-              selectedFromDate != null &&
-                      selectedToDate != null
-                  ? fetchReportData
-                  : null,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: homePrimaryColor,
-            foregroundColor: whiteColor,
-          ),
-          icon: const Icon(
-            Icons.filter_alt_outlined,
-          ),
-          label: Text(
-            'إنشاء تقرير الفترة',
-            style: TextStyle(
-              fontFamily: thmanyahFont,
-              fontWeight: FontWeight.w700,
+     SizedBox(
+  width: double.infinity,
+  child: ElevatedButton.icon(
+    onPressed: () async {
+      if (selectedFromDate == null ||
+          selectedToDate == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'الرجاء تحديد الفترة أولاً',
+              textDirection: TextDirection.rtl,
+              style: TextStyle(
+                fontFamily: thmanyahFont,
+              ),
             ),
           ),
+        );
+
+        return;
+      }
+
+      await fetchReportData();
+    },
+
+    style: ElevatedButton.styleFrom(
+      backgroundColor: homePrimaryColor,
+      foregroundColor: whiteColor,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(
+          width * 0.035,
         ),
       ),
-    ],
+    ),
+
+    icon: const Icon(
+      Icons.filter_alt_outlined,
+      color: whiteColor,
+    ),
+
+   label: const Text(
+  'إنشاء تقرير الفترة',
+  style: TextStyle(
+    fontFamily: thmanyahFont,
+    fontWeight: FontWeight.w700,
+    color: whiteColor,
   ),
+),
+  ),
+),
+
+// إغلاق Column حق كرت تحديد الفترة
+],
+),
+
+// إغلاق Container حق كرت تحديد الفترة
 ),
 
 SizedBox(height: height * 0.025),
 
-                    if (isLoading)
+if (isLoading)
                       SizedBox(
                         height: height * 0.6,
                         child: const Center(
@@ -990,77 +1153,35 @@ SizedBox(height: height * 0.035),
                       // PDF BUTTONS
                       // ===========================================
 
-                      Row(
-                        children: [
-                          Expanded(
-                            child: SizedBox(
-                              height: height * 0.065,
-                              child: ElevatedButton.icon(
-  onPressed: generatePdf,
-  style: ElevatedButton.styleFrom(
-    elevation: 0,
-    backgroundColor: homePrimaryColor,
-    foregroundColor: whiteColor,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(
-        width * 0.04,
+SizedBox(
+  width: double.infinity,
+  height: height * 0.065,
+  child: ElevatedButton.icon(
+    onPressed: generatePdf,
+    style: ElevatedButton.styleFrom(
+      elevation: 0,
+      backgroundColor: homePrimaryColor,
+      foregroundColor: whiteColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(
+          width * 0.04,
+        ),
+      ),
+    ),
+    icon: Icon(
+      Icons.download_rounded,
+      size: width * 0.05,
+    ),
+    label: Text(
+      'تصدير PDF',
+      style: TextStyle(
+        fontFamily: thmanyahFont,
+        fontSize: width * 0.039,
+        fontWeight: FontWeight.w700,
       ),
     ),
   ),
-  icon: Icon(
-    Icons.download_rounded,
-    size: width * 0.055,
-  ),
-  label: Text(
-    'تصدير PDF',
-    style: TextStyle(
-      fontFamily: thmanyahFont,
-      fontSize: width * 0.039,
-      fontWeight: FontWeight.w700,
-    ),
-  ),
 ),
-                            ),
-                          ),
-
-                          SizedBox(width: width * 0.03),
-
-                          Expanded(
-                            child: SizedBox(
-                              height: height * 0.065,
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  // المشاركة لاحقاً
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  elevation: 0,
-                                  backgroundColor:
-                                      homePrimaryColor,
-                                  foregroundColor: whiteColor,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                          width * 0.04,
-                                        ),
-                                  ),
-                                ),
-                                icon: Icon(
-                                  Icons.ios_share_rounded,
-                                  size: width * 0.05,
-                                ),
-                                label: Text(
-                                  'مشاركة PDF',
-                                  style: TextStyle(
-                                    fontFamily: thmanyahFont,
-                                    fontSize: width * 0.039,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                     ],
 
                     SizedBox(height: height * 0.025),
@@ -1123,7 +1244,7 @@ SizedBox(height: height * 0.035),
                 fontFamily: thmanyahFont,
                 fontSize: width * 0.032,
                 fontWeight: FontWeight.w600,
-                color: homeDarkTextColor,
+                color: whiteColor,
               ),
             ),
           ),
@@ -1215,10 +1336,12 @@ SizedBox(height: height * 0.035),
     // PDF COLORS
     // ==========================================
 
-    final lightBlue = PdfColor.fromHex('#DCEFF8');
-    final lighterBlue = PdfColor.fromHex('#F1F8FC');
-    final darkBlue = PdfColor.fromHex('#315B70');
-    final borderBlue = PdfColor.fromHex('#A9D3E6');
+   final primaryPurple = PdfColor.fromHex('#788ABD');
+final lightPurple = PdfColor.fromHex('#E7E9F5');
+final lighterPurple = PdfColor.fromHex('#F5F5FA');
+final darkPurple = PdfColor.fromHex('#172A4D');
+final borderPurple = PdfColor.fromHex('#C9CDE3');
+final white = PdfColors.white;
 
     // ==========================================
     // ADD PDF PAGE
@@ -1238,7 +1361,7 @@ SizedBox(height: height * 0.035),
             return pw.FullPage(
               ignoreMargins: true,
               child: pw.Container(
-                color: lighterBlue,
+               color: lighterPurple,
               ),
             );
           },
@@ -1257,10 +1380,10 @@ SizedBox(height: height * 0.035),
                 horizontal: 15,
               ),
               decoration: pw.BoxDecoration(
-                color: lightBlue,
+                color: primaryPurple,
                 borderRadius: pw.BorderRadius.circular(12),
                 border: pw.Border.all(
-                  color: borderBlue,
+                  color: borderPurple,
                   width: 0.7,
                 ),
               ),
@@ -1271,7 +1394,7 @@ SizedBox(height: height * 0.035),
                   style: pw.TextStyle(
                     font: boldFont,
                     fontSize: 24,
-                    color: darkBlue,
+                   color: white,
                   ),
                 ),
               ),
@@ -1287,10 +1410,10 @@ SizedBox(height: height * 0.035),
               width: double.infinity,
               padding: const pw.EdgeInsets.all(14),
               decoration: pw.BoxDecoration(
-                color: lightBlue,
+                color: lightPurple,
                 borderRadius: pw.BorderRadius.circular(10),
                 border: pw.Border.all(
-                  color: borderBlue,
+                  color: borderPurple,
                   width: 0.7,
                 ),
               ),
@@ -1302,7 +1425,7 @@ SizedBox(height: height * 0.035),
                     style: pw.TextStyle(
                       font: boldFont,
                       fontSize: 15,
-                      color: darkBlue,
+                      color: darkPurple,
                     ),
                   ),
 
@@ -1330,7 +1453,7 @@ SizedBox(height: height * 0.035),
               style: pw.TextStyle(
                 font: boldFont,
                 fontSize: 17,
-                color: darkBlue,
+                color: darkPurple,
               ),
             ),
 
@@ -1342,13 +1465,13 @@ SizedBox(height: height * 0.035),
 
             pw.Table(
               border: pw.TableBorder.all(
-                color: borderBlue,
+                color: borderPurple,
                 width: 0.7,
               ),
               children: [
                 pw.TableRow(
                   decoration: pw.BoxDecoration(
-                    color: lightBlue,
+                    color: lightPurple,
                   ),
                   children: [
                     _pdfCell(
@@ -1396,7 +1519,7 @@ SizedBox(height: height * 0.035),
               style: pw.TextStyle(
                 font: boldFont,
                 fontSize: 17,
-                color: darkBlue,
+                color: darkPurple,
               ),
             ),
 
@@ -1421,7 +1544,7 @@ SizedBox(height: height * 0.035),
                     color: PdfColors.white,
                     borderRadius: pw.BorderRadius.circular(7),
                     border: pw.Border.all(
-                      color: borderBlue,
+                      color: borderPurple,
                       width: 0.6,
                     ),
                   ),
@@ -1434,7 +1557,7 @@ SizedBox(height: height * 0.035),
                         style: pw.TextStyle(
                           font: boldFont,
                           fontSize: 12,
-                          color: darkBlue,
+                          color: darkPurple,
                         ),
                       ),
 
@@ -1462,7 +1585,7 @@ SizedBox(height: height * 0.035),
               style: pw.TextStyle(
                 font: boldFont,
                 fontSize: 17,
-                color: darkBlue,
+                color: darkPurple,
               ),
             ),
 
@@ -1480,7 +1603,7 @@ SizedBox(height: height * 0.035),
                   color: PdfColors.white,
                   borderRadius: pw.BorderRadius.circular(7),
                   border: pw.Border.all(
-                    color: borderBlue,
+                    color: borderPurple,
                     width: 0.6,
                   ),
                 ),
@@ -1505,7 +1628,7 @@ SizedBox(height: height * 0.035),
                       color: PdfColors.white,
                       borderRadius: pw.BorderRadius.circular(7),
                       border: pw.Border.all(
-                        color: borderBlue,
+                        color: borderPurple,
                         width: 0.6,
                       ),
                     ),
@@ -1531,7 +1654,7 @@ SizedBox(height: height * 0.035),
               style: pw.TextStyle(
                 font: boldFont,
                 fontSize: 17,
-                color: darkBlue,
+                color: darkPurple,
               ),
             ),
 
@@ -1545,10 +1668,10 @@ SizedBox(height: height * 0.035),
               width: double.infinity,
               padding: const pw.EdgeInsets.all(14),
               decoration: pw.BoxDecoration(
-                color: lightBlue,
+                color: lightPurple,
                 borderRadius: pw.BorderRadius.circular(10),
                 border: pw.Border.all(
-                  color: borderBlue,
+                  color: borderPurple,
                   width: 0.7,
                 ),
               ),
@@ -1571,7 +1694,7 @@ SizedBox(height: height * 0.035),
             // ==========================================
 
             pw.Divider(
-              color: borderBlue,
+              color: borderPurple,
             ),
 
             pw.SizedBox(height: 8),
@@ -1582,7 +1705,7 @@ SizedBox(height: height * 0.035),
               style: pw.TextStyle(
                 font: regularFont,
                 fontSize: 9,
-                color: darkBlue,
+                color: darkPurple,
               ),
             ),
 
@@ -1591,47 +1714,34 @@ SizedBox(height: height * 0.035),
             // ==========================================
             // FINAL MESSAGE
             // ==========================================
+// ==========================================
+// FINAL MESSAGE
+// ==========================================
 
-            pw.Container(
-              width: double.infinity,
-              padding: const pw.EdgeInsets.symmetric(
-                vertical: 16,
-                horizontal: 12,
-              ),
-              decoration: pw.BoxDecoration(
-                color: lightBlue,
-                borderRadius: pw.BorderRadius.circular(12),
-                border: pw.Border.all(
-                  color: borderBlue,
-                  width: 0.7,
-                ),
-              ),
-              child: pw.Column(
-                children: [
-                  pw.Text(
-                    '♡',
-                    textAlign: pw.TextAlign.center,
-                    style: pw.TextStyle(
-                      font: regularFont,
-                      fontSize: 24,
-                      color: darkBlue,
-                    ),
-                  ),
-
-                  pw.SizedBox(height: 5),
-
-                  pw.Text(
-                    'لا بأس، طهور إن شاء الله',
-                    textAlign: pw.TextAlign.center,
-                    style: pw.TextStyle(
-                      font: boldFont,
-                      fontSize: 16,
-                      color: darkBlue,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+pw.Container(
+  width: double.infinity,
+  padding: const pw.EdgeInsets.symmetric(
+    vertical: 16,
+    horizontal: 12,
+  ),
+  decoration: pw.BoxDecoration(
+    color: lightPurple,
+    borderRadius: pw.BorderRadius.circular(12),
+    border: pw.Border.all(
+      color: borderPurple,
+      width: 0.7,
+    ),
+  ),
+  child: pw.Text(
+    'لا بأس، طهور إن شاء الله',
+    textAlign: pw.TextAlign.center,
+    style: pw.TextStyle(
+      font: boldFont,
+      fontSize: 16,
+      color: darkPurple,
+    ),
+  ),
+),
           ];
         },
       ),

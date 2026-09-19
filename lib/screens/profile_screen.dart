@@ -11,6 +11,7 @@ import 'package:final_project/screens/appointment_screen.dart';
 import 'package:final_project/screens/personal_info_screen.dart';
 import 'package:final_project/screens/help_support_screen.dart';
 import 'package:final_project/screens/privacy_policy_screen.dart';
+import 'package:final_project/screens/notifications_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -486,17 +487,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         // =================================================
                         // NOTIFICATIONS
                         // =================================================
-                        _profileItem(
-                          width: width,
-                          height: height,
-                          icon: Icons.notifications_none_rounded,
-                          title: 'الإشعارات',
-                          iconColor: homeYellowColor,
-                          onTap: () {
-                            // سيتم ربط صفحة الإشعارات لاحقًا
-                          },
-                        ),
-
+                _profileItem(
+  width: width,
+  height: height,
+  icon: Icons.notifications_none_rounded,
+  title: 'الإشعارات',
+  iconColor: homeYellowColor,
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            const NotificationsScreen(),
+      ),
+    );
+  },
+),
                         _divider(width),
 
                         // =================================================
