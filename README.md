@@ -20,27 +20,14 @@
 
 ---
 
-# 🎬 Halati App Demo
+# 🎬 Halati Splash Screen 
 
 <p align="center">
-  <img src="halati_demo.gif" width="230" alt="Halati Application Demo">
+  <img src="halati_demo.gif" width="230" alt="Halati Splash Screen">
 </p>
 
 <p align="center">
-  <strong>See Halati in Action 💙</strong>
-</p>
-
-<p align="center">
-  <sub>
-    Explore the complete application experience — from symptom tracking
-    to smart health reports and AI-powered summaries.
-  </sub>
-</p>
-
-<p align="center">
-  <a href="halati_demo.mp4">
-    <strong>▶️ Watch Full Application Demo</strong>
-  </a>
+  <strong> Halati Splash Screen💙</strong>
 </p>
 
 ---
